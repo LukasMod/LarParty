@@ -1,4 +1,4 @@
-import { Link } from 'expo-router';
+import { Link, useLocalSearchParams } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -6,38 +6,29 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
 
-const quickLinks = [{ href: '/party/new' as const, label: 'Create a new party' }];
+export default function PartyDetailsScreen() {
+  const { partyId } = useLocalSearchParams<{ partyId: string }>();
 
-export default function PartyListScreen() {
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.content}>
           <View style={styles.header}>
-            <ThemedText type="title" style={styles.title}>
-              LarParty
-            </ThemedText>
-            <ThemedText style={styles.subtitle} themeColor="textSecondary">
-              Create themed parties and generate character cards for your next LARP-inspired event.
-            </ThemedText>
+            <ThemedText type="subtitle">Party Details</ThemedText>
+            <ThemedText themeColor="textSecondary">Party ID: {partyId}</ThemedText>
           </View>
 
           <ThemedView type="backgroundElement" style={styles.card}>
-            <ThemedText type="subtitle">Party List</ThemedText>
-            <ThemedText themeColor="textSecondary">
-              No parties yet. This placeholder will become the saved party list in Phase 2.
+            <ThemedText>
+              This placeholder screen will show the selected party theme, mood, and list of character cards.
             </ThemedText>
           </ThemedView>
 
-          <View style={styles.actions}>
-            {quickLinks.map((link) => (
-              <Link key={link.href} href={link.href} asChild>
-                <Pressable style={styles.primaryButton}>
-                  <ThemedText style={styles.primaryButtonText}>{link.label}</ThemedText>
-                </Pressable>
-              </Link>
-            ))}
-          </View>
+          <Link href={{ pathname: '/party/[partyId]/card/new', params: { partyId } }} asChild>
+            <Pressable style={styles.primaryButton}>
+              <ThemedText style={styles.primaryButtonText}>Create a character card</ThemedText>
+            </Pressable>
+          </Link>
         </View>
       </SafeAreaView>
     </ThemedView>
@@ -61,23 +52,12 @@ const styles = StyleSheet.create({
     gap: Spacing.four,
   },
   header: {
-    gap: Spacing.two,
-    paddingTop: Spacing.two,
-  },
-  title: {
-    fontSize: 42,
-    lineHeight: 46,
-  },
-  subtitle: {
-    maxWidth: 520,
+    gap: Spacing.one,
   },
   card: {
     borderRadius: Spacing.four,
     padding: Spacing.four,
     gap: Spacing.two,
-  },
-  actions: {
-    gap: Spacing.three,
   },
   primaryButton: {
     backgroundColor: '#7A3FF2',

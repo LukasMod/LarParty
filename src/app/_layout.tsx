@@ -1,15 +1,32 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
-import { useColorScheme } from 'react-native';
+import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
+import { Colors } from '@/constants/theme';
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+export default function RootLayout() {
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AnimatedSplashOverlay />
-      <AppTabs />
-    </ThemeProvider>
+    <>
+      <StatusBar style="dark" />
+      <Stack
+        screenOptions={{
+          headerShadowVisible: false,
+          headerTintColor: Colors.light.text,
+          headerStyle: {
+            backgroundColor: Colors.light.background,
+          },
+          headerTitleStyle: {
+            color: Colors.light.text,
+          },
+          contentStyle: {
+            backgroundColor: Colors.light.background,
+          },
+        }}>
+        <Stack.Screen name="index" options={{ title: 'LarParty' }} />
+        <Stack.Screen name="party/new" options={{ title: 'New Party' }} />
+        <Stack.Screen name="party/[partyId]" options={{ title: 'Party Details' }} />
+        <Stack.Screen name="party/[partyId]/card/new" options={{ title: 'New Character Card' }} />
+        <Stack.Screen name="party/[partyId]/card/[cardId]" options={{ title: 'Character Card' }} />
+      </Stack>
+    </>
   );
 }
