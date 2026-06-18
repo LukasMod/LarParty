@@ -1,14 +1,14 @@
 import { Link, router, useLocalSearchParams } from 'expo-router';
 import { useMemo } from 'react';
-import { Alert, Pressable, StyleSheet, View } from 'react-native';
+import { Alert, Pressable, View } from 'react-native';
+import { StyleSheet } from 'react-native-unistyles';
 
+import { ThemedText } from '@/components/themed-text';
+import { ThemedView } from '@/components/themed-view';
 import { getCardsForParty } from '@/features/cards/selectors';
 import { useCardStore } from '@/features/cards/store/card-store';
 import { getPartyById } from '@/features/parties/selectors';
 import { usePartyStore } from '@/features/parties/store/party-store';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Spacing } from '@/constants/theme';
 import { Screen } from '@/shared/components/screen';
 import { partyMoodLabels, themeCategoryLabels } from '@/shared/constants/party-options';
 
@@ -101,42 +101,42 @@ export default function PartyDetailsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create(theme => ({
   header: {
-    gap: Spacing.one,
+    gap: theme.spacing.one,
   },
   card: {
-    borderRadius: Spacing.four,
-    padding: Spacing.four,
-    gap: Spacing.two,
+    borderRadius: theme.radius.card,
+    padding: theme.spacing.four,
+    gap: theme.spacing.two,
   },
   cardList: {
-    gap: Spacing.two,
-    marginTop: Spacing.two,
+    gap: theme.spacing.two,
+    marginTop: theme.spacing.two,
   },
   cardItem: {
-    borderRadius: Spacing.three,
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.three,
-    gap: Spacing.one,
+    borderRadius: theme.radius.control,
+    paddingHorizontal: theme.spacing.three,
+    paddingVertical: theme.spacing.three,
+    gap: theme.spacing.one,
   },
   primaryButton: {
-    backgroundColor: '#7A3FF2',
-    borderRadius: 999,
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.three,
+    backgroundColor: theme.colors.primary,
+    borderRadius: theme.radius.pill,
+    paddingHorizontal: theme.spacing.four,
+    paddingVertical: theme.spacing.three,
     alignItems: 'center',
   },
   primaryButtonText: {
-    color: '#FFF8F1',
+    color: theme.colors.primaryText,
     fontWeight: '700',
   },
   secondaryButton: {
     borderWidth: 1,
-    borderColor: '#D6C7AF',
-    borderRadius: 999,
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.three,
+    borderColor: theme.colors.border,
+    borderRadius: theme.radius.pill,
+    paddingHorizontal: theme.spacing.four,
+    paddingVertical: theme.spacing.three,
     alignItems: 'center',
   },
-});
+}));

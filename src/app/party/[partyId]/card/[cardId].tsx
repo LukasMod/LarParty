@@ -1,10 +1,10 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { Alert, Pressable, StyleSheet, View } from 'react-native';
+import { Alert, Pressable, View } from 'react-native';
+import { StyleSheet } from 'react-native-unistyles';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Colors, Spacing } from '@/constants/theme';
 import { useCardStore } from '@/features/cards/store/card-store';
 import { generateCharacterCard } from '@/features/generation/gemini';
 import { getPartyById } from '@/features/parties/selectors';
@@ -195,75 +195,75 @@ export default function CardDetailsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create(theme => ({
   header: {
-    gap: Spacing.one,
+    gap: theme.spacing.one,
   },
   modeSwitch: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: Spacing.two,
+    gap: theme.spacing.two,
   },
   modeChip: {
     borderWidth: 1,
-    borderColor: '#D6C7AF',
-    borderRadius: 999,
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.two,
-    backgroundColor: Colors.light.background,
+    borderColor: theme.colors.border,
+    borderRadius: theme.radius.pill,
+    paddingHorizontal: theme.spacing.three,
+    paddingVertical: theme.spacing.two,
+    backgroundColor: theme.colors.inputBackground,
   },
   modeChipSelected: {
-    backgroundColor: '#7A3FF2',
-    borderColor: '#7A3FF2',
+    backgroundColor: theme.colors.primary,
+    borderColor: theme.colors.primary,
   },
   modeChipTextSelected: {
-    color: '#FFF8F1',
+    color: theme.colors.primaryText,
     fontWeight: '700',
   },
   card: {
-    borderRadius: Spacing.four,
-    padding: Spacing.four,
-    gap: Spacing.three,
+    borderRadius: theme.radius.card,
+    padding: theme.spacing.four,
+    gap: theme.spacing.three,
   },
   collectibleCard: {
     borderWidth: 2,
-    borderColor: '#B9953B',
+    borderColor: theme.colors.cardPreviewAccent,
   },
   infoCard: {
     borderWidth: 1,
-    borderColor: '#D6C7AF',
+    borderColor: theme.colors.border,
   },
   section: {
-    gap: Spacing.two,
+    gap: theme.spacing.two,
   },
   traitList: {
-    gap: Spacing.two,
+    gap: theme.spacing.two,
   },
   traitItem: {
-    borderRadius: Spacing.three,
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.two,
+    borderRadius: theme.radius.control,
+    paddingHorizontal: theme.spacing.three,
+    paddingVertical: theme.spacing.two,
   },
   primaryButton: {
-    backgroundColor: '#7A3FF2',
-    borderRadius: 999,
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.three,
+    backgroundColor: theme.colors.primary,
+    borderRadius: theme.radius.pill,
+    paddingHorizontal: theme.spacing.four,
+    paddingVertical: theme.spacing.three,
     alignItems: 'center',
   },
   primaryButtonText: {
-    color: '#FFF8F1',
+    color: theme.colors.primaryText,
     fontWeight: '700',
   },
   secondaryButton: {
     borderWidth: 1,
-    borderColor: '#D6C7AF',
-    borderRadius: 999,
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.three,
+    borderColor: theme.colors.border,
+    borderRadius: theme.radius.pill,
+    paddingHorizontal: theme.spacing.four,
+    paddingVertical: theme.spacing.three,
     alignItems: 'center',
   },
   buttonDisabled: {
     opacity: 0.65,
   },
-});
+}));

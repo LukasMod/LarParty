@@ -1,10 +1,10 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { Pressable, TextInput, View } from 'react-native';
+import { StyleSheet } from 'react-native-unistyles';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Colors, Spacing } from '@/constants/theme';
 import { useCardStore } from '@/features/cards/store/card-store';
 import { CharacterCardInput, InputTrait, SexOption } from '@/features/cards/types';
 import { generateCharacterCard } from '@/features/generation/gemini';
@@ -130,7 +130,7 @@ export default function NewCharacterCardScreen() {
                 value={name}
                 onChangeText={setName}
                 placeholder="Mira Nightbloom"
-                placeholderTextColor={Colors.light.textSecondary}
+                placeholderTextColor={styles.placeholder.color}
                 style={styles.input}
               />
             </View>
@@ -161,7 +161,7 @@ export default function NewCharacterCardScreen() {
                 value={age}
                 onChangeText={setAge}
                 placeholder="25"
-                placeholderTextColor={Colors.light.textSecondary}
+                placeholderTextColor={styles.placeholder.color}
                 keyboardType="number-pad"
                 style={styles.input}
               />
@@ -210,63 +210,66 @@ export default function NewCharacterCardScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create(theme => ({
   header: {
-    gap: Spacing.one,
+    gap: theme.spacing.one,
   },
   card: {
-    borderRadius: Spacing.four,
-    padding: Spacing.four,
-    gap: Spacing.four,
+    borderRadius: theme.radius.card,
+    padding: theme.spacing.four,
+    gap: theme.spacing.four,
   },
   fieldGroup: {
-    gap: Spacing.two,
+    gap: theme.spacing.two,
+  },
+  placeholder: {
+    color: theme.colors.textSecondary,
   },
   input: {
-    backgroundColor: Colors.light.background,
-    color: Colors.light.text,
-    borderRadius: Spacing.three,
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.three,
+    backgroundColor: theme.colors.inputBackground,
+    color: theme.colors.text,
+    borderRadius: theme.radius.control,
+    paddingHorizontal: theme.spacing.three,
+    paddingVertical: theme.spacing.three,
     borderWidth: 1,
-    borderColor: '#D6C7AF',
+    borderColor: theme.colors.inputBorder,
   },
   optionGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: Spacing.two,
+    gap: theme.spacing.two,
   },
   optionChip: {
     borderWidth: 1,
-    borderColor: '#D6C7AF',
-    borderRadius: 999,
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.two,
-    backgroundColor: Colors.light.background,
+    borderColor: theme.colors.border,
+    borderRadius: theme.radius.pill,
+    paddingHorizontal: theme.spacing.three,
+    paddingVertical: theme.spacing.two,
+    backgroundColor: theme.colors.inputBackground,
   },
   optionChipSelected: {
-    backgroundColor: '#7A3FF2',
-    borderColor: '#7A3FF2',
+    backgroundColor: theme.colors.primary,
+    borderColor: theme.colors.primary,
   },
   optionChipDisabled: {
     opacity: 0.45,
   },
   optionChipTextSelected: {
-    color: '#FFF8F1',
+    color: theme.colors.primaryText,
     fontWeight: '700',
   },
   primaryButton: {
-    backgroundColor: '#7A3FF2',
-    borderRadius: 999,
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.three,
+    backgroundColor: theme.colors.primary,
+    borderRadius: theme.radius.pill,
+    paddingHorizontal: theme.spacing.four,
+    paddingVertical: theme.spacing.three,
     alignItems: 'center',
   },
   primaryButtonDisabled: {
     opacity: 0.65,
   },
   primaryButtonText: {
-    color: '#FFF8F1',
+    color: theme.colors.primaryText,
     fontWeight: '700',
   },
-});
+}));
