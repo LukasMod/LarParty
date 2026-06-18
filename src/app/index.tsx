@@ -1,18 +1,24 @@
 import { Link } from 'expo-router';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { getCardsForParty } from '@/features/cards/selectors';
+import { useCardStore } from '@/features/cards/store/card-store';
+import { usePartyStore } from '@/features/parties/store/party-store';
+import { themeCategoryLabels, partyMoodLabels } from '@/shared/constants/party-options';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { MaxContentWidth, Spacing } from '@/constants/theme';
-
-const quickLinks = [{ href: '/party/new' as const, label: 'Create a new party' }];
+import { Spacing } from '@/constants/theme';
 
 export default function PartyListScreen() {
+  const hasHydrated = usePartyStore((state) => state.hasHydrated);
+  const parties = usePartyStore((state) => state.parties);
+  const cards = useCardStore((state) => state.cards);
+
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.content}>
+        <ScrollView contentContainerStyle={styles.content}>
           <View style={styles.header}>
             <ThemedText type="title" style={styles.title}>
               LarParty
@@ -22,23 +28,57 @@ export default function PartyListScreen() {
             </ThemedText>
           </View>
 
-          <ThemedView type="backgroundElement" style={styles.card}>
-            <ThemedText type="subtitle">Party List</ThemedText>
-            <ThemedText themeColor="textSecondary">
-              No parties yet. This placeholder will become the saved party list in Phase 2.
-            </ThemedText>
-          </ThemedView>
+          {!hasHydrated ? (
+            <ThemedView type="backgroundElement" style={styles.card}>
+              <ThemedText type="subtitle">Loading parties...</ThemedText>
+              <ThemedText themeColor="textSecondary">
+                Restoring your saved local party data.
+              </ThemedText>
+            </ThemedView>
+          ) : parties.length === 0 ? (
+            <ThemedView type="backgroundElement" style={styles.card}>
+              <ThemedText type="subtitle">Party List</ThemedText>
+              <ThemedText themeColor="textSecondary">
+                No parties yet. Create your first party to start generating character cards.
+              </ThemedText>
+            </ThemedView>
+          ) : (
+            <View style={styles.partyList}>
+              {parties.map((party) => {
+                const partyCards = getCardsForParty(cards, party.id);
 
-          <View style={styles.actions}>
-            {quickLinks.map((link) => (
-              <Link key={link.href} href={link.href} asChild>
-                <Pressable style={styles.primaryButton}>
-                  <ThemedText style={styles.primaryButtonText}>{link.label}</ThemedText>
-                </Pressable>
-              </Link>
-            ))}
-          </View>
-        </View>
+                return (
+                  <Link
+                    key={party.id}
+                    href={{ pathname: '/party/[partyId]', params: { partyId: party.id } }}
+                    asChild>
+                    <Pressable>
+                      <ThemedView type="backgroundElement" style={styles.partyCard}>
+                        <View style={styles.partyCardHeader}>
+                          <ThemedText type="subtitle" style={styles.partyCardTitle}>
+                            {party.title}
+                          </ThemedText>
+                          <ThemedText themeColor="textSecondary">
+                            {partyCards.length} {partyCards.length === 1 ? 'card' : 'cards'}
+                          </ThemedText>
+                        </View>
+                        <ThemedText themeColor="textSecondary">
+                          {themeCategoryLabels[party.themeCategory]} · {partyMoodLabels[party.mood]}
+                        </ThemedText>
+                      </ThemedView>
+                    </Pressable>
+                  </Link>
+                );
+              })}
+            </View>
+          )}
+
+          <Link href="/party/new" asChild>
+            <Pressable style={styles.primaryButton}>
+              <ThemedText style={styles.primaryButtonText}>Create a new party</ThemedText>
+            </Pressable>
+          </Link>
+        </ScrollView>
       </SafeAreaView>
     </ThemedView>
   );
@@ -50,12 +90,9 @@ const styles = StyleSheet.create({
   },
   safeArea: {
     flex: 1,
-    alignItems: 'center',
   },
   content: {
-    flex: 1,
     width: '100%',
-    maxWidth: MaxContentWidth,
     paddingHorizontal: Spacing.four,
     paddingVertical: Spacing.four,
     gap: Spacing.four,
@@ -68,16 +105,30 @@ const styles = StyleSheet.create({
     fontSize: 42,
     lineHeight: 46,
   },
-  subtitle: {
-    maxWidth: 520,
-  },
+  subtitle: {},
   card: {
     borderRadius: Spacing.four,
     padding: Spacing.four,
     gap: Spacing.two,
   },
-  actions: {
+  partyList: {
     gap: Spacing.three,
+  },
+  partyCard: {
+    borderRadius: Spacing.four,
+    padding: Spacing.four,
+    gap: Spacing.two,
+  },
+  partyCardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: Spacing.two,
+    alignItems: 'center',
+  },
+  partyCardTitle: {
+    flex: 1,
+    fontSize: 24,
+    lineHeight: 30,
   },
   primaryButton: {
     backgroundColor: '#7A3FF2',
