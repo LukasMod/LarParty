@@ -1,5 +1,5 @@
-import { CardDisplayMode } from '@/features/cards/types';
+import { CardDisplayMode } from '@/features/cards/types'
 
 export interface PreferencesState {
-  cardDisplayMode: CardDisplayMode;
+  cardDisplayMode: CardDisplayMode
 }

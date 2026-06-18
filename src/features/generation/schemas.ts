@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from 'zod'
 
 export const generatedCharacterCardSchema = z.object({
   generatedNameWithClass: z.string().trim().min(1),
@@ -10,9 +10,11 @@ export const generatedCharacterCardSchema = z.object({
   ]),
   specialMovement: z.string().trim().min(1),
   specialPhrase: z.string().trim().min(1),
-});
+})
 
-export type GeneratedCharacterCardResult = z.infer<typeof generatedCharacterCardSchema>;
+export type GeneratedCharacterCardResult = z.infer<
+  typeof generatedCharacterCardSchema
+>
 
 export const generatedCharacterCardJsonSchema = {
   type: 'object',
@@ -23,7 +25,8 @@ export const generatedCharacterCardJsonSchema = {
     },
     backgroundHistory: {
       type: 'string',
-      description: 'Exactly 2 short sentences describing the character background.',
+      description:
+        'Exactly 2 short sentences describing the character background.',
     },
     characterTraits: {
       type: 'array',
@@ -50,4 +53,4 @@ export const generatedCharacterCardJsonSchema = {
     'specialMovement',
     'specialPhrase',
   ],
-} as const;
+} as const

@@ -20,9 +20,11 @@ This checklist translates the approved implementation plan into practical execut
 ## Phase 1 — App shell and routing
 
 ### Goal
+
 Replace the Expo starter shell with the LarParty app structure.
 
 ### Tasks
+
 - [ ] Remove starter/demo screen concepts and app copy
 - [ ] Replace tab-based starter navigation with stack-based app flow
 - [ ] Create route structure:
@@ -38,6 +40,7 @@ Replace the Expo starter shell with the LarParty app structure.
 - [ ] Add app-level empty placeholder screens for each main route
 
 ### Exit criteria
+
 - [ ] App launches into Party List Screen
 - [ ] All main routes exist and are navigable
 - [ ] No starter-tab UX remains
@@ -47,9 +50,11 @@ Replace the Expo starter shell with the LarParty app structure.
 ## Phase 2 — Domain model and constants
 
 ### Goal
+
 Create stable product primitives before screen logic grows.
 
 ### Tasks
+
 - [ ] Add shared app constants for:
   - [ ] theme categories
   - [ ] moods
@@ -74,6 +79,7 @@ Create stable product primitives before screen logic grows.
   - [ ] formatting labels for display
 
 ### Exit criteria
+
 - [ ] All frozen enums live in one predictable place
 - [ ] Screens can import types/constants without duplication
 
@@ -82,9 +88,11 @@ Create stable product primitives before screen logic grows.
 ## Phase 3 — Persistence foundation
 
 ### Goal
+
 Make parties, cards, and preferences persist locally.
 
 ### Tasks
+
 - [ ] Create a storage abstraction for app data
 - [ ] Add persistence support for:
   - [ ] parties collection
@@ -98,6 +106,7 @@ Make parties, cards, and preferences persist locally.
 - [ ] Add error handling strategy for corrupted or missing local data
 
 ### Exit criteria
+
 - [ ] Data survives app reload/restart
 - [ ] Party deletion removes related cards
 - [ ] UI preference can be restored
@@ -107,9 +116,11 @@ Make parties, cards, and preferences persist locally.
 ## Phase 4 — Party screens
 
 ### Goal
+
 Build the party-level UX before AI card generation.
 
 ### Tasks
+
 - [ ] Implement Party List Screen
 - [ ] Add empty state for no parties
 - [ ] Add create party CTA
@@ -130,6 +141,7 @@ Build the party-level UX before AI card generation.
 - [ ] Add create card CTA
 
 ### Exit criteria
+
 - [ ] User can create and delete parties
 - [ ] Party details render persisted data correctly
 - [ ] Party list updates immediately after changes
@@ -139,9 +151,11 @@ Build the party-level UX before AI card generation.
 ## Phase 5 — Card creation foundation
 
 ### Goal
+
 Build card input flow before real AI generation.
 
 ### Tasks
+
 - [ ] Implement Create Character Card Screen
 - [ ] Add form fields:
   - [ ] name
@@ -156,6 +170,7 @@ Build card input flow before real AI generation.
 - [ ] Create local card record shape ready for generated output
 
 ### Exit criteria
+
 - [ ] Form is functional and validated
 - [ ] User can reach generate flow from party details
 - [ ] Inputs map cleanly into generation request structure
@@ -165,9 +180,11 @@ Build card input flow before real AI generation.
 ## Phase 6 — AI generation integration
 
 ### Goal
+
 Connect form input to local-LLM-first character generation.
 
 ### Tasks
+
 - [ ] Create generation service interface
 - [ ] Add local LLM generator implementation
 - [ ] Add optional mock generator fallback for development
@@ -189,6 +206,7 @@ Connect form input to local-LLM-first character generation.
   - [ ] unavailable AI runtime
 
 ### Exit criteria
+
 - [ ] Successful generation produces a saved draft card
 - [ ] Invalid responses do not create broken saved data
 - [ ] UX shows meaningful error feedback
@@ -198,9 +216,11 @@ Connect form input to local-LLM-first character generation.
 ## Phase 7 — Card details and lifecycle actions
 
 ### Goal
+
 Make generated cards usable and manageable.
 
 ### Tasks
+
 - [ ] Implement Card Details Screen
 - [ ] Show:
   - [ ] generated name with class
@@ -220,6 +240,7 @@ Make generated cards usable and manageable.
 - [ ] Make draft vs accepted visually distinguishable
 
 ### Exit criteria
+
 - [ ] Draft can be accepted
 - [ ] Accepted card stays preserved when regeneration creates a new draft
 - [ ] Card deletion works and updates party screen
@@ -229,9 +250,11 @@ Make generated cards usable and manageable.
 ## Phase 8 — Card presentation modes
 
 ### Goal
+
 Support both decorative and readable card views.
 
 ### Tasks
+
 - [ ] Design collectible card mode component
 - [ ] Design info mode component
 - [ ] Add display mode toggle UI
@@ -240,6 +263,7 @@ Support both decorative and readable card views.
 - [ ] Ensure both modes remain readable on phone screens
 
 ### Exit criteria
+
 - [ ] User can switch between collectible and info view
 - [ ] Selected mode is restored after app restart
 
@@ -248,9 +272,11 @@ Support both decorative and readable card views.
 ## Phase 9 — Theme styling system
 
 ### Goal
+
 Introduce theme-specific visual flavor without overcomplicating the UI.
 
 ### Tasks
+
 - [ ] Add base app design tokens
 - [ ] Add theme accent packs for:
   - [ ] Fantasy
@@ -267,6 +293,7 @@ Introduce theme-specific visual flavor without overcomplicating the UI.
 - [ ] Avoid separate per-theme component trees
 
 ### Exit criteria
+
 - [ ] Theme category visibly affects styling
 - [ ] UI remains consistent and manageable
 
@@ -275,9 +302,11 @@ Introduce theme-specific visual flavor without overcomplicating the UI.
 ## Phase 10 — Web compatibility pass
 
 ### Goal
+
 Ensure the mobile-first MVP still works acceptably on web.
 
 ### Tasks
+
 - [ ] Test all routes on web
 - [ ] Test all forms on web
 - [ ] Test persistence behavior on web
@@ -286,6 +315,7 @@ Ensure the mobile-first MVP still works acceptably on web.
 - [ ] Add only minimal web-specific adjustments if needed
 
 ### Exit criteria
+
 - [ ] Core product flow works on web
 - [ ] No web-only work blocks mobile-first delivery
 
@@ -294,9 +324,11 @@ Ensure the mobile-first MVP still works acceptably on web.
 ## Phase 11 — Final polish and readiness
 
 ### Goal
+
 Bring the PoC to a demo-ready state.
 
 ### Tasks
+
 - [ ] Review loading, error, and empty states across all screens
 - [ ] Review delete/regenerate confirmation UX
 - [ ] Review consistency of labels and enum display text
@@ -307,6 +339,7 @@ Bring the PoC to a demo-ready state.
 - [ ] Prepare short demo flow for showcasing the PoC
 
 ### Exit criteria
+
 - [ ] Main MVP flow is stable
 - [ ] Draft/accepted/regeneration behavior is understandable
 - [ ] App is visually coherent enough for PoC presentation

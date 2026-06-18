@@ -1,17 +1,17 @@
-import { Link } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Link } from 'expo-router'
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Spacing } from '@/constants/theme';
+import { ThemedText } from '@/components/themed-text'
+import { ThemedView } from '@/components/themed-view'
+import { Spacing } from '@/constants/theme'
 
 const checklistItems = [
   'Create and persist parties locally',
   'Add character card input flow',
   'Wire card drafts and accepted states',
   'Integrate local LLM generation',
-];
+]
 
 export default function ExploreScreen() {
   return (
@@ -21,7 +21,8 @@ export default function ExploreScreen() {
           <View style={styles.header}>
             <ThemedText type="subtitle">Explore</ThemedText>
             <ThemedText themeColor="textSecondary">
-              A simple project overview for the current LarParty proof of concept.
+              A simple project overview for the current LarParty proof of
+              concept.
             </ThemedText>
           </View>
 
@@ -38,13 +39,15 @@ export default function ExploreScreen() {
 
           <Link href="/" asChild>
             <Pressable style={styles.primaryButton}>
-              <ThemedText style={styles.primaryButtonText}>Back to parties</ThemedText>
+              <ThemedText style={styles.primaryButtonText}>
+                Back to parties
+              </ThemedText>
             </Pressable>
           </Link>
         </ScrollView>
       </SafeAreaView>
     </ThemedView>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -82,4 +85,4 @@ const styles = StyleSheet.create({
     color: '#FFF8F1',
     fontWeight: '700',
   },
-});
+})

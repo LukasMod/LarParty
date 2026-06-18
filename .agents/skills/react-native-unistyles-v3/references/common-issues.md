@@ -25,10 +25,11 @@ Curated from 150+ GitHub issues. Organized by category with symptoms, causes, an
 **Symptoms:** Styles don't work or "not configured" error with Expo Router.
 **Cause:** Expo Router resolves routes before your config runs.
 **Solution:**
+
 1. Set `"main": "index.ts"` in package.json
 2. Create `index.ts` with:
    ```ts
-   import './unistyles'        // configure first
+   import './unistyles' // configure first
    import 'expo-router/entry'
    ```
 3. For static rendering, also import config in `app/+html.tsx`
@@ -38,12 +39,14 @@ Curated from 150+ GitHub issues. Organized by category with symptoms, causes, an
 **Symptoms:** Runtime error mentioning `hasAdaptiveThemes` property.
 **Cause:** `adaptiveThemes` set to `true` without both `light` and `dark` themes registered.
 **Solution:** Ensure themes object has keys named exactly `light` and `dark`:
+
 ```tsx
 StyleSheet.configure({
   themes: { light: lightTheme, dark: darkTheme },
-  settings: { adaptiveThemes: true }
+  settings: { adaptiveThemes: true },
 })
 ```
+
 **Ref:** [#1040](https://github.com/jpudysz/react-native-unistyles/issues/1040)
 
 ---
@@ -55,6 +58,7 @@ StyleSheet.configure({
 **Symptoms:** Runtime error "Style is not bound!" or styles not applying.
 **Cause:** Spreading Unistyles styles with `{...styles.x}`. v3 styles are C++ proxy objects — spreading breaks the native binding.
 **Solution:** ALWAYS use array syntax:
+
 ```tsx
 // WRONG
 <View style={{ ...styles.container, ...styles.extra }} />
@@ -70,6 +74,7 @@ StyleSheet.configure({
 **Symptoms:** Animated styles don't update or crash.
 **Cause:** Spreading Unistyles styles inside `useAnimatedStyle`.
 **Solution:** Use array syntax when combining:
+
 ```tsx
 // WRONG
 const animStyle = useAnimatedStyle(() => ({ ...styles.box }))
@@ -87,9 +92,10 @@ const animStyle = useAnimatedStyle(() => ({ ...styles.box }))
 **Symptoms:** Styles not reactive; theme changes have no effect.
 **Cause:** The Babel plugin detects `StyleSheet.create` by checking the import source is `react-native-unistyles`. Re-exporting through a barrel file (e.g., `export { StyleSheet } from 'react-native-unistyles'` in `utils/index.ts`) breaks detection.
 **Solution:** Always import directly:
+
 ```tsx
 // WRONG
-import { StyleSheet } from '@/utils'  // barrel re-export
+import { StyleSheet } from '@/utils' // barrel re-export
 
 // CORRECT
 import { StyleSheet } from 'react-native-unistyles'
@@ -107,14 +113,15 @@ import { StyleSheet } from 'react-native-unistyles'
 **Symptoms:** Styles not reactive; Babel plugin appears to do nothing.
 **Cause:** The `root` option in Babel config resolves to the project root or an incorrect directory.
 **Solution:** `root` must point to your **source code directory**, not the project root:
+
 ```js
 // WRONG — root resolves to project root
-['react-native-unistyles/plugin', { root: '.' }]
-['react-native-unistyles/plugin', { root: '' }]
-
-// CORRECT
-['react-native-unistyles/plugin', { root: 'src' }]
-['react-native-unistyles/plugin', { root: 'app' }]  // for Expo Router
+;['react-native-unistyles/plugin', { root: '.' }][
+  ('react-native-unistyles/plugin', { root: '' })
+][
+  // CORRECT
+  ('react-native-unistyles/plugin', { root: 'src' })
+][('react-native-unistyles/plugin', { root: 'app' })] // for Expo Router
 ```
 
 ### Files outside root not processed
@@ -122,11 +129,15 @@ import { StyleSheet } from 'react-native-unistyles'
 **Symptoms:** Shared package styles not reactive.
 **Cause:** Only files inside `root` are processed by default.
 **Solution:** Add `autoProcessPaths` for additional directories:
+
 ```js
-['react-native-unistyles/plugin', {
-  root: 'src',
-  autoProcessPaths: ['../packages/shared/src']
-}]
+;[
+  'react-native-unistyles/plugin',
+  {
+    root: 'src',
+    autoProcessPaths: ['../packages/shared/src'],
+  },
+]
 ```
 
 ---
@@ -146,15 +157,17 @@ import { StyleSheet } from 'react-native-unistyles'
 **Cause:** ScopedTheme applies at mount time. Dynamically added children (e.g., FlatList items) may not inherit.
 **Status:** WONTFIX — by design.
 **Workaround:** Wrap each dynamically rendered item in its own `<ScopedTheme>`:
+
 ```tsx
 <ScopedTheme name="dark">
-  {items.map(item => (
+  {items.map((item) => (
     <ScopedTheme key={item.id} name="dark">
       <ItemCard item={item} />
     </ScopedTheme>
   ))}
 </ScopedTheme>
 ```
+
 **Ref:** [#955](https://github.com/jpudysz/react-native-unistyles/issues/955)
 
 ### Reanimated CSS transitions stale colors
@@ -162,10 +175,12 @@ import { StyleSheet } from 'react-native-unistyles'
 **Symptoms:** After theme switch, CSS transition colors show the old theme's value.
 **Cause:** Reanimated CSS transitions cache the initial color value.
 **Solution:** Use `key={rt.themeName}` to force re-mount on theme change:
+
 ```tsx
 const { rt } = useUnistyles()
 <Animated.View key={rt.themeName} style={styles.card} />
 ```
+
 **Ref:** [#1007](https://github.com/jpudysz/react-native-unistyles/issues/1007)
 
 ### withUnistyles not always updating
@@ -173,12 +188,14 @@ const { rt } = useUnistyles()
 **Symptoms:** Wrapped component doesn't re-render when theme changes.
 **Cause:** The wrapped component may have internal memoization preventing updates.
 **Solution:** Pass `key` prop tied to theme:
+
 ```tsx
 const UniButton = withUnistyles(Button, (theme) => ({
   color: theme.colors.primary,
-  key: theme.colors.primary,  // force update
+  key: theme.colors.primary, // force update
 }))
 ```
+
 **Ref:** [#980](https://github.com/jpudysz/react-native-unistyles/issues/980)
 
 ### Theme reverts after app background on Android
@@ -211,10 +228,12 @@ const UniButton = withUnistyles(Button, (theme) => ({
 **Symptoms:** Build fails with CMake errors on Android.
 **Cause:** Various CMake configuration issues, often related to NDK version or build tools.
 **Solution:** Ensure you're using a compatible NDK version. Clean build:
+
 ```bash
 cd android && ./gradlew clean && cd ..
 npx react-native run-android
 ```
+
 **Ref:** [#1058](https://github.com/jpudysz/react-native-unistyles/issues/1058), [#889](https://github.com/jpudysz/react-native-unistyles/issues/889), [#1013](https://github.com/jpudysz/react-native-unistyles/issues/1013)
 
 ### Screen orientation not updating runtime values
@@ -222,9 +241,11 @@ npx react-native run-android
 **Symptoms:** `rt.screen.width` / `rt.screen.height` don't update on rotation.
 **Cause:** Missing orientation listener setup or Android activity configuration.
 **Solution:** Ensure your AndroidManifest.xml allows orientation changes:
+
 ```xml
 <activity android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode" />
 ```
+
 **Ref:** [#1033](https://github.com/jpudysz/react-native-unistyles/issues/1033)
 
 ---
@@ -236,9 +257,10 @@ npx react-native run-android
 **Symptoms:** React hydration warnings on page load with SSR.
 **Cause:** Server-rendered styles don't match client-side computed styles.
 **Solution:** Use the SSR utilities:
+
 ```tsx
 // Server: inject styles
-const styles = useServerUnistyles()  // or getServerUnistyles()
+const styles = useServerUnistyles() // or getServerUnistyles()
 
 // Client: hydrate
 hydrateServerUnistyles()
@@ -274,6 +296,7 @@ hydrateServerUnistyles()
 **Symptoms:** TypeScript error when using `boxShadow` array inside variant styles.
 **Cause:** Type inference doesn't correctly handle arrays inside variant branches.
 **Workaround:** Cast with `as any` or extract the shadow to a const:
+
 ```tsx
 const shadow = [{ offsetX: 0, offsetY: 2, blurRadius: 4, color: 'rgba(0,0,0,0.1)' }]
 
@@ -283,6 +306,7 @@ variants: {
   },
 }
 ```
+
 **Ref:** [#1047](https://github.com/jpudysz/react-native-unistyles/issues/1047)
 
 ### withUnistyles inference failures
@@ -290,12 +314,14 @@ variants: {
 **Symptoms:** TypeScript can't infer prop types when using `withUnistyles`.
 **Cause:** Complex generic inference in the HOC type.
 **Workaround:** Explicitly type the component:
+
 ```tsx
 const UniButton = withUnistyles<typeof Button, { color: string }>(
   Button,
-  (theme) => ({ color: theme.colors.primary })
+  (theme) => ({ color: theme.colors.primary }),
 )
 ```
+
 **Ref:** [#1008](https://github.com/jpudysz/react-native-unistyles/issues/1008)
 
 ### Variant categories with different shapes
@@ -322,10 +348,11 @@ const UniButton = withUnistyles<typeof Button, { color: string }>(
 **Symptoms:** Styles not reactive, build errors.
 **Cause:** React Compiler runs before Unistyles plugin.
 **Solution:** Unistyles plugin MUST come BEFORE React Compiler in babel.config.js:
+
 ```js
 plugins: [
-  ['react-native-unistyles/plugin', { root: 'src' }],  // FIRST
-  'babel-plugin-react-compiler',                         // SECOND
+  ['react-native-unistyles/plugin', { root: 'src' }], // FIRST
+  'babel-plugin-react-compiler', // SECOND
 ]
 ```
 
@@ -344,6 +371,7 @@ plugins: [
 **Symptoms:** High memory usage or slow performance when using variants in long list items.
 **Cause:** Each list item with `useVariants()` maintains its own variant state.
 **Solution:** Use dynamic functions instead of variants for list items:
+
 ```tsx
 // Instead of variants:
 const styles = StyleSheet.create(theme => ({
@@ -355,6 +383,7 @@ const styles = StyleSheet.create(theme => ({
 // Usage in list item:
 <View style={styles.item(isActive)} />
 ```
+
 **Ref:** [#1034](https://github.com/jpudysz/react-native-unistyles/issues/1034)
 
 ### Tab navigation slow theme change
@@ -373,12 +402,14 @@ const styles = StyleSheet.create(theme => ({
 **Symptoms:** `Pressable` from `react-native-gesture-handler` doesn't update on theme change.
 **Cause:** RNGH's Pressable doesn't go through the standard React Native style processing that Unistyles hooks into.
 **Solution:** Use React Native's built-in `Pressable` or wrap RNGH's Pressable with `withUnistyles`:
+
 ```tsx
 import { Pressable as GHPressable } from 'react-native-gesture-handler'
 import { withUnistyles } from 'react-native-unistyles'
 
 const Pressable = withUnistyles(GHPressable)
 ```
+
 **Ref:** [#1109](https://github.com/jpudysz/react-native-unistyles/issues/1109)
 
 ### withUnistyles wraps elements on RN Web breaking SVG composition

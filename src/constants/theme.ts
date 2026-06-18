@@ -1,20 +1,23 @@
-import { appThemes, type ThemeColor } from '@/shared/theme/unistyles';
+import { appThemes, type ThemeColor } from '@/shared/theme/unistyles'
 
-export type { ThemeColor };
+export type { ThemeColor }
 
 export const Colors = {
   light: appThemes.default.colors,
-  dark: appThemes.dusk.colors,
+  dark: appThemes.horror.colors,
   default: appThemes.default.colors,
-  forest: appThemes.forest.colors,
-  ocean: appThemes.ocean.colors,
-  dusk: appThemes.dusk.colors,
-} as const;
+  fantasy: appThemes.fantasy.colors,
+  'sci-fi': appThemes['sci-fi'].colors,
+  horror: appThemes.horror.colors,
+  magic: appThemes.magic.colors,
+  casual: appThemes.casual.colors,
+  corporation: appThemes.corporation.colors,
+} as const
 
-export const Fonts = appThemes.default.fonts;
+export const Fonts = appThemes.default.fonts
 
-export const Spacing = appThemes.default.spacing;
+export const Spacing = appThemes.default.spacing
 
-export const Radius = appThemes.default.radius;
+export const Radius = appThemes.default.radius
 
-export const MaxContentWidth = 800;
+export const MaxContentWidth = 800

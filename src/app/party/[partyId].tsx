@@ -1,28 +1,37 @@
-import { Link, router, useLocalSearchParams } from 'expo-router';
-import { useMemo } from 'react';
-import { Alert, Pressable, View } from 'react-native';
-import { StyleSheet } from 'react-native-unistyles';
+import { Link, router, useLocalSearchParams } from 'expo-router'
+import { useMemo } from 'react'
+import { Alert, Pressable, View } from 'react-native'
+import { StyleSheet } from 'react-native-unistyles'
 
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { getCardsForParty } from '@/features/cards/selectors';
-import { useCardStore } from '@/features/cards/store/card-store';
-import { getPartyById } from '@/features/parties/selectors';
-import { usePartyStore } from '@/features/parties/store/party-store';
-import { Screen } from '@/shared/components/screen';
-import { partyMoodLabels, themeCategoryLabels } from '@/shared/constants/party-options';
+import { ThemedText } from '@/components/themed-text'
+import { ThemedView } from '@/components/themed-view'
+import { getCardsForParty } from '@/features/cards/selectors'
+import { useCardStore } from '@/features/cards/store/card-store'
+import { getPartyById } from '@/features/parties/selectors'
+import { usePartyStore } from '@/features/parties/store/party-store'
+import { Screen } from '@/shared/components/screen'
+import {
+  partyMoodLabels,
+  themeCategoryLabels,
+} from '@/shared/constants/party-options'
 
 export default function PartyDetailsScreen() {
-  const { partyId } = useLocalSearchParams<{ partyId: string }>();
-  const parties = usePartyStore((state) => state.parties);
-  const deleteParty = usePartyStore((state) => state.deleteParty);
-  const allCards = useCardStore((state) => state.cards);
-  const party = useMemo(() => getPartyById(parties, partyId), [parties, partyId]);
-  const cards = useMemo(() => getCardsForParty(allCards, partyId), [allCards, partyId]);
+  const { partyId } = useLocalSearchParams<{ partyId: string }>()
+  const parties = usePartyStore((state) => state.parties)
+  const deleteParty = usePartyStore((state) => state.deleteParty)
+  const allCards = useCardStore((state) => state.cards)
+  const party = useMemo(
+    () => getPartyById(parties, partyId),
+    [parties, partyId],
+  )
+  const cards = useMemo(
+    () => getCardsForParty(allCards, partyId),
+    [allCards, partyId],
+  )
 
   function handleDeleteParty() {
     if (!party) {
-      return;
+      return
     }
 
     Alert.alert('Delete party?', `Remove ${party.title} and all saved cards?`, [
@@ -31,11 +40,11 @@ export default function PartyDetailsScreen() {
         text: 'Delete',
         style: 'destructive',
         onPress: () => {
-          deleteParty(party.id);
-          router.replace('/');
+          deleteParty(party.id)
+          router.replace('/')
         },
       },
-    ]);
+    ])
   }
 
   return (
@@ -52,7 +61,8 @@ export default function PartyDetailsScreen() {
           <View style={styles.header}>
             <ThemedText type="subtitle">{party.title}</ThemedText>
             <ThemedText themeColor="textSecondary">
-              {themeCategoryLabels[party.themeCategory]} · {partyMoodLabels[party.mood]}
+              {themeCategoryLabels[party.themeCategory]} ·{' '}
+              {partyMoodLabels[party.mood]}
             </ThemedText>
           </View>
 
@@ -71,12 +81,16 @@ export default function PartyDetailsScreen() {
                       pathname: '/party/[partyId]/card/[cardId]',
                       params: { partyId: party.id, cardId: card.id },
                     }}
-                    asChild>
+                    asChild
+                  >
                     <Pressable>
                       <ThemedView style={styles.cardItem}>
-                        <ThemedText type="smallBold">{card.generated.generatedNameWithClass}</ThemedText>
+                        <ThemedText type="smallBold">
+                          {card.generated.generatedNameWithClass}
+                        </ThemedText>
                         <ThemedText themeColor="textSecondary">
-                          {card.status === 'accepted' ? 'Accepted' : 'Draft'} · {card.input.name}
+                          {card.status === 'accepted' ? 'Accepted' : 'Draft'} ·{' '}
+                          {card.input.name}
                         </ThemedText>
                       </ThemedView>
                     </Pressable>
@@ -86,9 +100,17 @@ export default function PartyDetailsScreen() {
             )}
           </ThemedView>
 
-          <Link href={{ pathname: '/party/[partyId]/card/new', params: { partyId: party.id } }} asChild>
+          <Link
+            href={{
+              pathname: '/party/[partyId]/card/new',
+              params: { partyId: party.id },
+            }}
+            asChild
+          >
             <Pressable style={styles.primaryButton}>
-              <ThemedText style={styles.primaryButtonText}>Create a character card</ThemedText>
+              <ThemedText style={styles.primaryButtonText}>
+                Create a character card
+              </ThemedText>
             </Pressable>
           </Link>
 
@@ -98,10 +120,10 @@ export default function PartyDetailsScreen() {
         </>
       )}
     </Screen>
-  );
+  )
 }
 
-const styles = StyleSheet.create(theme => ({
+const styles = StyleSheet.create((theme) => ({
   header: {
     gap: theme.spacing.one,
   },
@@ -139,4 +161,4 @@ const styles = StyleSheet.create(theme => ({
     paddingVertical: theme.spacing.three,
     alignItems: 'center',
   },
-}));
+}))

@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
 ### Theme-aware styles (zero re-renders)
 
 ```tsx
-const styles = StyleSheet.create(theme => ({
+const styles = StyleSheet.create((theme) => ({
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
@@ -99,10 +99,10 @@ Register breakpoints in `StyleSheet.configure`, then use breakpoint names as key
 
 ```tsx
 StyleSheet.configure({
-  breakpoints: { xs: 0, sm: 576, md: 768, lg: 992, xl: 1200 }
+  breakpoints: { xs: 0, sm: 576, md: 768, lg: 992, xl: 1200 },
 })
 
-const styles = StyleSheet.create(theme => ({
+const styles = StyleSheet.create((theme) => ({
   container: {
     padding: {
       xs: 8,
@@ -175,7 +175,7 @@ Variants allow conditional style groups selected at the component level.
 ### Basic variants
 
 ```tsx
-const styles = StyleSheet.create(theme => ({
+const styles = StyleSheet.create((theme) => ({
   button: {
     borderRadius: theme.radius.md,
     variants: {
@@ -195,14 +195,18 @@ const styles = StyleSheet.create(theme => ({
 
 const Button = ({ size = 'medium', variant = 'filled', children }) => {
   styles.useVariants({ size, variant })
-  return <TouchableOpacity style={styles.button}><Text>{children}</Text></TouchableOpacity>
+  return (
+    <TouchableOpacity style={styles.button}>
+      <Text>{children}</Text>
+    </TouchableOpacity>
+  )
 }
 ```
 
 ### Boolean variants
 
 ```tsx
-const styles = StyleSheet.create(theme => ({
+const styles = StyleSheet.create((theme) => ({
   card: {
     padding: theme.spacing.md,
     variants: {
@@ -225,7 +229,7 @@ styles.useVariants({ elevated: true, disabled: false })
 Use the `default` key for a fallback when no variant is selected:
 
 ```tsx
-const styles = StyleSheet.create(theme => ({
+const styles = StyleSheet.create((theme) => ({
   text: {
     variants: {
       weight: {
@@ -246,7 +250,7 @@ styles.useVariants({})
 Apply styles only when multiple variant values match simultaneously:
 
 ```tsx
-const styles = StyleSheet.create(theme => ({
+const styles = StyleSheet.create((theme) => ({
   button: {
     variants: {
       size: {
@@ -274,11 +278,14 @@ const styles = StyleSheet.create(theme => ({
 ```tsx
 import type { UnistylesVariants } from 'react-native-unistyles'
 
-const styles = StyleSheet.create(theme => ({
+const styles = StyleSheet.create((theme) => ({
   chip: {
     variants: {
       size: { sm: { height: 24 }, md: { height: 32 }, lg: { height: 40 } },
-      color: { primary: { backgroundColor: 'blue' }, secondary: { backgroundColor: 'gray' } },
+      color: {
+        primary: { backgroundColor: 'blue' },
+        secondary: { backgroundColor: 'gray' },
+      },
     },
   },
 }))
@@ -290,7 +297,11 @@ type ChipProps = { label: string } & ChipVariants
 
 const Chip = ({ label, ...variants }: ChipProps) => {
   styles.useVariants(variants)
-  return <View style={styles.chip}><Text>{label}</Text></View>
+  return (
+    <View style={styles.chip}>
+      <Text>{label}</Text>
+    </View>
+  )
 }
 ```
 
@@ -306,9 +317,9 @@ import { mq, StyleSheet } from 'react-native-unistyles'
 const styles = StyleSheet.create({
   container: {
     padding: {
-      [mq.only.width(null, 576)]: 8,       // width <= 576
-      [mq.only.width(576, 768)]: 16,       // 576 < width <= 768
-      [mq.only.width(768)]: 24,            // width > 768
+      [mq.only.width(null, 576)]: 8, // width <= 576
+      [mq.only.width(576, 768)]: 16, // 576 < width <= 768
+      [mq.only.width(768)]: 24, // width > 768
     },
   },
   sidebar: {
@@ -323,9 +334,9 @@ const styles = StyleSheet.create({
 ### Mixing breakpoint names and pixel values
 
 ```tsx
-mq.only.width('sm', 'lg')       // between sm and lg breakpoints
-mq.only.width(320, 768)         // between 320px and 768px
-mq.only.height(400)             // height > 400px
+mq.only.width('sm', 'lg') // between sm and lg breakpoints
+mq.only.width(320, 768) // between 320px and 768px
+mq.only.height(400) // height > 400px
 ```
 
 ### Combined width + height
@@ -334,8 +345,8 @@ mq.only.height(400)             // height > 400px
 const styles = StyleSheet.create({
   panel: {
     flexDirection: {
-      [mq.width(null, 768).and.height(null, 500)]: 'column',   // small screen
-      [mq.width(768).and.height(500)]: 'row',                  // large screen
+      [mq.width(null, 768).and.height(null, 500)]: 'column', // small screen
+      [mq.width(768).and.height(500)]: 'row', // large screen
     },
   },
 })
@@ -397,7 +408,7 @@ StyleSheet.configure({
 ```tsx
 StyleSheet.configure({
   themes: { light: lightTheme, dark: darkTheme },
-  settings: { adaptiveThemes: true },  // auto-switches based on OS setting
+  settings: { adaptiveThemes: true }, // auto-switches based on OS setting
 })
 ```
 
@@ -414,7 +425,7 @@ UnistylesRuntime.setTheme('dark')
 // Toggle
 const toggle = () => {
   UnistylesRuntime.setTheme(
-    UnistylesRuntime.themeName === 'light' ? 'dark' : 'light'
+    UnistylesRuntime.themeName === 'light' ? 'dark' : 'light',
   )
 }
 ```
@@ -422,9 +433,9 @@ const toggle = () => {
 ### Updating theme values at runtime
 
 ```tsx
-UnistylesRuntime.updateTheme('light', current => ({
+UnistylesRuntime.updateTheme('light', (current) => ({
   ...current,
-  colors: { ...current.colors, primary: '#ff6600' }
+  colors: { ...current.colors, primary: '#ff6600' },
 }))
 ```
 
@@ -473,12 +484,12 @@ const Layout = () => (
 
 ## Web-Specific Features
 
-### _web property
+### \_web property
 
 Add web-only styles using the `_web` key:
 
 ```tsx
-const styles = StyleSheet.create(theme => ({
+const styles = StyleSheet.create((theme) => ({
   button: {
     padding: 16,
     _web: {
@@ -493,7 +504,7 @@ const styles = StyleSheet.create(theme => ({
 ### Pseudo-classes
 
 ```tsx
-const styles = StyleSheet.create(theme => ({
+const styles = StyleSheet.create((theme) => ({
   button: {
     backgroundColor: theme.colors.primary,
     _web: {
@@ -544,7 +555,11 @@ import { getWebProps } from 'react-native-unistyles/web-only'
 
 const CustomWebComponent = () => {
   const { className, style } = getWebProps(styles.container)
-  return <div className={className} style={style}>Content</div>
+  return (
+    <div className={className} style={style}>
+      Content
+    </div>
+  )
 }
 ```
 
@@ -575,7 +590,7 @@ const MyComponent = () => {
 ```tsx
 import { useAnimatedVariantColor } from 'react-native-unistyles/reanimated'
 
-const styles = StyleSheet.create(theme => ({
+const styles = StyleSheet.create((theme) => ({
   button: {
     variants: {
       state: {
@@ -588,7 +603,10 @@ const styles = StyleSheet.create(theme => ({
 
 const AnimatedButton = ({ isActive }) => {
   styles.useVariants({ state: isActive ? 'active' : 'inactive' })
-  const animatedColor = useAnimatedVariantColor(styles.button, 'backgroundColor')
+  const animatedColor = useAnimatedVariantColor(
+    styles.button,
+    'backgroundColor',
+  )
 
   return <Animated.View style={[styles.button, animatedColor]} />
 }
@@ -603,6 +621,7 @@ Always use **array syntax**:
 ```
 
 Never spread:
+
 ```tsx
 // WRONG: <Animated.View style={{ ...styles.container, ...animatedStyle }} />
 ```
@@ -629,7 +648,7 @@ export default function RootLayout({ children }) {
 }
 
 // app/page.tsx (client component)
-'use client'
+;('use client')
 import { hydrateServerUnistyles } from 'react-native-unistyles'
 
 hydrateServerUnistyles()
@@ -639,7 +658,10 @@ hydrateServerUnistyles()
 
 ```tsx
 // pages/_document.tsx
-import { getServerUnistyles, resetServerUnistyles } from 'react-native-unistyles'
+import {
+  getServerUnistyles,
+  resetServerUnistyles,
+} from 'react-native-unistyles'
 
 export default function Document() {
   const styles = getServerUnistyles()
@@ -647,7 +669,10 @@ export default function Document() {
   return (
     <Html>
       <Head>{styles}</Head>
-      <body><Main /><NextScript /></body>
+      <body>
+        <Main />
+        <NextScript />
+      </body>
     </Html>
   )
 }
@@ -699,7 +724,7 @@ const styles = StyleSheet.create((theme, rt) => ({
 ```tsx
 const styles = StyleSheet.create((theme, rt) => ({
   input: {
-    marginBottom: rt.insets.ime,  // automatically adjusts when keyboard opens/closes
+    marginBottom: rt.insets.ime, // automatically adjusts when keyboard opens/closes
   },
 }))
 ```

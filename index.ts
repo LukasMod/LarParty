@@ -1,2 +1,2 @@
-import '@/shared/theme/unistyles';
-import 'expo-router/entry';
+import '@/shared/theme/unistyles'
+import 'expo-router/entry'

@@ -1,17 +1,31 @@
-import { Platform, Text, type TextProps } from 'react-native';
-import { StyleSheet } from 'react-native-unistyles';
+import { Platform, Text, type TextProps } from 'react-native'
+import { StyleSheet } from 'react-native-unistyles'
 
-import { ThemeColor } from '@/constants/theme';
-import { useTheme } from '@/hooks/use-theme';
+import { ThemeColor } from '@/constants/theme'
+import { useTheme } from '@/hooks/use-theme'
 
 export type ThemedTextProps = TextProps & {
-  type?: 'default' | 'title' | 'small' | 'smallBold' | 'subtitle' | 'link' | 'linkPrimary' | 'code';
-  themeColor?: ThemeColor;
-};
+  type?:
+    | 'default'
+    | 'title'
+    | 'small'
+    | 'smallBold'
+    | 'subtitle'
+    | 'link'
+    | 'linkPrimary'
+    | 'code'
+  themeColor?: ThemeColor
+}
 
-export function ThemedText({ style, type = 'default', themeColor, ...rest }: ThemedTextProps) {
-  const theme = useTheme();
-  const color = type === 'linkPrimary' ? theme.primary : theme[themeColor ?? 'text'];
+export function ThemedText({
+  style,
+  type = 'default',
+  themeColor,
+  ...rest
+}: ThemedTextProps) {
+  const theme = useTheme()
+  const color =
+    type === 'linkPrimary' ? theme.primary : theme[themeColor ?? 'text']
 
   return (
     <Text
@@ -29,10 +43,10 @@ export function ThemedText({ style, type = 'default', themeColor, ...rest }: The
       ]}
       {...rest}
     />
-  );
+  )
 }
 
-const styles = StyleSheet.create(theme => ({
+const styles = StyleSheet.create((theme) => ({
   base: {
     fontSize: 16,
     lineHeight: 24,
@@ -67,4 +81,4 @@ const styles = StyleSheet.create(theme => ({
     fontWeight: Platform.select({ android: '700', default: '500' }),
     fontSize: 12,
   },
-}));
+}))

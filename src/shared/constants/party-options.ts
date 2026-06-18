@@ -2,19 +2,22 @@ export const themeCategories = [
   'fantasy',
   'sci-fi',
   'horror',
-  'starwars',
-  'harry-potter',
-  'witcher',
-] as const;
+  'magic',
+  'casual',
+  'corporation',
+] as const
 
-export const themeCategoryLabels: Record<(typeof themeCategories)[number], string> = {
+export const themeCategoryLabels: Record<
+  (typeof themeCategories)[number],
+  string
+> = {
   fantasy: 'Fantasy',
   'sci-fi': 'Sci-Fi',
   horror: 'Horror',
-  starwars: 'StarWars',
-  'harry-potter': 'Harry Potter',
-  witcher: 'Witcher',
-};
+  magic: 'Magic',
+  casual: 'Casual',
+  corporation: 'Corporation',
+}
 
 export const partyMoods = [
   'fun',
@@ -25,7 +28,17 @@ export const partyMoods = [
   'chaotic',
   'mysterious',
   'adventurous',
-] as const;
+  'epic',
+  'playful',
+  'dark',
+  'tense',
+  'whimsical',
+  'romantic',
+  'noble',
+  'melancholic',
+  'rebellious',
+  'cozy',
+] as const
 
 export const partyMoodLabels: Record<(typeof partyMoods)[number], string> = {
   fun: 'Fun',
@@ -36,7 +49,17 @@ export const partyMoodLabels: Record<(typeof partyMoods)[number], string> = {
   chaotic: 'Chaotic',
   mysterious: 'Mysterious',
   adventurous: 'Adventurous',
-};
+  epic: 'Epic',
+  playful: 'Playful',
+  dark: 'Dark',
+  tense: 'Tense',
+  whimsical: 'Whimsical',
+  romantic: 'Romantic',
+  noble: 'Noble',
+  melancholic: 'Melancholic',
+  rebellious: 'Rebellious',
+  cozy: 'Cozy',
+}
 
 export const cardTraits = [
   'calm',
@@ -47,7 +70,7 @@ export const cardTraits = [
   'shy',
   'arrogant',
   'chaotic',
-] as const;
+] as const
 
 export const cardTraitLabels: Record<(typeof cardTraits)[number], string> = {
   calm: 'Calm',
@@ -58,14 +81,14 @@ export const cardTraitLabels: Record<(typeof cardTraits)[number], string> = {
   shy: 'Shy',
   arrogant: 'Arrogant',
   chaotic: 'Chaotic',
-};
+}
 
-export const sexOptions = ['male', 'female', 'other'] as const;
+export const sexOptions = ['male', 'female', 'other'] as const
 
 export const sexOptionLabels: Record<(typeof sexOptions)[number], string> = {
   male: 'Male',
   female: 'Female',
   other: 'Other',
-};
+}
 
-export const cardDisplayModes = ['collectible', 'info'] as const;
+export const cardDisplayModes = ['collectible', 'info'] as const

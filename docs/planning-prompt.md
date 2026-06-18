@@ -7,11 +7,13 @@ Use this prompt in a future planning session to produce a detailed technical imp
 Help me design a highly detailed implementation plan for a React Native Expo PoC app called **LarParty**.
 
 ## Product context
+
 LarParty is a playful app for LARP and themed-party users. The app lets a user create a themed party and generate AI-powered character cards for party participants.
 
 This is a PoC, so the solution should stay intentionally lean while still using clean architecture and current best practices.
 
 ## Platform and tech context
+
 - Framework: React Native with Expo
 - Styling: Unistyles 3.0
 - Primary platforms: iOS and Android
@@ -21,6 +23,7 @@ This is a PoC, so the solution should stay intentionally lean while still using 
 - Use current Expo and React Native best practices, based on up-to-date documentation
 
 ## Product rules
+
 - Party and Party Theme are the same entity
 - Party is just a grouping container for cards
 - Party has only:
@@ -35,6 +38,7 @@ This is a PoC, so the solution should stay intentionally lean while still using 
 - No maps, location, camera, or media
 
 ## Core MVP features
+
 1. View list of all parties
 2. Create a party
 3. Delete a party
@@ -47,15 +51,18 @@ This is a PoC, so the solution should stay intentionally lean while still using 
 10. Delete a card
 11. View card details offline after local persistence
 12. Allow switching card details presentation between:
-   - collectible card style
-   - readable info sheet style
+
+- collectible card style
+- readable info sheet style
 
 ## Party creation inputs
+
 - title
 - theme category from predefined options
 - mood from predefined options
 
 Examples of theme categories:
+
 - Fantasy
 - Sci-Fi
 - Horror
@@ -64,6 +71,7 @@ Examples of theme categories:
 - and other extensible options
 
 Examples of mood options:
+
 - fun
 - serious
 - scary
@@ -71,12 +79,14 @@ Examples of mood options:
 - dramatic
 
 ## Character card input form
+
 - name
 - sex
 - age
 - predefined traits
 
 Examples of traits:
+
 - calm
 - aggressive
 - funny
@@ -87,7 +97,9 @@ Examples of traits:
 - chaotic
 
 ## AI generation requirements
+
 The app should build a prompt using:
+
 - party theme category
 - mood
 - entered name
@@ -98,6 +110,7 @@ The app should build a prompt using:
 The AI must return strict structured JSON mapped into the UI.
 
 Expected output fields:
+
 - generatedNameWithClass: string
 - backgroundHistory: string (2 sentences)
 - characterTraits: string[] (exactly 3)
@@ -105,6 +118,7 @@ Expected output fields:
 - specialPhrase: string
 
 Generation behavior:
+
 - successful generation auto-saves a draft card locally
 - user can accept the card
 - user can regenerate the full card
@@ -112,22 +126,27 @@ Generation behavior:
 - no field-level editing in MVP
 
 ## Offline requirements
+
 Must work offline for:
+
 - viewing saved parties
 - viewing saved party themes
 - viewing saved card drafts and accepted cards
 
 Does not need to work offline for:
+
 - generation
 - regeneration
 
 ## Design direction
+
 - overall tone: Party Crazy
 - visual style should adapt to selected party theme
 - use one consistent design system with theme-based accents rather than fully separate app skins
 - card details should support both a decorative collectible mode and a cleaner readable mode
 
 ## Planning tasks
+
 Please create a detailed implementation plan that includes:
 
 1. **Recommended app architecture**
@@ -196,6 +215,7 @@ Please create a detailed implementation plan that includes:
     - identify unresolved product and technical questions that should be decided before implementation
 
 ## Output expectations
+
 - Keep the PoC small and achievable
 - Prefer practical implementation over enterprise complexity
 - Do not overengineer backend-like abstractions unless they help future evolution

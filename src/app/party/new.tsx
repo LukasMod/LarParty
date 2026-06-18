@@ -1,45 +1,45 @@
-import { router } from 'expo-router';
-import { useState } from 'react';
-import { Pressable, TextInput, View } from 'react-native';
-import { StyleSheet } from 'react-native-unistyles';
+import { router } from 'expo-router'
+import { useState } from 'react'
+import { Pressable, TextInput, View } from 'react-native'
+import { StyleSheet } from 'react-native-unistyles'
 
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { usePartyStore } from '@/features/parties/store/party-store';
-import { PartyMood, ThemeCategory } from '@/features/parties/types';
-import { Screen } from '@/shared/components/screen';
+import { ThemedText } from '@/components/themed-text'
+import { ThemedView } from '@/components/themed-view'
+import { usePartyStore } from '@/features/parties/store/party-store'
+import { PartyMood, ThemeCategory } from '@/features/parties/types'
+import { Screen } from '@/shared/components/screen'
 import {
   partyMoodLabels,
   partyMoods,
   themeCategoryLabels,
   themeCategories,
-} from '@/shared/constants/party-options';
+} from '@/shared/constants/party-options'
 
 export default function NewPartyScreen() {
-  const createParty = usePartyStore((state) => state.createParty);
-  const [title, setTitle] = useState('');
-  const [themeCategory, setThemeCategory] = useState<ThemeCategory>('fantasy');
-  const [mood, setMood] = useState<PartyMood>('fun');
-  const [showValidationError, setShowValidationError] = useState(false);
+  const createParty = usePartyStore((state) => state.createParty)
+  const [title, setTitle] = useState('')
+  const [themeCategory, setThemeCategory] = useState<ThemeCategory>('fantasy')
+  const [mood, setMood] = useState<PartyMood>('fun')
+  const [showValidationError, setShowValidationError] = useState(false)
 
   function handleCreateParty() {
-    const trimmedTitle = title.trim();
+    const trimmedTitle = title.trim()
 
     if (!trimmedTitle) {
-      setShowValidationError(true);
-      return;
+      setShowValidationError(true)
+      return
     }
 
     const partyId = createParty({
       title: trimmedTitle,
       themeCategory,
       mood,
-    });
+    })
 
     router.replace({
       pathname: '/party/[partyId]',
       params: { partyId },
-    });
+    })
   }
 
   return (
@@ -52,9 +52,9 @@ export default function NewPartyScreen() {
           <TextInput
             value={title}
             onChangeText={(value) => {
-              setTitle(value);
+              setTitle(value)
               if (showValidationError && value.trim()) {
-                setShowValidationError(false);
+                setShowValidationError(false)
               }
             }}
             placeholder="Friday Tavern Night"
@@ -62,7 +62,9 @@ export default function NewPartyScreen() {
             style={styles.input}
           />
           {showValidationError ? (
-            <ThemedText themeColor="textSecondary">Party name is required.</ThemedText>
+            <ThemedText themeColor="textSecondary">
+              Party name is required.
+            </ThemedText>
           ) : null}
         </View>
 
@@ -70,18 +72,26 @@ export default function NewPartyScreen() {
           <ThemedText type="smallBold">Theme category</ThemedText>
           <View style={styles.optionGrid}>
             {themeCategories.map((option) => {
-              const isSelected = option === themeCategory;
+              const isSelected = option === themeCategory
 
               return (
                 <Pressable
                   key={option}
                   onPress={() => setThemeCategory(option)}
-                  style={[styles.optionChip, isSelected && styles.optionChipSelected]}>
-                  <ThemedText style={isSelected ? styles.optionChipTextSelected : undefined}>
+                  style={[
+                    styles.optionChip,
+                    isSelected && styles.optionChipSelected,
+                  ]}
+                >
+                  <ThemedText
+                    style={
+                      isSelected ? styles.optionChipTextSelected : undefined
+                    }
+                  >
                     {themeCategoryLabels[option]}
                   </ThemedText>
                 </Pressable>
-              );
+              )
             })}
           </View>
         </View>
@@ -90,18 +100,26 @@ export default function NewPartyScreen() {
           <ThemedText type="smallBold">Mood</ThemedText>
           <View style={styles.optionGrid}>
             {partyMoods.map((option) => {
-              const isSelected = option === mood;
+              const isSelected = option === mood
 
               return (
                 <Pressable
                   key={option}
                   onPress={() => setMood(option)}
-                  style={[styles.optionChip, isSelected && styles.optionChipSelected]}>
-                  <ThemedText style={isSelected ? styles.optionChipTextSelected : undefined}>
+                  style={[
+                    styles.optionChip,
+                    isSelected && styles.optionChipSelected,
+                  ]}
+                >
+                  <ThemedText
+                    style={
+                      isSelected ? styles.optionChipTextSelected : undefined
+                    }
+                  >
                     {partyMoodLabels[option]}
                   </ThemedText>
                 </Pressable>
-              );
+              )
             })}
           </View>
         </View>
@@ -111,10 +129,10 @@ export default function NewPartyScreen() {
         <ThemedText style={styles.primaryButtonText}>Save party</ThemedText>
       </Pressable>
     </Screen>
-  );
+  )
 }
 
-const styles = StyleSheet.create(theme => ({
+const styles = StyleSheet.create((theme) => ({
   card: {
     borderRadius: theme.radius.card,
     padding: theme.spacing.four,
@@ -167,4 +185,4 @@ const styles = StyleSheet.create(theme => ({
     color: theme.colors.primaryText,
     fontWeight: '700',
   },
-}));
+}))

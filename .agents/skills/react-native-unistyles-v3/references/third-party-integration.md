@@ -76,14 +76,17 @@ By default, the Babel plugin only processes files inside the `root` directory. F
 // babel.config.js
 module.exports = {
   plugins: [
-    ['react-native-unistyles/plugin', {
-      root: 'src',
-      autoProcessPaths: [
-        '../packages/shared-ui/src',
-        '../packages/design-system/src',
-      ],
-    }]
-  ]
+    [
+      'react-native-unistyles/plugin',
+      {
+        root: 'src',
+        autoProcessPaths: [
+          '../packages/shared-ui/src',
+          '../packages/design-system/src',
+        ],
+      },
+    ],
+  ],
 }
 ```
 
@@ -99,11 +102,14 @@ Process files that import from custom package names (useful for internal package
 // babel.config.js
 module.exports = {
   plugins: [
-    ['react-native-unistyles/plugin', {
-      root: 'src',
-      autoProcessImports: ['@myorg/ui', '@myorg/shared-components'],
-    }]
-  ]
+    [
+      'react-native-unistyles/plugin',
+      {
+        root: 'src',
+        autoProcessImports: ['@myorg/ui', '@myorg/shared-components'],
+      },
+    ],
+  ],
 }
 ```
 
@@ -119,20 +125,23 @@ Map exotic component imports to Unistyles component factories. Useful when a lib
 // babel.config.js
 module.exports = {
   plugins: [
-    ['react-native-unistyles/plugin', {
-      root: 'src',
-      autoRemapImports: {
-        '@expo/vector-icons': {
-          'MaterialIcons': 'Text',     // treat as Text factory
-          'FontAwesome': 'Text',
-        },
-        'react-native-svg': {
-          'Svg': 'View',              // treat as View factory
-          'Circle': 'View',
+    [
+      'react-native-unistyles/plugin',
+      {
+        root: 'src',
+        autoRemapImports: {
+          '@expo/vector-icons': {
+            MaterialIcons: 'Text', // treat as Text factory
+            FontAwesome: 'Text',
+          },
+          'react-native-svg': {
+            Svg: 'View', // treat as View factory
+            Circle: 'View',
+          },
         },
       },
-    }]
-  ]
+    ],
+  ],
 }
 ```
 
@@ -148,9 +157,9 @@ The Unistyles Babel plugin **MUST come BEFORE** React Compiler:
 // babel.config.js
 module.exports = {
   plugins: [
-    ['react-native-unistyles/plugin', { root: 'src' }],    // FIRST
-    'babel-plugin-react-compiler',                           // SECOND
-  ]
+    ['react-native-unistyles/plugin', { root: 'src' }], // FIRST
+    'babel-plugin-react-compiler', // SECOND
+  ],
 }
 ```
 
@@ -230,6 +239,7 @@ This replaces `react-native-safe-area-context` for most use cases. No `<SafeArea
 `FlatList` has a known crash on orientation change ([#803](https://github.com/jpudysz/react-native-unistyles/issues/803)) — this is a React Native core issue, not Unistyles-specific.
 
 **Recommended alternatives:**
+
 - [FlashList](https://github.com/Shopify/flash-list) by Shopify
 - [Legend List](https://github.com/LegendApp/legend-list) by LegendApp
 
@@ -241,11 +251,11 @@ Both work correctly with Unistyles orientation changes.
 
 Mostly **replaced** by Unistyles' built-in `rt.insets`:
 
-| Before (safe-area-context) | After (Unistyles v3) |
-|---------------------------|----------------------|
-| `<SafeAreaProvider>` | Not needed |
-| `useSafeAreaInsets()` | `rt.insets` in StyleSheet.create |
-| `<SafeAreaView>` | Use `rt.insets.top` / `rt.insets.bottom` in styles |
+| Before (safe-area-context) | After (Unistyles v3)                               |
+| -------------------------- | -------------------------------------------------- |
+| `<SafeAreaProvider>`       | Not needed                                         |
+| `useSafeAreaInsets()`      | `rt.insets` in StyleSheet.create                   |
+| `<SafeAreaView>`           | Use `rt.insets.top` / `rt.insets.bottom` in styles |
 
 ```tsx
 // Before
@@ -257,7 +267,7 @@ const Component = () => {
 
 // After
 const styles = StyleSheet.create((theme, rt) => ({
-  container: { paddingTop: rt.insets.top }
+  container: { paddingTop: rt.insets.top },
 }))
 const Component = () => <View style={styles.container} />
 ```

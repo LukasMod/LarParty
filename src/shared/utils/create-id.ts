@@ -1,5 +1,5 @@
-import uuid from 'react-native-uuid';
+import uuid from 'react-native-uuid'
 
 export function createId(prefix: string) {
-  return `${prefix}-${uuid.v4()}`;
+  return `${prefix}-${uuid.v4()}`
 }

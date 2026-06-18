@@ -1,14 +1,14 @@
-import { create } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
+import { create } from 'zustand'
+import { createJSONStorage, persist } from 'zustand/middleware'
 
-import { CardDisplayMode } from '@/features/cards/types';
-import { zustandStorage } from '@/shared/storage/zustand-storage';
+import { CardDisplayMode } from '@/features/cards/types'
+import { zustandStorage } from '@/shared/storage/zustand-storage'
 
 interface PreferencesStoreState {
-  hasHydrated: boolean;
-  cardDisplayMode: CardDisplayMode;
-  setCardDisplayMode: (cardDisplayMode: CardDisplayMode) => void;
-  setHasHydrated: (hasHydrated: boolean) => void;
+  hasHydrated: boolean
+  cardDisplayMode: CardDisplayMode
+  setCardDisplayMode: (cardDisplayMode: CardDisplayMode) => void
+  setHasHydrated: (hasHydrated: boolean) => void
 }
 
 export const usePreferencesStore = create<PreferencesStoreState>()(
@@ -17,18 +17,18 @@ export const usePreferencesStore = create<PreferencesStoreState>()(
       hasHydrated: false,
       cardDisplayMode: 'collectible',
       setCardDisplayMode: (cardDisplayMode) => {
-        set({ cardDisplayMode });
+        set({ cardDisplayMode })
       },
       setHasHydrated: (hasHydrated) => {
-        set({ hasHydrated });
+        set({ hasHydrated })
       },
     }),
     {
       name: 'preferences-store',
       storage: createJSONStorage(() => zustandStorage),
       onRehydrateStorage: () => (state) => {
-        state?.setHasHydrated(true);
+        state?.setHasHydrated(true)
       },
-    }
-  )
-);
+    },
+  ),
+)

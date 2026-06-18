@@ -1,17 +1,17 @@
-import { create } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
+import { create } from 'zustand'
+import { createJSONStorage, persist } from 'zustand/middleware'
 
-import { useCardStore } from '@/features/cards/store/card-store';
-import { CreatePartyInput, Party } from '@/features/parties/types';
-import { zustandStorage } from '@/shared/storage/zustand-storage';
-import { createId } from '@/shared/utils/create-id';
+import { useCardStore } from '@/features/cards/store/card-store'
+import { CreatePartyInput, Party } from '@/features/parties/types'
+import { zustandStorage } from '@/shared/storage/zustand-storage'
+import { createId } from '@/shared/utils/create-id'
 
 interface PartyStoreState {
-  hasHydrated: boolean;
-  parties: Party[];
-  createParty: (input: CreatePartyInput) => string;
-  deleteParty: (partyId: string) => void;
-  setHasHydrated: (hasHydrated: boolean) => void;
+  hasHydrated: boolean
+  parties: Party[]
+  createParty: (input: CreatePartyInput) => string
+  deleteParty: (partyId: string) => void
+  setHasHydrated: (hasHydrated: boolean) => void
 }
 
 export const usePartyStore = create<PartyStoreState>()(
@@ -20,8 +20,8 @@ export const usePartyStore = create<PartyStoreState>()(
       hasHydrated: false,
       parties: [],
       createParty: (input) => {
-        const timestamp = new Date().toISOString();
-        const partyId = createId('party');
+        const timestamp = new Date().toISOString()
+        const partyId = createId('party')
 
         set((state) => ({
           parties: [
@@ -35,26 +35,26 @@ export const usePartyStore = create<PartyStoreState>()(
             },
             ...state.parties,
           ],
-        }));
+        }))
 
-        return partyId;
+        return partyId
       },
       deleteParty: (partyId) => {
         set((state) => ({
           parties: state.parties.filter((party) => party.id !== partyId),
-        }));
-        useCardStore.getState().deleteCardsForParty(partyId);
+        }))
+        useCardStore.getState().deleteCardsForParty(partyId)
       },
       setHasHydrated: (hasHydrated) => {
-        set({ hasHydrated });
+        set({ hasHydrated })
       },
     }),
     {
       name: 'party-store',
       storage: createJSONStorage(() => zustandStorage),
       onRehydrateStorage: () => (state) => {
-        state?.setHasHydrated(true);
+        state?.setHasHydrated(true)
       },
-    }
-  )
-);
+    },
+  ),
+)

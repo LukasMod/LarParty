@@ -1,9 +1,19 @@
-import { cardTraitLabels, partyMoodLabels, sexOptionLabels, themeCategoryLabels } from '@/shared/constants/party-options';
+import {
+  cardTraitLabels,
+  partyMoodLabels,
+  sexOptionLabels,
+  themeCategoryLabels,
+} from '@/shared/constants/party-options'
 
-import { GenerateCharacterCardRequest } from '@/features/generation/types';
+import { GenerateCharacterCardRequest } from '@/features/generation/types'
 
-export function buildCharacterCardPrompt({ party, input }: GenerateCharacterCardRequest) {
-  const selectedTraits = input.selectedTraits.map((trait) => cardTraitLabels[trait]).join(', ');
+export function buildCharacterCardPrompt({
+  party,
+  input,
+}: GenerateCharacterCardRequest) {
+  const selectedTraits = input.selectedTraits
+    .map((trait) => cardTraitLabels[trait])
+    .join(', ')
 
   return [
     'You create playful and imaginative LARP character cards for party guests.',
@@ -28,5 +38,5 @@ export function buildCharacterCardPrompt({ party, input }: GenerateCharacterCard
     '- specialMovement should be a fun physical mannerism or entrance cue.',
     '- specialPhrase should be a memorable short line the player can say in character.',
     '- Avoid explicit, hateful, or inappropriate content.',
-  ].join('\n');
+  ].join('\n')
 }

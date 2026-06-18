@@ -9,6 +9,7 @@ yarn add react-native-unistyles react-native-nitro-modules
 ```
 
 Then rebuild your native project:
+
 ```bash
 npx pod-install  # iOS
 npx react-native run-android  # Android
@@ -23,22 +24,25 @@ The Babel plugin is **mandatory**. It transforms `StyleSheet.create` calls at bu
 module.exports = {
   presets: ['module:@react-native/babel-preset'],
   plugins: [
-    ['react-native-unistyles/plugin', {
-      root: 'src'  // REQUIRED: directory containing your app source code
-    }]
-  ]
+    [
+      'react-native-unistyles/plugin',
+      {
+        root: 'src', // REQUIRED: directory containing your app source code
+      },
+    ],
+  ],
 }
 ```
 
 ### Plugin options
 
-| Option | Type | Description |
-|--------|------|-------------|
-| `root` | `string` | **Required.** Path to your source code root (relative to project root). Only files in this directory are processed. Must NOT resolve to the project root itself. |
-| `autoProcessPaths` | `string[]` | Additional directories outside `root` to process (e.g., shared packages in a monorepo). |
-| `autoProcessImports` | `string[]` | Additional package names whose imports trigger processing (e.g., `['@myorg/ui']`). |
-| `autoRemapImports` | `Record<string, Record<string, string>>` | Map exotic component imports to Unistyles component factories. |
-| `debug` | `boolean` | Enable debug logging to see which files are processed. Default: `false`. |
+| Option               | Type                                     | Description                                                                                                                                                      |
+| -------------------- | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `root`               | `string`                                 | **Required.** Path to your source code root (relative to project root). Only files in this directory are processed. Must NOT resolve to the project root itself. |
+| `autoProcessPaths`   | `string[]`                               | Additional directories outside `root` to process (e.g., shared packages in a monorepo).                                                                          |
+| `autoProcessImports` | `string[]`                               | Additional package names whose imports trigger processing (e.g., `['@myorg/ui']`).                                                                               |
+| `autoRemapImports`   | `Record<string, Record<string, string>>` | Map exotic component imports to Unistyles component factories.                                                                                                   |
+| `debug`              | `boolean`                                | Enable debug logging to see which files are processed. Default: `false`.                                                                                         |
 
 ### Example: Monorepo with shared packages
 
@@ -46,12 +50,15 @@ module.exports = {
 // babel.config.js
 module.exports = {
   plugins: [
-    ['react-native-unistyles/plugin', {
-      root: 'src',
-      autoProcessPaths: ['../shared-ui/src'],
-      autoProcessImports: ['@myorg/shared-ui']
-    }]
-  ]
+    [
+      'react-native-unistyles/plugin',
+      {
+        root: 'src',
+        autoProcessPaths: ['../shared-ui/src'],
+        autoProcessImports: ['@myorg/shared-ui'],
+      },
+    ],
+  ],
 }
 ```
 
@@ -63,9 +70,9 @@ If using React Compiler, the Unistyles plugin **MUST come BEFORE** React Compile
 // babel.config.js
 module.exports = {
   plugins: [
-    ['react-native-unistyles/plugin', { root: 'src' }],  // FIRST
-    'babel-plugin-react-compiler',                         // SECOND
-  ]
+    ['react-native-unistyles/plugin', { root: 'src' }], // FIRST
+    'babel-plugin-react-compiler', // SECOND
+  ],
 }
 ```
 
@@ -84,7 +91,7 @@ StyleSheet.configure({
     dark: darkTheme,
   },
   breakpoints: {
-    xs: 0,    // first breakpoint MUST start at 0
+    xs: 0, // first breakpoint MUST start at 0
     sm: 576,
     md: 768,
     lg: 992,
@@ -92,18 +99,18 @@ StyleSheet.configure({
   },
   settings: {
     initialTheme: 'light',
-  }
+  },
 })
 ```
 
 ### Settings options
 
-| Setting | Type | Description |
-|---------|------|-------------|
-| `initialTheme` | `string \| () => string` | Theme to use on app start. Can be a function for lazy evaluation (e.g., reading from storage). Mutually exclusive with `adaptiveThemes`. |
-| `adaptiveThemes` | `boolean` | Auto-switch between `light` and `dark` themes based on OS color scheme. Requires themes named exactly `light` and `dark`. Mutually exclusive with `initialTheme`. |
-| `CSSVars` | `boolean` | Use CSS custom properties for theme values on web. Enables instant theme switching without style recalculation. Default: `false`. |
-| `nativeBreakpointsMode` | `'pixels' \| 'points'` | Whether breakpoint values are in physical pixels or logical points. Default: device-dependent. |
+| Setting                 | Type                     | Description                                                                                                                                                       |
+| ----------------------- | ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `initialTheme`          | `string \| () => string` | Theme to use on app start. Can be a function for lazy evaluation (e.g., reading from storage). Mutually exclusive with `adaptiveThemes`.                          |
+| `adaptiveThemes`        | `boolean`                | Auto-switch between `light` and `dark` themes based on OS color scheme. Requires themes named exactly `light` and `dark`. Mutually exclusive with `initialTheme`. |
+| `CSSVars`               | `boolean`                | Use CSS custom properties for theme values on web. Enables instant theme switching without style recalculation. Default: `false`.                                 |
+| `nativeBreakpointsMode` | `'pixels' \| 'points'`   | Whether breakpoint values are in physical pixels or logical points. Default: device-dependent.                                                                    |
 
 ### Minimal configuration (no themes, no breakpoints)
 
@@ -125,7 +132,7 @@ import { breakpoints } from './breakpoints'
 
 type AppThemes = {
   light: typeof lightTheme
-  dark: typeof lightTheme  // same shape as light
+  dark: typeof lightTheme // same shape as light
 }
 
 type AppBreakpoints = typeof breakpoints
@@ -142,6 +149,7 @@ StyleSheet.configure({
 ```
 
 This enables:
+
 - Auto-completion for `theme.colors.*`, `theme.spacing.*`, etc.
 - Type-safe breakpoint names in styles and `mq`
 - Type-safe theme names in `UnistylesRuntime.setTheme()`
@@ -161,7 +169,7 @@ Expo Router resolves routes before Unistyles can initialize. Extra steps are nee
 
 ```ts
 // index.ts — import config BEFORE the router
-import './unistyles'        // your StyleSheet.configure() file
+import './unistyles' // your StyleSheet.configure() file
 import 'expo-router/entry'
 ```
 
@@ -171,7 +179,7 @@ Import your Unistyles config in `app/+html.tsx`:
 
 ```tsx
 // app/+html.tsx
-import '../unistyles'  // ensures Unistyles initializes for each static page
+import '../unistyles' // ensures Unistyles initializes for each static page
 
 import { ScrollViewStyleReset } from 'expo-router/html'
 import { type PropsWithChildren } from 'react'
@@ -182,7 +190,10 @@ export default function Root({ children }: PropsWithChildren) {
       <head>
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no"
+        />
         <ScrollViewStyleReset />
       </head>
       <body>{children}</body>
@@ -198,7 +209,7 @@ The Babel plugin auto-disables in test environments (`NODE_ENV=test`). Import th
 ```js
 // jest.setup.js
 require('react-native-unistyles/mocks')
-require('./unistyles')  // your StyleSheet.configure() call — provides theme data to mocks
+require('./unistyles') // your StyleSheet.configure() call — provides theme data to mocks
 ```
 
 ```js
@@ -209,6 +220,7 @@ module.exports = {
 ```
 
 The mock provides:
+
 - `StyleSheet.create` that resolves theme functions using the first registered theme
 - `StyleSheet.configure` that stores themes/breakpoints
 - `useUnistyles()` returning `{ theme, rt }` with mock runtime values

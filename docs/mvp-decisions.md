@@ -3,12 +3,14 @@
 This file records the currently approved product and technical decisions for the PoC.
 
 ## Product identity
+
 - App name: LarParty
 - Type: React Native Expo PoC
 - Audience: LARP and themed-party users, primarily ages 12–46
 - Product goal: generate fun, themed character cards for party participants from lightweight user input
 
 ## Scope rules
+
 - Party and Party Theme are the same concept
 - A party is only a container that groups cards
 - Party title is only a user-facing label
@@ -21,18 +23,21 @@ This file records the currently approved product and technical decisions for the
 - No demo content on first launch
 
 ## Platform priorities
+
 - Primary: iOS and Android
 - Secondary: web
 - Layout priority: phone-first
 - Color mode: light mode only
 
 ## Styling direction
+
 - Style: Party Crazy
 - Visual direction should adapt by selected theme
 - Use one shared design system with theme-based accents
 - Styling system target: Unistyles 3.0
 
 ## Party fields in MVP
+
 - title
 - theme category
 - mood
@@ -42,14 +47,16 @@ No date, description, or location in MVP.
 ## Frozen select options
 
 ### Theme categories
+
 - Fantasy
 - Sci-Fi
 - Horror
-- StarWars
-- Harry Potter
-- Witcher
+- Magic
+- Casual
+- Corporation
 
 ### Mood options
+
 - fun
 - serious
 - scary
@@ -60,6 +67,7 @@ No date, description, or location in MVP.
 - adventurous
 
 ### Character traits
+
 - calm
 - aggressive
 - funny
@@ -70,11 +78,13 @@ No date, description, or location in MVP.
 - chaotic
 
 ### Sex options
+
 - Male
 - Female
 - Other
 
 ## Card generation rules
+
 - AI generation is a must-have feature
 - Primary AI direction: local LLM first
 - AI output must be strict structured JSON
@@ -86,6 +96,7 @@ No date, description, or location in MVP.
   - 1 special word/phrase/sentence
 
 ## Card form rules
+
 - inputs:
   - name
   - sex
@@ -94,6 +105,7 @@ No date, description, or location in MVP.
 - trait selection max: 3
 
 ## Card lifecycle rules
+
 - a successful generation auto-saves a draft
 - a draft can be accepted
 - a card can be regenerated
@@ -103,7 +115,9 @@ No date, description, or location in MVP.
 - deleting a card is allowed
 
 ## Regeneration behavior
+
 When a user regenerates after already accepting a card:
+
 - keep the accepted version saved
 - create a new draft candidate
 - do not overwrite the accepted version in place
@@ -111,13 +125,16 @@ When a user regenerates after already accepting a card:
 This means multiple related versions may exist.
 
 ## Card presentation rules
+
 - card details screen should support two display modes:
   - collectible card mode
   - readable info mode
 - user should be able to switch between them
 
 ## Offline rules
+
 ### Must work offline
+
 - viewing saved parties
 - viewing saved party themes
 - viewing saved cards
@@ -125,12 +142,15 @@ This means multiple related versions may exist.
 - viewing saved drafts
 
 ### Not required offline
+
 - generation
 - regeneration
 - AI runtime unless proven feasible later
 
 ## Web support rule
+
 Web is nice-to-have. Do not let web parity slow down the mobile-first MVP.
 
 ## Open technical uncertainty
+
 The biggest unresolved technical question is the exact local LLM path and its compatibility with Expo and web support. This requires follow-up validation before final implementation package choices are locked.

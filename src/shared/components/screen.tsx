@@ -1,16 +1,15 @@
-import { PropsWithChildren } from 'react';
-import { ScrollView, View, type StyleProp, type ViewStyle } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { StyleSheet } from 'react-native-unistyles';
+import { PropsWithChildren } from 'react'
+import { ScrollView, View, type StyleProp, type ViewStyle } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { StyleSheet } from 'react-native-unistyles'
 
-import { ThemedView } from '@/components/themed-view';
-import { Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme'
 
 type ScreenProps = PropsWithChildren<{
-  scrollable?: boolean;
-  contentStyle?: StyleProp<ViewStyle>;
-  safeAreaStyle?: StyleProp<ViewStyle>;
-}>;
+  scrollable?: boolean
+  contentStyle?: StyleProp<ViewStyle>
+  safeAreaStyle?: StyleProp<ViewStyle>
+}>
 
 export function Screen({
   children,
@@ -18,23 +17,35 @@ export function Screen({
   contentStyle,
   safeAreaStyle,
 }: ScreenProps) {
-  const content = <View style={[styles.content, contentStyle]}>{children}</View>;
+  const content = <View style={[styles.content, contentStyle]}>{children}</View>
 
-  return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={[styles.safeArea, safeAreaStyle]} edges={['top', 'left', 'right']}>
-        {scrollable ? (
-          <ScrollView contentContainerStyle={styles.scrollContent}>{content}</ScrollView>
-        ) : (
-          content
-        )}
+  return scrollable ? (
+    <View style={styles.container}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        automaticallyAdjustContentInsets={false}
+        contentInsetAdjustmentBehavior="never"
+      >
+        <SafeAreaView style={[styles.safeArea, safeAreaStyle]} edges={['left', 'right', 'bottom']}>
+          {content}
+        </SafeAreaView>
+      </ScrollView>
+    </View>
+  ) : (
+    <View style={styles.container}>
+      <SafeAreaView style={[styles.safeArea, safeAreaStyle]} edges={['left', 'right', 'bottom']}>
+        {content}
       </SafeAreaView>
-    </ThemedView>
-  );
+    </View>
+  )
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  scrollView: {
     flex: 1,
   },
   safeArea: {
@@ -42,12 +53,12 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
+    paddingTop: Spacing.two,
+    paddingBottom: Spacing.four,
   },
   content: {
     width: '100%',
     paddingHorizontal: Spacing.four,
-    paddingTop: Spacing.three,
-    paddingBottom: Spacing.four,
     gap: Spacing.four,
   },
-});
+})

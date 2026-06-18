@@ -41,12 +41,12 @@ import { StyleSheet } from 'react-native-unistyles'
 
 // 1. Static object compatible with React Native StyleSheet.create
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 }
+  container: { flex: 1, padding: 16 },
 })
 
 // 2. Theme function (reactive to theme changes, zero re-renders)
-const styles = StyleSheet.create(theme => ({
-  container: { backgroundColor: theme.colors.background }
+const styles = StyleSheet.create((theme) => ({
+  container: { backgroundColor: theme.colors.background },
 }))
 
 // 3. Theme + miniRuntime function (reactive to theme AND device state)
@@ -54,8 +54,8 @@ const styles = StyleSheet.create((theme, rt) => ({
   container: {
     backgroundColor: theme.colors.background,
     paddingTop: rt.insets.top,
-    width: rt.screen.width > 768 ? 500 : rt.screen.width - 32
-  }
+    width: rt.screen.width > 768 ? 500 : rt.screen.width - 32,
+  },
 }))
 ```
 
@@ -66,18 +66,18 @@ StyleSheet.configure({
   themes: { light: lightTheme, dark: darkTheme },
   breakpoints: { xs: 0, sm: 576, md: 768, lg: 992, xl: 1200 },
   settings: {
-    initialTheme: 'light',       // or: () => storage.getString('theme') ?? 'light'
+    initialTheme: 'light', // or: () => storage.getString('theme') ?? 'light'
     // adaptiveThemes: true,     // auto-switch light/dark based on OS (mutually exclusive with initialTheme)
     // CSSVars: true,            // use CSS custom properties on web
     // nativeBreakpointsMode: 'pixels' | 'points'
-  }
+  },
 })
 ```
 
 ### Variants
 
 ```tsx
-const styles = StyleSheet.create(theme => ({
+const styles = StyleSheet.create((theme) => ({
   button: {
     variants: {
       size: {
@@ -88,12 +88,12 @@ const styles = StyleSheet.create(theme => ({
       color: {
         primary: { backgroundColor: theme.colors.primary },
         secondary: { backgroundColor: theme.colors.secondary },
-      }
+      },
     },
     compoundVariants: [
-      { size: 'large', color: 'primary', styles: { borderWidth: 2 } }
+      { size: 'large', color: 'primary', styles: { borderWidth: 2 } },
     ],
-  }
+  },
 }))
 
 // In component — call useVariants BEFORE accessing styles
@@ -109,7 +109,7 @@ import { Button } from 'some-library'
 
 const UniButton = withUnistyles(Button, (theme, rt) => ({
   color: theme.colors.primary,
-  size: rt.screen.width > 400 ? 'large' : 'small'
+  size: rt.screen.width > 400 ? 'large' : 'small',
 }))
 
 // Usage: <UniButton title="Press me" />

@@ -15,31 +15,35 @@ import { StyleSheet } from 'react-native-unistyles'
 Creates a reactive stylesheet. Returns an object with the same keys as your stylesheet, plus a `useVariants()` method. Each style value is a C++ proxy object.
 
 **Overload 1 — Static object:**
+
 ```tsx
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 }
+  container: { flex: 1, padding: 16 },
 })
 ```
 
 **Overload 2 — Theme function (zero re-renders on theme change):**
+
 ```tsx
-const styles = StyleSheet.create(theme => ({
-  container: { backgroundColor: theme.colors.background }
+const styles = StyleSheet.create((theme) => ({
+  container: { backgroundColor: theme.colors.background },
 }))
 ```
 
 **Overload 3 — Theme + miniRuntime function (zero re-renders on theme/device change):**
+
 ```tsx
 const styles = StyleSheet.create((theme, rt) => ({
   container: {
     backgroundColor: theme.colors.background,
     paddingTop: rt.insets.top,
-    width: rt.screen.width > 768 ? 500 : rt.screen.width - 32
-  }
+    width: rt.screen.width > 768 ? 500 : rt.screen.width - 32,
+  },
 }))
 ```
 
 **Dynamic functions — pass arguments at the call site:**
+
 ```tsx
 const styles = StyleSheet.create(theme => ({
   box: (width: number, isActive: boolean) => ({
@@ -71,22 +75,24 @@ StyleSheet.configure({
 
 ### StyleSheet utilities
 
-| Property/Method | Description |
-|----------------|-------------|
-| `StyleSheet.hairlineWidth` | Thinnest visible line width (always `1` in v3) |
-| `StyleSheet.absoluteFill` | Shorthand for `{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }` |
-| `StyleSheet.absoluteFillObject` | Same object as `absoluteFill` |
-| `StyleSheet.compose(a, b)` | Compose two styles |
-| `StyleSheet.flatten(style)` | Flatten a style array into a single object |
+| Property/Method                 | Description                                                                    |
+| ------------------------------- | ------------------------------------------------------------------------------ |
+| `StyleSheet.hairlineWidth`      | Thinnest visible line width (always `1` in v3)                                 |
+| `StyleSheet.absoluteFill`       | Shorthand for `{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }` |
+| `StyleSheet.absoluteFillObject` | Same object as `absoluteFill`                                                  |
+| `StyleSheet.compose(a, b)`      | Compose two styles                                                             |
+| `StyleSheet.flatten(style)`     | Flatten a style array into a single object                                     |
 
 ### StyleSheet.addChangeListener(listener)
 
 Subscribe to Unistyles dependency changes:
 
 ```tsx
-const unsubscribe = StyleSheet.addChangeListener((dependencies: UnistyleDependency[]) => {
-  // dependencies is an array of what changed (Theme, Breakpoints, Orientation, etc.)
-})
+const unsubscribe = StyleSheet.addChangeListener(
+  (dependencies: UnistyleDependency[]) => {
+    // dependencies is an array of what changed (Theme, Breakpoints, Orientation, etc.)
+  },
+)
 
 // Later:
 unsubscribe()
@@ -104,28 +110,28 @@ import { UnistylesRuntime } from 'react-native-unistyles'
 
 ### Read-only properties
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `colorScheme` | `'light' \| 'dark' \| 'unspecified'` | OS color scheme |
-| `themeName` | `string \| undefined` | Current active theme name |
-| `breakpoint` | `string \| undefined` | Current active breakpoint name |
-| `hasAdaptiveThemes` | `boolean` | Whether adaptive themes are enabled |
-| `screen` | `{ width: number, height: number }` | Screen dimensions |
-| `insets` | `{ top, bottom, left, right, ime: number }` | Safe area insets + keyboard (ime) |
-| `orientation` | `'portrait' \| 'landscape'` | Current orientation |
-| `isPortrait` | `boolean` | Shorthand for portrait check |
-| `isLandscape` | `boolean` | Shorthand for landscape check |
-| `pixelRatio` | `number` | Device pixel ratio |
-| `fontScale` | `number` | User font scale preference |
-| `rtl` | `boolean` | Whether layout direction is RTL |
-| `contentSizeCategory` | `IOSContentSizeCategory \| AndroidContentSizeCategory` | Accessibility text size |
-| `breakpoints` | `UnistylesBreakpoints` | Registered breakpoints object |
+| Property              | Type                                                   | Description                         |
+| --------------------- | ------------------------------------------------------ | ----------------------------------- |
+| `colorScheme`         | `'light' \| 'dark' \| 'unspecified'`                   | OS color scheme                     |
+| `themeName`           | `string \| undefined`                                  | Current active theme name           |
+| `breakpoint`          | `string \| undefined`                                  | Current active breakpoint name      |
+| `hasAdaptiveThemes`   | `boolean`                                              | Whether adaptive themes are enabled |
+| `screen`              | `{ width: number, height: number }`                    | Screen dimensions                   |
+| `insets`              | `{ top, bottom, left, right, ime: number }`            | Safe area insets + keyboard (ime)   |
+| `orientation`         | `'portrait' \| 'landscape'`                            | Current orientation                 |
+| `isPortrait`          | `boolean`                                              | Shorthand for portrait check        |
+| `isLandscape`         | `boolean`                                              | Shorthand for landscape check       |
+| `pixelRatio`          | `number`                                               | Device pixel ratio                  |
+| `fontScale`           | `number`                                               | User font scale preference          |
+| `rtl`                 | `boolean`                                              | Whether layout direction is RTL     |
+| `contentSizeCategory` | `IOSContentSizeCategory \| AndroidContentSizeCategory` | Accessibility text size             |
+| `breakpoints`         | `UnistylesBreakpoints`                                 | Registered breakpoints object       |
 
 ### Sub-objects
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `statusBar` | `UnistylesStatusBar` | Status bar dimensions and controls |
+| Property        | Type                     | Description                                      |
+| --------------- | ------------------------ | ------------------------------------------------ |
+| `statusBar`     | `UnistylesStatusBar`     | Status bar dimensions and controls               |
 | `navigationBar` | `UnistylesNavigationBar` | Navigation bar dimensions and controls (Android) |
 
 ### Methods
@@ -138,9 +144,9 @@ UnistylesRuntime.setTheme('dark')
 const darkTheme = UnistylesRuntime.getTheme('dark')
 
 // Update theme values at runtime (triggers re-style of affected components)
-UnistylesRuntime.updateTheme('light', currentTheme => ({
+UnistylesRuntime.updateTheme('light', (currentTheme) => ({
   ...currentTheme,
-  colors: { ...currentTheme.colors, primary: '#ff0000' }
+  colors: { ...currentTheme.colors, primary: '#ff0000' },
 }))
 
 // Enable/disable adaptive themes
@@ -161,12 +167,12 @@ UnistylesRuntime.setImmersiveMode(true)
 import { StatusBar } from 'react-native-unistyles'
 ```
 
-| Property/Method | Type | Description |
-|----------------|------|-------------|
-| `width` | `number` | Status bar width |
-| `height` | `number` | Status bar height |
-| `setHidden(hidden, animation?)` | `(boolean, 'none' \| 'fade' \| 'slide') => void` | Show/hide status bar |
-| `setStyle(style, animated?)` | `('default' \| 'light' \| 'dark', boolean?) => void` | Set status bar style |
+| Property/Method                 | Type                                                 | Description          |
+| ------------------------------- | ---------------------------------------------------- | -------------------- |
+| `width`                         | `number`                                             | Status bar width     |
+| `height`                        | `number`                                             | Status bar height    |
+| `setHidden(hidden, animation?)` | `(boolean, 'none' \| 'fade' \| 'slide') => void`     | Show/hide status bar |
+| `setStyle(style, animated?)`    | `('default' \| 'light' \| 'dark', boolean?) => void` | Set status bar style |
 
 Also accessible via `UnistylesRuntime.statusBar`.
 
@@ -178,10 +184,10 @@ Also accessible via `UnistylesRuntime.statusBar`.
 import { NavigationBar } from 'react-native-unistyles'
 ```
 
-| Property/Method | Type | Description |
-|----------------|------|-------------|
-| `width` | `number` | Navigation bar width |
-| `height` | `number` | Navigation bar height |
+| Property/Method     | Type                | Description                        |
+| ------------------- | ------------------- | ---------------------------------- |
+| `width`             | `number`            | Navigation bar width               |
+| `height`            | `number`            | Navigation bar height              |
 | `setHidden(hidden)` | `(boolean) => void` | Show/hide navigation bar (Android) |
 
 Also accessible via `UnistylesRuntime.navigationBar`.
@@ -213,6 +219,7 @@ mq.height(min?, max?).and.width(min?, max?)   // returns symbol
 ```
 
 Parameters can be:
+
 - **Breakpoint names**: `'sm'`, `'md'`, `'lg'` (from registered breakpoints)
 - **Pixel values**: `320`, `768`, `1200`
 - **`null`/`undefined`**: unbounded (no min or no max)
@@ -220,14 +227,15 @@ Parameters can be:
 ### Examples
 
 ```tsx
-mq.only.width('sm', 'md')           // width between sm and md breakpoints
-mq.only.width(320, 768)             // width between 320px and 768px
-mq.only.width('sm')                 // width >= sm (no max)
-mq.only.width(null, 600)            // width <= 600px
-mq.width('sm', 'lg').and.height(400, 800)  // combined width + height
+mq.only.width('sm', 'md') // width between sm and md breakpoints
+mq.only.width(320, 768) // width between 320px and 768px
+mq.only.width('sm') // width >= sm (no max)
+mq.only.width(null, 600) // width <= 600px
+mq.width('sm', 'lg').and.height(400, 800) // combined width + height
 ```
 
 Used in:
+
 - Style values (breakpoint-like keys): `{ [mq.only.width(320, 768)]: 16 }`
 - `<Display mq={...}>` and `<Hide mq={...}>` components
 
@@ -246,7 +254,7 @@ import { withUnistyles } from 'react-native-unistyles'
 ```tsx
 const UniButton = withUnistyles(Button, (theme, rt) => ({
   color: theme.colors.primary,
-  size: rt.screen.width > 400 ? 'large' : 'small'
+  size: rt.screen.width > 400 ? 'large' : 'small',
 }))
 ```
 
@@ -328,11 +336,11 @@ import { ScopedTheme } from 'react-native-unistyles'
 
 Props are **mutually exclusive** — use only one:
 
-| Prop | Type | Description |
-|------|------|-------------|
-| `name` | `keyof UnistylesThemes` | Force a specific theme |
-| `invertedAdaptive` | `boolean` | Use the opposite adaptive theme |
-| `reset` | `boolean` | Reset to the global theme (undo parent ScopedTheme) |
+| Prop               | Type                    | Description                                         |
+| ------------------ | ----------------------- | --------------------------------------------------- |
+| `name`             | `keyof UnistylesThemes` | Force a specific theme                              |
+| `invertedAdaptive` | `boolean`               | Use the opposite adaptive theme                     |
+| `reset`            | `boolean`               | Reset to the global theme (undo parent ScopedTheme) |
 
 ```tsx
 // Force dark theme in this subtree
@@ -362,13 +370,16 @@ Extract variant types from a stylesheet for use in component props:
 ```tsx
 import type { UnistylesVariants } from 'react-native-unistyles'
 
-const styles = StyleSheet.create(theme => ({
+const styles = StyleSheet.create((theme) => ({
   button: {
     variants: {
       size: { small: { padding: 4 }, large: { padding: 16 } },
-      color: { primary: { backgroundColor: 'blue' }, secondary: { backgroundColor: 'gray' } },
-    }
-  }
+      color: {
+        primary: { backgroundColor: 'blue' },
+        secondary: { backgroundColor: 'gray' },
+      },
+    },
+  },
 }))
 
 type ButtonVariants = UnistylesVariants<typeof styles>
@@ -378,7 +389,11 @@ type Props = { title: string } & ButtonVariants
 
 const Button = ({ title, ...variants }: Props) => {
   styles.useVariants(variants)
-  return <TouchableOpacity style={styles.button}><Text>{title}</Text></TouchableOpacity>
+  return (
+    <TouchableOpacity style={styles.button}>
+      <Text>{title}</Text>
+    </TouchableOpacity>
+  )
 }
 ```
 
@@ -391,7 +406,10 @@ The type of individual style entries in a Unistyles stylesheet.
 Enums for accessibility text size categories:
 
 ```tsx
-import type { IOSContentSizeCategory, AndroidContentSizeCategory } from 'react-native-unistyles'
+import type {
+  IOSContentSizeCategory,
+  AndroidContentSizeCategory,
+} from 'react-native-unistyles'
 
 // iOS values: 'accessibilityExtraExtraExtraLarge', 'xxxLarge', 'xxLarge', 'xLarge',
 //             'Large', 'Medium', 'Small', 'xSmall', 'unspecified'
@@ -424,7 +442,11 @@ For custom web components that don't support Unistyles' auto-processing:
 
 ```tsx
 const { className, style: webStyle } = getWebProps(styles.container)
-return <div className={className} style={webStyle}>...</div>
+return (
+  <div className={className} style={webStyle}>
+    ...
+  </div>
+)
 ```
 
 ---
@@ -432,7 +454,10 @@ return <div className={className} style={webStyle}>...</div>
 ## Reanimated Exports
 
 ```tsx
-import { useAnimatedTheme, useAnimatedVariantColor } from 'react-native-unistyles/reanimated'
+import {
+  useAnimatedTheme,
+  useAnimatedVariantColor,
+} from 'react-native-unistyles/reanimated'
 ```
 
 ### useAnimatedTheme()
@@ -466,16 +491,16 @@ import {
   useServerUnistyles,
   getServerUnistyles,
   hydrateServerUnistyles,
-  resetServerUnistyles
+  resetServerUnistyles,
 } from 'react-native-unistyles'
 ```
 
-| Function | Description |
-|----------|-------------|
+| Function                        | Description                                              |
+| ------------------------------- | -------------------------------------------------------- |
 | `useServerUnistyles(settings?)` | React hook returning style elements for SSR (App Router) |
 | `getServerUnistyles(settings?)` | Returns React element with styles for SSR (Pages Router) |
-| `hydrateServerUnistyles()` | Call on client to hydrate server-rendered styles |
-| `resetServerUnistyles()` | Reset server styles between requests |
+| `hydrateServerUnistyles()`      | Call on client to hydrate server-rendered styles         |
+| `resetServerUnistyles()`        | Reset server styles between requests                     |
 
 Settings: `{ includeRNWStyles?: boolean }`
 

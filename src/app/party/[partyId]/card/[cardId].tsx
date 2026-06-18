@@ -1,47 +1,58 @@
-import { router, useLocalSearchParams } from 'expo-router';
-import { useMemo, useState } from 'react';
-import { Alert, Pressable, View } from 'react-native';
-import { StyleSheet } from 'react-native-unistyles';
+import { router, useLocalSearchParams } from 'expo-router'
+import { useMemo, useState } from 'react'
+import { Alert, Pressable, View } from 'react-native'
+import { StyleSheet } from 'react-native-unistyles'
 
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { useCardStore } from '@/features/cards/store/card-store';
-import { generateCharacterCard } from '@/features/generation/gemini';
-import { getPartyById } from '@/features/parties/selectors';
-import { usePartyStore } from '@/features/parties/store/party-store';
-import { usePreferencesStore } from '@/features/preferences/store/preferences-store';
-import { Screen } from '@/shared/components/screen';
-import { cardDisplayModes } from '@/shared/constants/party-options';
+import { ThemedText } from '@/components/themed-text'
+import { ThemedView } from '@/components/themed-view'
+import { useCardStore } from '@/features/cards/store/card-store'
+import { generateCharacterCard } from '@/features/generation/gemini'
+import { getPartyById } from '@/features/parties/selectors'
+import { usePartyStore } from '@/features/parties/store/party-store'
+import { usePreferencesStore } from '@/features/preferences/store/preferences-store'
+import { Screen } from '@/shared/components/screen'
+import { cardDisplayModes } from '@/shared/constants/party-options'
 
 export default function CardDetailsScreen() {
-  const { partyId, cardId } = useLocalSearchParams<{ partyId: string; cardId: string }>();
-  const parties = usePartyStore((state) => state.parties);
-  const party = useMemo(() => getPartyById(parties, partyId), [parties, partyId]);
+  const { partyId, cardId } = useLocalSearchParams<{
+    partyId: string
+    cardId: string
+  }>()
+  const parties = usePartyStore((state) => state.parties)
+  const party = useMemo(
+    () => getPartyById(parties, partyId),
+    [parties, partyId],
+  )
 
-  const cards = useCardStore((state) => state.cards);
-  const acceptCard = useCardStore((state) => state.acceptCard);
-  const createDraftCard = useCardStore((state) => state.createDraftCard);
-  const deleteCard = useCardStore((state) => state.deleteCard);
+  const cards = useCardStore((state) => state.cards)
+  const acceptCard = useCardStore((state) => state.acceptCard)
+  const createDraftCard = useCardStore((state) => state.createDraftCard)
+  const deleteCard = useCardStore((state) => state.deleteCard)
 
-  const card = useMemo(() => cards.find((entry) => entry.id === cardId), [cards, cardId]);
+  const card = useMemo(
+    () => cards.find((entry) => entry.id === cardId),
+    [cards, cardId],
+  )
 
-  const cardDisplayMode = usePreferencesStore((state) => state.cardDisplayMode);
-  const setCardDisplayMode = usePreferencesStore((state) => state.setCardDisplayMode);
+  const cardDisplayMode = usePreferencesStore((state) => state.cardDisplayMode)
+  const setCardDisplayMode = usePreferencesStore(
+    (state) => state.setCardDisplayMode,
+  )
 
-  const [isRegenerating, setIsRegenerating] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isRegenerating, setIsRegenerating] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   function handleAcceptCard() {
     if (!card || card.status === 'accepted') {
-      return;
+      return
     }
 
-    acceptCard(card.id);
+    acceptCard(card.id)
   }
 
   function handleDeleteCard() {
     if (!card) {
-      return;
+      return
     }
 
     Alert.alert('Delete card?', 'Remove this saved character card?', [
@@ -50,57 +61,63 @@ export default function CardDetailsScreen() {
         text: 'Delete',
         style: 'destructive',
         onPress: () => {
-          deleteCard(card.id);
+          deleteCard(card.id)
           router.replace({
             pathname: '/party/[partyId]',
             params: { partyId: card.partyId },
-          });
+          })
         },
       },
-    ]);
+    ])
   }
 
   function handleRegenerateCard() {
     if (!card || !party) {
-      return;
+      return
     }
 
-    Alert.alert('Regenerate card?', 'Create a new draft variation from the same character input?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Regenerate',
-        onPress: async () => {
-          setErrorMessage(null);
-          setIsRegenerating(true);
+    Alert.alert(
+      'Regenerate card?',
+      'Create a new draft variation from the same character input?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Regenerate',
+          onPress: async () => {
+            setErrorMessage(null)
+            setIsRegenerating(true)
 
-          try {
-            const generated = await generateCharacterCard({
-              party,
-              input: card.input,
-            });
+            try {
+              const generated = await generateCharacterCard({
+                party,
+                input: card.input,
+              })
 
-            const nextCardId = createDraftCard({
-              partyId: card.partyId,
-              input: card.input,
-              generated,
-              basedOnCardId: card.id,
-              generationGroupId: card.generationGroupId,
-            });
+              const nextCardId = createDraftCard({
+                partyId: card.partyId,
+                input: card.input,
+                generated,
+                basedOnCardId: card.id,
+                generationGroupId: card.generationGroupId,
+              })
 
-            router.replace({
-              pathname: '/party/[partyId]/card/[cardId]',
-              params: { partyId: card.partyId, cardId: nextCardId },
-            });
-          } catch (error) {
-            setErrorMessage(
-              error instanceof Error ? error.message : 'Unable to regenerate card right now.'
-            );
-          } finally {
-            setIsRegenerating(false);
-          }
+              router.replace({
+                pathname: '/party/[partyId]/card/[cardId]',
+                params: { partyId: card.partyId, cardId: nextCardId },
+              })
+            } catch (error) {
+              setErrorMessage(
+                error instanceof Error
+                  ? error.message
+                  : 'Unable to regenerate card right now.',
+              )
+            } finally {
+              setIsRegenerating(false)
+            }
+          },
         },
-      },
-    ]);
+      ],
+    )
   }
 
   return (
@@ -115,26 +132,35 @@ export default function CardDetailsScreen() {
       ) : (
         <>
           <View style={styles.header}>
-            <ThemedText type="subtitle">{card.generated.generatedNameWithClass}</ThemedText>
+            <ThemedText type="subtitle">
+              {card.generated.generatedNameWithClass}
+            </ThemedText>
             <ThemedText themeColor="textSecondary">
-              {card.status === 'accepted' ? 'Accepted card' : 'Draft card'} · {party.title}
+              {card.status === 'accepted' ? 'Accepted card' : 'Draft card'} ·{' '}
+              {party.title}
             </ThemedText>
           </View>
 
           <View style={styles.modeSwitch}>
             {cardDisplayModes.map((mode) => {
-              const isSelected = mode === cardDisplayMode;
+              const isSelected = mode === cardDisplayMode
 
               return (
                 <Pressable
                   key={mode}
                   onPress={() => setCardDisplayMode(mode)}
-                  style={[styles.modeChip, isSelected && styles.modeChipSelected]}>
-                  <ThemedText style={isSelected ? styles.modeChipTextSelected : undefined}>
+                  style={[
+                    styles.modeChip,
+                    isSelected && styles.modeChipSelected,
+                  ]}
+                >
+                  <ThemedText
+                    style={isSelected ? styles.modeChipTextSelected : undefined}
+                  >
                     {mode === 'collectible' ? 'Collectible view' : 'Info view'}
                   </ThemedText>
                 </Pressable>
-              );
+              )
             })}
           </View>
 
@@ -142,8 +168,11 @@ export default function CardDetailsScreen() {
             type="backgroundElement"
             style={[
               styles.card,
-              cardDisplayMode === 'collectible' ? styles.collectibleCard : styles.infoCard,
-            ]}>
+              cardDisplayMode === 'collectible'
+                ? styles.collectibleCard
+                : styles.infoCard,
+            ]}
+          >
             <View style={styles.section}>
               <ThemedText type="smallBold">Background</ThemedText>
               <ThemedText>{card.generated.backgroundHistory}</ThemedText>
@@ -171,19 +200,29 @@ export default function CardDetailsScreen() {
             </View>
           </ThemedView>
 
-          {errorMessage ? <ThemedText themeColor="textSecondary">{errorMessage}</ThemedText> : null}
+          {errorMessage ? (
+            <ThemedText themeColor="textSecondary">{errorMessage}</ThemedText>
+          ) : null}
 
           {card.status === 'draft' ? (
             <Pressable style={styles.primaryButton} onPress={handleAcceptCard}>
-              <ThemedText style={styles.primaryButtonText}>Accept card</ThemedText>
+              <ThemedText style={styles.primaryButtonText}>
+                Accept card
+              </ThemedText>
             </Pressable>
           ) : null}
 
           <Pressable
-            style={[styles.secondaryButton, isRegenerating && styles.buttonDisabled]}
+            style={[
+              styles.secondaryButton,
+              isRegenerating && styles.buttonDisabled,
+            ]}
             disabled={isRegenerating}
-            onPress={handleRegenerateCard}>
-            <ThemedText>{isRegenerating ? 'Regenerating...' : 'Regenerate card'}</ThemedText>
+            onPress={handleRegenerateCard}
+          >
+            <ThemedText>
+              {isRegenerating ? 'Regenerating...' : 'Regenerate card'}
+            </ThemedText>
           </Pressable>
 
           <Pressable style={styles.secondaryButton} onPress={handleDeleteCard}>
@@ -192,10 +231,10 @@ export default function CardDetailsScreen() {
         </>
       )}
     </Screen>
-  );
+  )
 }
 
-const styles = StyleSheet.create(theme => ({
+const styles = StyleSheet.create((theme) => ({
   header: {
     gap: theme.spacing.one,
   },
@@ -266,4 +305,4 @@ const styles = StyleSheet.create(theme => ({
   buttonDisabled: {
     opacity: 0.65,
   },
-}));
+}))
