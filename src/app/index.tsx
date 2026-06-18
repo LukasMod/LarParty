@@ -15,12 +15,12 @@ import {
 } from '@/shared/constants/party-options'
 
 const partyAccentByTheme = {
-  fantasy: Colors.default.cardPreviewAccent,
-  'sci-fi': Colors.ocean.cardPreviewAccent,
-  horror: Colors.dusk.cardPreviewAccent,
-  magic: Colors.forest.cardPreviewAccent,
-  casual: Colors.default.cardPreviewAccent,
-  corporation: Colors.ocean.cardPreviewAccent,
+  fantasy: Colors.fantasy.cardPreviewAccent,
+  'sci-fi': Colors['sci-fi'].cardPreviewAccent,
+  horror: Colors.horror.cardPreviewAccent,
+  magic: Colors.magic.cardPreviewAccent,
+  casual: Colors.casual.cardPreviewAccent,
+  corporation: Colors.corporation.cardPreviewAccent,
 } as const
 
 export default function PartyListScreen() {
