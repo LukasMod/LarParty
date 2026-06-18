@@ -50,6 +50,7 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",
+    "healthcheck:react-compiler": "npx react-compiler-healthcheck@latest",
     "check": "npm run lint && npm run typecheck",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\""
   },
