@@ -1,7 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -11,6 +10,7 @@ import { CharacterCardInput, InputTrait, SexOption } from '@/features/cards/type
 import { generateCharacterCard } from '@/features/generation/gemini';
 import { getPartyById } from '@/features/parties/selectors';
 import { usePartyStore } from '@/features/parties/store/party-store';
+import { Screen } from '@/shared/components/screen';
 import {
   cardTraitLabels,
   cardTraits,
@@ -106,127 +106,111 @@ export default function NewCharacterCardScreen() {
   }
 
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ScrollView contentContainerStyle={styles.content}>
-          {!party ? (
-            <ThemedView type="backgroundElement" style={styles.card}>
-              <ThemedText type="subtitle">Party not found</ThemedText>
-              <ThemedText themeColor="textSecondary">
-                This party may have been deleted or is still loading.
-              </ThemedText>
-            </ThemedView>
-          ) : (
-            <>
-              <View style={styles.header}>
-                <ThemedText type="subtitle">Create Character Card</ThemedText>
-                <ThemedText themeColor="textSecondary">
-                  {party.title} · {themeCategoryLabels[party.themeCategory]}
-                </ThemedText>
+    <Screen>
+      {!party ? (
+        <ThemedView type="backgroundElement" style={styles.card}>
+          <ThemedText type="subtitle">Party not found</ThemedText>
+          <ThemedText themeColor="textSecondary">
+            This party may have been deleted or is still loading.
+          </ThemedText>
+        </ThemedView>
+      ) : (
+        <>
+          <View style={styles.header}>
+            <ThemedText type="subtitle">Create Character Card</ThemedText>
+            <ThemedText themeColor="textSecondary">
+              {party.title} · {themeCategoryLabels[party.themeCategory]}
+            </ThemedText>
+          </View>
+
+          <ThemedView type="backgroundElement" style={styles.card}>
+            <View style={styles.fieldGroup}>
+              <ThemedText type="smallBold">Character name</ThemedText>
+              <TextInput
+                value={name}
+                onChangeText={setName}
+                placeholder="Mira Nightbloom"
+                placeholderTextColor={Colors.light.textSecondary}
+                style={styles.input}
+              />
+            </View>
+
+            <View style={styles.fieldGroup}>
+              <ThemedText type="smallBold">Sex</ThemedText>
+              <View style={styles.optionGrid}>
+                {sexOptions.map((option) => {
+                  const isSelected = option === sex;
+
+                  return (
+                    <Pressable
+                      key={option}
+                      onPress={() => setSex(option)}
+                      style={[styles.optionChip, isSelected && styles.optionChipSelected]}>
+                      <ThemedText style={isSelected ? styles.optionChipTextSelected : undefined}>
+                        {sexOptionLabels[option]}
+                      </ThemedText>
+                    </Pressable>
+                  );
+                })}
               </View>
+            </View>
 
-              <ThemedView type="backgroundElement" style={styles.card}>
-                <View style={styles.fieldGroup}>
-                  <ThemedText type="smallBold">Character name</ThemedText>
-                  <TextInput
-                    value={name}
-                    onChangeText={setName}
-                    placeholder="Mira Nightbloom"
-                    placeholderTextColor={Colors.light.textSecondary}
-                    style={styles.input}
-                  />
-                </View>
+            <View style={styles.fieldGroup}>
+              <ThemedText type="smallBold">Age</ThemedText>
+              <TextInput
+                value={age}
+                onChangeText={setAge}
+                placeholder="25"
+                placeholderTextColor={Colors.light.textSecondary}
+                keyboardType="number-pad"
+                style={styles.input}
+              />
+            </View>
 
-                <View style={styles.fieldGroup}>
-                  <ThemedText type="smallBold">Sex</ThemedText>
-                  <View style={styles.optionGrid}>
-                    {sexOptions.map((option) => {
-                      const isSelected = option === sex;
+            <View style={styles.fieldGroup}>
+              <ThemedText type="smallBold">Traits</ThemedText>
+              <ThemedText themeColor="textSecondary">Pick up to {MAX_TRAITS} traits.</ThemedText>
+              <View style={styles.optionGrid}>
+                {cardTraits.map((trait) => {
+                  const isSelected = selectedTraits.includes(trait);
+                  const isDisabled = !isSelected && selectedTraits.length >= MAX_TRAITS;
 
-                      return (
-                        <Pressable
-                          key={option}
-                          onPress={() => setSex(option)}
-                          style={[styles.optionChip, isSelected && styles.optionChipSelected]}>
-                          <ThemedText style={isSelected ? styles.optionChipTextSelected : undefined}>
-                            {sexOptionLabels[option]}
-                          </ThemedText>
-                        </Pressable>
-                      );
-                    })}
-                  </View>
-                </View>
+                  return (
+                    <Pressable
+                      key={trait}
+                      onPress={() => toggleTrait(trait)}
+                      style={[
+                        styles.optionChip,
+                        isSelected && styles.optionChipSelected,
+                        isDisabled && styles.optionChipDisabled,
+                      ]}>
+                      <ThemedText style={isSelected ? styles.optionChipTextSelected : undefined}>
+                        {cardTraitLabels[trait]}
+                      </ThemedText>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </View>
 
-                <View style={styles.fieldGroup}>
-                  <ThemedText type="smallBold">Age</ThemedText>
-                  <TextInput
-                    value={age}
-                    onChangeText={setAge}
-                    placeholder="25"
-                    placeholderTextColor={Colors.light.textSecondary}
-                    keyboardType="number-pad"
-                    style={styles.input}
-                  />
-                </View>
+            {errorMessage ? <ThemedText themeColor="textSecondary">{errorMessage}</ThemedText> : null}
+          </ThemedView>
 
-                <View style={styles.fieldGroup}>
-                  <ThemedText type="smallBold">Traits</ThemedText>
-                  <ThemedText themeColor="textSecondary">Pick up to {MAX_TRAITS} traits.</ThemedText>
-                  <View style={styles.optionGrid}>
-                    {cardTraits.map((trait) => {
-                      const isSelected = selectedTraits.includes(trait);
-                      const isDisabled = !isSelected && selectedTraits.length >= MAX_TRAITS;
-
-                      return (
-                        <Pressable
-                          key={trait}
-                          onPress={() => toggleTrait(trait)}
-                          style={[
-                            styles.optionChip,
-                            isSelected && styles.optionChipSelected,
-                            isDisabled && styles.optionChipDisabled,
-                          ]}>
-                          <ThemedText style={isSelected ? styles.optionChipTextSelected : undefined}>
-                            {cardTraitLabels[trait]}
-                          </ThemedText>
-                        </Pressable>
-                      );
-                    })}
-                  </View>
-                </View>
-
-                {errorMessage ? <ThemedText themeColor="textSecondary">{errorMessage}</ThemedText> : null}
-              </ThemedView>
-
-              <Pressable
-                disabled={isSubmitting}
-                style={[styles.primaryButton, isSubmitting && styles.primaryButtonDisabled]}
-                onPress={handleGenerateCard}>
-                <ThemedText style={styles.primaryButtonText}>
-                  {isSubmitting ? 'Generating...' : 'Generate character card'}
-                </ThemedText>
-              </Pressable>
-            </>
-          )}
-        </ScrollView>
-      </SafeAreaView>
-    </ThemedView>
+          <Pressable
+            disabled={isSubmitting}
+            style={[styles.primaryButton, isSubmitting && styles.primaryButtonDisabled]}
+            onPress={handleGenerateCard}>
+            <ThemedText style={styles.primaryButtonText}>
+              {isSubmitting ? 'Generating...' : 'Generate character card'}
+            </ThemedText>
+          </Pressable>
+        </>
+      )}
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  safeArea: {
-    flex: 1,
-  },
-  content: {
-    width: '100%',
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.four,
-    gap: Spacing.four,
-  },
   header: {
     gap: Spacing.one,
   },

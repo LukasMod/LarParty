@@ -1,7 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Alert, Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -11,6 +10,7 @@ import { generateCharacterCard } from '@/features/generation/gemini';
 import { getPartyById } from '@/features/parties/selectors';
 import { usePartyStore } from '@/features/parties/store/party-store';
 import { usePreferencesStore } from '@/features/preferences/store/preferences-store';
+import { Screen } from '@/shared/components/screen';
 import { cardDisplayModes } from '@/shared/constants/party-options';
 
 export default function CardDetailsScreen() {
@@ -104,114 +104,98 @@ export default function CardDetailsScreen() {
   }
 
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ScrollView contentContainerStyle={styles.content}>
-          {!party || !card ? (
-            <ThemedView type="backgroundElement" style={styles.card}>
-              <ThemedText type="subtitle">Card not found</ThemedText>
-              <ThemedText themeColor="textSecondary">
-                This card may have been deleted or is still loading.
-              </ThemedText>
-            </ThemedView>
-          ) : (
-            <>
-              <View style={styles.header}>
-                <ThemedText type="subtitle">{card.generated.generatedNameWithClass}</ThemedText>
-                <ThemedText themeColor="textSecondary">
-                  {card.status === 'accepted' ? 'Accepted card' : 'Draft card'} · {party.title}
-                </ThemedText>
-              </View>
+    <Screen>
+      {!party || !card ? (
+        <ThemedView type="backgroundElement" style={styles.card}>
+          <ThemedText type="subtitle">Card not found</ThemedText>
+          <ThemedText themeColor="textSecondary">
+            This card may have been deleted or is still loading.
+          </ThemedText>
+        </ThemedView>
+      ) : (
+        <>
+          <View style={styles.header}>
+            <ThemedText type="subtitle">{card.generated.generatedNameWithClass}</ThemedText>
+            <ThemedText themeColor="textSecondary">
+              {card.status === 'accepted' ? 'Accepted card' : 'Draft card'} · {party.title}
+            </ThemedText>
+          </View>
 
-              <View style={styles.modeSwitch}>
-                {cardDisplayModes.map((mode) => {
-                  const isSelected = mode === cardDisplayMode;
+          <View style={styles.modeSwitch}>
+            {cardDisplayModes.map((mode) => {
+              const isSelected = mode === cardDisplayMode;
 
-                  return (
-                    <Pressable
-                      key={mode}
-                      onPress={() => setCardDisplayMode(mode)}
-                      style={[styles.modeChip, isSelected && styles.modeChipSelected]}>
-                      <ThemedText style={isSelected ? styles.modeChipTextSelected : undefined}>
-                        {mode === 'collectible' ? 'Collectible view' : 'Info view'}
-                      </ThemedText>
-                    </Pressable>
-                  );
-                })}
-              </View>
-
-              <ThemedView
-                type="backgroundElement"
-                style={[
-                  styles.card,
-                  cardDisplayMode === 'collectible' ? styles.collectibleCard : styles.infoCard,
-                ]}>
-                <View style={styles.section}>
-                  <ThemedText type="smallBold">Background</ThemedText>
-                  <ThemedText>{card.generated.backgroundHistory}</ThemedText>
-                </View>
-
-                <View style={styles.section}>
-                  <ThemedText type="smallBold">Character traits</ThemedText>
-                  <View style={styles.traitList}>
-                    {card.generated.characterTraits.map((trait) => (
-                      <ThemedView key={trait} style={styles.traitItem}>
-                        <ThemedText>{trait}</ThemedText>
-                      </ThemedView>
-                    ))}
-                  </View>
-                </View>
-
-                <View style={styles.section}>
-                  <ThemedText type="smallBold">Special movement</ThemedText>
-                  <ThemedText>{card.generated.specialMovement}</ThemedText>
-                </View>
-
-                <View style={styles.section}>
-                  <ThemedText type="smallBold">Special phrase</ThemedText>
-                  <ThemedText>“{card.generated.specialPhrase}”</ThemedText>
-                </View>
-              </ThemedView>
-
-              {errorMessage ? <ThemedText themeColor="textSecondary">{errorMessage}</ThemedText> : null}
-
-              {card.status === 'draft' ? (
-                <Pressable style={styles.primaryButton} onPress={handleAcceptCard}>
-                  <ThemedText style={styles.primaryButtonText}>Accept card</ThemedText>
+              return (
+                <Pressable
+                  key={mode}
+                  onPress={() => setCardDisplayMode(mode)}
+                  style={[styles.modeChip, isSelected && styles.modeChipSelected]}>
+                  <ThemedText style={isSelected ? styles.modeChipTextSelected : undefined}>
+                    {mode === 'collectible' ? 'Collectible view' : 'Info view'}
+                  </ThemedText>
                 </Pressable>
-              ) : null}
+              );
+            })}
+          </View>
 
-              <Pressable
-                style={[styles.secondaryButton, isRegenerating && styles.buttonDisabled]}
-                disabled={isRegenerating}
-                onPress={handleRegenerateCard}>
-                <ThemedText>{isRegenerating ? 'Regenerating...' : 'Regenerate card'}</ThemedText>
-              </Pressable>
+          <ThemedView
+            type="backgroundElement"
+            style={[
+              styles.card,
+              cardDisplayMode === 'collectible' ? styles.collectibleCard : styles.infoCard,
+            ]}>
+            <View style={styles.section}>
+              <ThemedText type="smallBold">Background</ThemedText>
+              <ThemedText>{card.generated.backgroundHistory}</ThemedText>
+            </View>
 
-              <Pressable style={styles.secondaryButton} onPress={handleDeleteCard}>
-                <ThemedText>Delete card</ThemedText>
-              </Pressable>
-            </>
-          )}
-        </ScrollView>
-      </SafeAreaView>
-    </ThemedView>
+            <View style={styles.section}>
+              <ThemedText type="smallBold">Character traits</ThemedText>
+              <View style={styles.traitList}>
+                {card.generated.characterTraits.map((trait) => (
+                  <ThemedView key={trait} style={styles.traitItem}>
+                    <ThemedText>{trait}</ThemedText>
+                  </ThemedView>
+                ))}
+              </View>
+            </View>
+
+            <View style={styles.section}>
+              <ThemedText type="smallBold">Special movement</ThemedText>
+              <ThemedText>{card.generated.specialMovement}</ThemedText>
+            </View>
+
+            <View style={styles.section}>
+              <ThemedText type="smallBold">Special phrase</ThemedText>
+              <ThemedText>“{card.generated.specialPhrase}”</ThemedText>
+            </View>
+          </ThemedView>
+
+          {errorMessage ? <ThemedText themeColor="textSecondary">{errorMessage}</ThemedText> : null}
+
+          {card.status === 'draft' ? (
+            <Pressable style={styles.primaryButton} onPress={handleAcceptCard}>
+              <ThemedText style={styles.primaryButtonText}>Accept card</ThemedText>
+            </Pressable>
+          ) : null}
+
+          <Pressable
+            style={[styles.secondaryButton, isRegenerating && styles.buttonDisabled]}
+            disabled={isRegenerating}
+            onPress={handleRegenerateCard}>
+            <ThemedText>{isRegenerating ? 'Regenerating...' : 'Regenerate card'}</ThemedText>
+          </Pressable>
+
+          <Pressable style={styles.secondaryButton} onPress={handleDeleteCard}>
+            <ThemedText>Delete card</ThemedText>
+          </Pressable>
+        </>
+      )}
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  safeArea: {
-    flex: 1,
-  },
-  content: {
-    width: '100%',
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.four,
-    gap: Spacing.four,
-  },
   header: {
     gap: Spacing.one,
   },

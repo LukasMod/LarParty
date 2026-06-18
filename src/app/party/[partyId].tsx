@@ -1,16 +1,16 @@
 import { Link, router, useLocalSearchParams } from 'expo-router';
 import { useMemo } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Alert, Pressable, StyleSheet, View } from 'react-native';
 
 import { getCardsForParty } from '@/features/cards/selectors';
 import { useCardStore } from '@/features/cards/store/card-store';
 import { getPartyById } from '@/features/parties/selectors';
 import { usePartyStore } from '@/features/parties/store/party-store';
-import { partyMoodLabels, themeCategoryLabels } from '@/shared/constants/party-options';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
+import { Screen } from '@/shared/components/screen';
+import { partyMoodLabels, themeCategoryLabels } from '@/shared/constants/party-options';
 
 export default function PartyDetailsScreen() {
   const { partyId } = useLocalSearchParams<{ partyId: string }>();
@@ -39,85 +39,69 @@ export default function PartyDetailsScreen() {
   }
 
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ScrollView contentContainerStyle={styles.content}>
-          {!party ? (
-            <ThemedView type="backgroundElement" style={styles.card}>
-              <ThemedText type="subtitle">Party not found</ThemedText>
+    <Screen>
+      {!party ? (
+        <ThemedView type="backgroundElement" style={styles.card}>
+          <ThemedText type="subtitle">Party not found</ThemedText>
+          <ThemedText themeColor="textSecondary">
+            This party may have been deleted or is still loading.
+          </ThemedText>
+        </ThemedView>
+      ) : (
+        <>
+          <View style={styles.header}>
+            <ThemedText type="subtitle">{party.title}</ThemedText>
+            <ThemedText themeColor="textSecondary">
+              {themeCategoryLabels[party.themeCategory]} · {partyMoodLabels[party.mood]}
+            </ThemedText>
+          </View>
+
+          <ThemedView type="backgroundElement" style={styles.card}>
+            <ThemedText type="smallBold">Character Cards</ThemedText>
+            {cards.length === 0 ? (
               <ThemedText themeColor="textSecondary">
-                This party may have been deleted or is still loading.
+                No cards yet. This party is ready for its first character.
               </ThemedText>
-            </ThemedView>
-          ) : (
-            <>
-              <View style={styles.header}>
-                <ThemedText type="subtitle">{party.title}</ThemedText>
-                <ThemedText themeColor="textSecondary">
-                  {themeCategoryLabels[party.themeCategory]} · {partyMoodLabels[party.mood]}
-                </ThemedText>
+            ) : (
+              <View style={styles.cardList}>
+                {cards.map((card) => (
+                  <Link
+                    key={card.id}
+                    href={{
+                      pathname: '/party/[partyId]/card/[cardId]',
+                      params: { partyId: party.id, cardId: card.id },
+                    }}
+                    asChild>
+                    <Pressable>
+                      <ThemedView style={styles.cardItem}>
+                        <ThemedText type="smallBold">{card.generated.generatedNameWithClass}</ThemedText>
+                        <ThemedText themeColor="textSecondary">
+                          {card.status === 'accepted' ? 'Accepted' : 'Draft'} · {card.input.name}
+                        </ThemedText>
+                      </ThemedView>
+                    </Pressable>
+                  </Link>
+                ))}
               </View>
+            )}
+          </ThemedView>
 
-              <ThemedView type="backgroundElement" style={styles.card}>
-                <ThemedText type="smallBold">Character Cards</ThemedText>
-                {cards.length === 0 ? (
-                  <ThemedText themeColor="textSecondary">
-                    No cards yet. This party is ready for its first character.
-                  </ThemedText>
-                ) : (
-                  <View style={styles.cardList}>
-                    {cards.map((card) => (
-                      <Link
-                        key={card.id}
-                        href={{
-                          pathname: '/party/[partyId]/card/[cardId]',
-                          params: { partyId: party.id, cardId: card.id },
-                        }}
-                        asChild>
-                        <Pressable>
-                          <ThemedView style={styles.cardItem}>
-                            <ThemedText type="smallBold">{card.generated.generatedNameWithClass}</ThemedText>
-                            <ThemedText themeColor="textSecondary">
-                              {card.status === 'accepted' ? 'Accepted' : 'Draft'} · {card.input.name}
-                            </ThemedText>
-                          </ThemedView>
-                        </Pressable>
-                      </Link>
-                    ))}
-                  </View>
-                )}
-              </ThemedView>
+          <Link href={{ pathname: '/party/[partyId]/card/new', params: { partyId: party.id } }} asChild>
+            <Pressable style={styles.primaryButton}>
+              <ThemedText style={styles.primaryButtonText}>Create a character card</ThemedText>
+            </Pressable>
+          </Link>
 
-              <Link href={{ pathname: '/party/[partyId]/card/new', params: { partyId: party.id } }} asChild>
-                <Pressable style={styles.primaryButton}>
-                  <ThemedText style={styles.primaryButtonText}>Create a character card</ThemedText>
-                </Pressable>
-              </Link>
-
-              <Pressable style={styles.secondaryButton} onPress={handleDeleteParty}>
-                <ThemedText>Delete party</ThemedText>
-              </Pressable>
-            </>
-          )}
-        </ScrollView>
-      </SafeAreaView>
-    </ThemedView>
+          <Pressable style={styles.secondaryButton} onPress={handleDeleteParty}>
+            <ThemedText>Delete party</ThemedText>
+          </Pressable>
+        </>
+      )}
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  safeArea: {
-    flex: 1,
-  },
-  content: {
-    width: '100%',
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.four,
-    gap: Spacing.four,
-  },
   header: {
     gap: Spacing.one,
   },

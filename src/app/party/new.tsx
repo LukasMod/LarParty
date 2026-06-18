@@ -1,19 +1,19 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { usePartyStore } from '@/features/parties/store/party-store';
 import { PartyMood, ThemeCategory } from '@/features/parties/types';
+import { ThemedText } from '@/components/themed-text';
+import { ThemedView } from '@/components/themed-view';
+import { Colors, Spacing } from '@/constants/theme';
+import { Screen } from '@/shared/components/screen';
 import {
   partyMoodLabels,
   partyMoods,
   themeCategoryLabels,
   themeCategories,
 } from '@/shared/constants/party-options';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Colors, Spacing } from '@/constants/theme';
 
 export default function NewPartyScreen() {
   const createParty = usePartyStore((state) => state.createParty);
@@ -43,95 +43,78 @@ export default function NewPartyScreen() {
   }
 
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.content}>
-          <ThemedText type="subtitle">Create Party</ThemedText>
+    <Screen>
+      <ThemedText type="subtitle">Create Party</ThemedText>
 
-          <ThemedView type="backgroundElement" style={styles.card}>
-            <View style={styles.fieldGroup}>
-              <ThemedText type="smallBold">Party name</ThemedText>
-              <TextInput
-                value={title}
-                onChangeText={(value) => {
-                  setTitle(value);
-                  if (showValidationError && value.trim()) {
-                    setShowValidationError(false);
-                  }
-                }}
-                placeholder="Friday Tavern Night"
-                placeholderTextColor={Colors.light.textSecondary}
-                style={styles.input}
-              />
-              {showValidationError ? (
-                <ThemedText themeColor="textSecondary">Party name is required.</ThemedText>
-              ) : null}
-            </View>
-
-            <View style={styles.fieldGroup}>
-              <ThemedText type="smallBold">Theme category</ThemedText>
-              <View style={styles.optionGrid}>
-                {themeCategories.map((option) => {
-                  const isSelected = option === themeCategory;
-
-                  return (
-                    <Pressable
-                      key={option}
-                      onPress={() => setThemeCategory(option)}
-                      style={[styles.optionChip, isSelected && styles.optionChipSelected]}>
-                      <ThemedText style={isSelected ? styles.optionChipTextSelected : undefined}>
-                        {themeCategoryLabels[option]}
-                      </ThemedText>
-                    </Pressable>
-                  );
-                })}
-              </View>
-            </View>
-
-            <View style={styles.fieldGroup}>
-              <ThemedText type="smallBold">Mood</ThemedText>
-              <View style={styles.optionGrid}>
-                {partyMoods.map((option) => {
-                  const isSelected = option === mood;
-
-                  return (
-                    <Pressable
-                      key={option}
-                      onPress={() => setMood(option)}
-                      style={[styles.optionChip, isSelected && styles.optionChipSelected]}>
-                      <ThemedText style={isSelected ? styles.optionChipTextSelected : undefined}>
-                        {partyMoodLabels[option]}
-                      </ThemedText>
-                    </Pressable>
-                  );
-                })}
-              </View>
-            </View>
-          </ThemedView>
-
-          <Pressable style={styles.primaryButton} onPress={handleCreateParty}>
-            <ThemedText style={styles.primaryButtonText}>Save party</ThemedText>
-          </Pressable>
+      <ThemedView type="backgroundElement" style={styles.card}>
+        <View style={styles.fieldGroup}>
+          <ThemedText type="smallBold">Party name</ThemedText>
+          <TextInput
+            value={title}
+            onChangeText={(value) => {
+              setTitle(value);
+              if (showValidationError && value.trim()) {
+                setShowValidationError(false);
+              }
+            }}
+            placeholder="Friday Tavern Night"
+            placeholderTextColor={Colors.light.textSecondary}
+            style={styles.input}
+          />
+          {showValidationError ? (
+            <ThemedText themeColor="textSecondary">Party name is required.</ThemedText>
+          ) : null}
         </View>
-      </SafeAreaView>
-    </ThemedView>
+
+        <View style={styles.fieldGroup}>
+          <ThemedText type="smallBold">Theme category</ThemedText>
+          <View style={styles.optionGrid}>
+            {themeCategories.map((option) => {
+              const isSelected = option === themeCategory;
+
+              return (
+                <Pressable
+                  key={option}
+                  onPress={() => setThemeCategory(option)}
+                  style={[styles.optionChip, isSelected && styles.optionChipSelected]}>
+                  <ThemedText style={isSelected ? styles.optionChipTextSelected : undefined}>
+                    {themeCategoryLabels[option]}
+                  </ThemedText>
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
+
+        <View style={styles.fieldGroup}>
+          <ThemedText type="smallBold">Mood</ThemedText>
+          <View style={styles.optionGrid}>
+            {partyMoods.map((option) => {
+              const isSelected = option === mood;
+
+              return (
+                <Pressable
+                  key={option}
+                  onPress={() => setMood(option)}
+                  style={[styles.optionChip, isSelected && styles.optionChipSelected]}>
+                  <ThemedText style={isSelected ? styles.optionChipTextSelected : undefined}>
+                    {partyMoodLabels[option]}
+                  </ThemedText>
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
+      </ThemedView>
+
+      <Pressable style={styles.primaryButton} onPress={handleCreateParty}>
+        <ThemedText style={styles.primaryButtonText}>Save party</ThemedText>
+      </Pressable>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  safeArea: {
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-    width: '100%',
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.four,
-    gap: Spacing.four,
-  },
   card: {
     borderRadius: Spacing.four,
     padding: Spacing.four,
