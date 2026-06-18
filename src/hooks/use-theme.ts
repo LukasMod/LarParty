@@ -1,7 +1,9 @@
 import { useUnistyles } from 'react-native-unistyles';
 
-export function useTheme() {
+import { appThemes, type ThemeColors } from '@/shared/theme/unistyles';
+
+export function useTheme(): ThemeColors {
   const { theme } = useUnistyles();
 
-  return theme.colors;
+  return theme?.colors ?? appThemes.default.colors;
 }

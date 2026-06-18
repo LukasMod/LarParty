@@ -1,35 +1,20 @@
 import '@/global.css';
 
+import { appThemes, type ThemeColor } from '@/shared/theme/unistyles';
+
+const lightTheme = appThemes.default.colors;
+
 export const Colors = {
-  light: {
-    text: '#1F1B2D',
-    background: '#FFF8F1',
-    backgroundElement: '#F4EBDD',
-    backgroundSelected: '#E9DCC5',
-    textSecondary: '#6E5F4A',
-    border: '#D6C7AF',
-    primary: '#7A3FF2',
-    primaryText: '#FFF8F1',
-  },
+  light: lightTheme,
+  dark: appThemes.dusk.colors,
 } as const;
 
-export type ThemeColor = keyof typeof Colors.light;
+export type { ThemeColor };
 
-export const Fonts = {
-  sans: 'normal',
-  serif: 'serif',
-  rounded: 'normal',
-  mono: 'monospace',
-} as const;
+export const Fonts = appThemes.default.fonts;
 
-export const Spacing = {
-  half: 2,
-  one: 4,
-  two: 8,
-  three: 16,
-  four: 24,
-  five: 32,
-  six: 64,
-} as const;
+export const Spacing = appThemes.default.spacing;
+
+export const Radius = appThemes.default.radius;
 
 export const MaxContentWidth = 800;
