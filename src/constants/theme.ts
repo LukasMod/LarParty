@@ -1,15 +1,15 @@
-import '@/global.css';
-
 import { appThemes, type ThemeColor } from '@/shared/theme/unistyles';
 
-const lightTheme = appThemes.default.colors;
+export type { ThemeColor };
 
 export const Colors = {
-  light: lightTheme,
+  light: appThemes.default.colors,
   dark: appThemes.dusk.colors,
+  default: appThemes.default.colors,
+  forest: appThemes.forest.colors,
+  ocean: appThemes.ocean.colors,
+  dusk: appThemes.dusk.colors,
 } as const;
-
-export type { ThemeColor };
 
 export const Fonts = appThemes.default.fonts;
 
