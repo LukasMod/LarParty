@@ -65,6 +65,8 @@ Shared code lives in `src/shared`:
 - `npm run android`
 - `npm run web`
 - `npm run lint`
+- `npm run typecheck`
+- `npm run check` — run lint + typecheck
 - `npx expo start --clear` — clear Metro cache
 
 ### Testing
