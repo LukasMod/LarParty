@@ -1,5 +1,7 @@
-import { Colors } from '@/constants/theme';
+import { useUnistyles } from 'react-native-unistyles';
 
 export function useTheme() {
-  return Colors.light;
+  const { theme } = useUnistyles();
+
+  return theme.colors;
 }

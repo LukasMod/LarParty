@@ -6,6 +6,7 @@ import { useCardStore } from '@/features/cards/store/card-store';
 import { usePartyStore } from '@/features/parties/store/party-store';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { useTheme } from '@/hooks/use-theme';
 import { Spacing } from '@/constants/theme';
 import { Screen } from '@/shared/components/screen';
 import { partyMoodLabels, themeCategoryLabels } from '@/shared/constants/party-options';
@@ -14,6 +15,7 @@ export default function PartyListScreen() {
   const hasHydrated = usePartyStore((state) => state.hasHydrated);
   const parties = usePartyStore((state) => state.parties);
   const cards = useCardStore((state) => state.cards);
+  const theme = useTheme();
 
   return (
     <Screen>
@@ -67,8 +69,8 @@ export default function PartyListScreen() {
       )}
 
       <Link href="/party/new" asChild>
-        <Pressable style={styles.primaryButton}>
-          <ThemedText style={styles.primaryButtonText}>Create a new party</ThemedText>
+        <Pressable style={{ ...styles.primaryButton, backgroundColor: theme.primary }}>
+          <ThemedText style={{ ...styles.primaryButtonText, color: theme.primaryText }}>Create a new party</ThemedText>
         </Pressable>
       </Link>
     </Screen>

@@ -730,3 +730,209 @@ Before starting final implementation, validate with Context7:
 - current React Native compatibility guidance for chosen packages
 - local LLM integration viability and constraints for Expo
 - web caveats for the selected persistence and AI approach
+
+---
+
+## 16. Unistyles 3 Per-Party Theming Plan
+
+### 16.1 Current baseline
+The current app is already structurally compatible with a Unistyles migration, but it is not yet configured for it.
+
+Observed state:
+- project uses `react` 19.2.3 and `react-native` 0.85.3
+- required native dependencies for Unistyles 3 are already present: `react-native-reanimated` and `react-native-nitro-modules`
+- `react-native-unistyles` has been added as a dependency
+- Expo New Architecture is not yet enabled
+- there is currently no `babel.config.js`
+- the app still uses a static light theme via local constants and helper wrappers
+
+### 16.2 Product decisions for theming
+The theming direction for this app is now frozen as follows:
+- use **full palette** theming, not accent-only theming
+- party styling is driven by **theme category only**, not mood
+- the theme should affect the **whole app while inside a party flow**, including header chrome
+- party visual theme is **fixed at creation time** for MVP
+- category palettes should be **bold**, not subtle
+- home list should show **party theme previews** without recoloring the whole home screen
+- typography stays shared for MVP, with room for future category-specific personality
+- the current warm beige palette remains the default non-party theme
+
+### 16.3 Recommended theming architecture
+Adopt Unistyles 3 as the styling foundation and switch themes at runtime based on the currently active party route.
+
+Use one default app theme for non-party screens and one theme per party category for in-party screens.
+
+This keeps the MVP simple because visual styling can be derived directly from `party.themeCategory` without storing duplicate per-party palette data.
+
+### 16.4 Theme modeling strategy
+Map each `ThemeCategory` to one Unistyles theme name:
+- `default`
+- `party-fantasy`
+- `party-sci-fi`
+- `party-horror`
+- `party-starwars`
+- `party-harry-potter`
+- `party-witcher`
+
+This design:
+- preserves the fixed-at-creation rule without adding editable visual state
+- makes runtime switching deterministic
+- avoids saving redundant palette data on every party record
+- keeps future custom overrides possible if needed later
+
+### 16.5 Theme system structure
+Create a dedicated theme layer under `src/shared/theme/`:
+- `tokens.ts` for shared spacing, radius, and typography primitives
+- `themes.ts` for concrete Unistyles themes
+- `unistyles.ts` for `StyleSheet.configure(...)`
+- `party-theme.ts` for mapping `ThemeCategory` to Unistyles theme names
+- module augmentation for `react-native-unistyles` typing
+
+Theme objects should include:
+- `colors.text`
+- `colors.textSecondary`
+- `colors.background`
+- `colors.surface` / `backgroundElement`
+- `colors.selectedSurface`
+- `colors.border`
+- `colors.primary`
+- `colors.primaryText`
+- `colors.danger`
+- `colors.dangerText`
+- `colors.inputBackground`
+- `colors.inputBorder`
+- `colors.headerBackground`
+- `colors.cardPreviewAccent`
+- shared spacing tokens
+- shared radius tokens
+- shared fonts / typography references
+- optional theme metadata for future visual personality extensions
+
+### 16.6 Palette art direction
+Because the visual direction is intentionally bold, each category theme should be strong but still readable.
+
+Initial palette guidance:
+- default → warm parchment / beige baseline
+- fantasy → jewel-toned plum + antique gold + parchment contrast
+- sci-fi → deep navy / graphite + neon cyan accent
+- horror → dark wine / charcoal + blood-red accent
+- starwars → deep space blue / black + warm saber-like gold accent
+- harry-potter → aged parchment + burgundy + old-gold academic accent
+- witcher → slate / steel + ember accent with rougher darker surfaces
+
+### 16.7 Runtime theme switching strategy
+Runtime theme switching should happen high in the route tree so it can affect:
+- header tint and header background
+- screen background
+- shared surfaces
+- buttons, inputs, chips, and other repeated UI
+
+Recommended flow:
+1. detect whether the active route contains a `partyId`
+2. read the matching party from persisted state
+3. resolve the theme name from `party.themeCategory`
+4. call `UnistylesRuntime.setTheme(themeName)` for party flows
+5. fall back to `default` on non-party screens such as `/` and `/party/new`
+
+This logic should live close to `src/app/_layout.tsx` rather than being passed manually through props.
+
+### 16.8 Shared helper migration strategy
+Keep the current wrapper components, but migrate their internals to Unistyles-backed tokens and theme values:
+- `src/components/themed-text.tsx`
+- `src/components/themed-view.tsx`
+- `src/shared/components/screen.tsx`
+- `src/hooks/use-theme.ts`
+
+This reduces migration noise and keeps the screen code readable while the styling engine changes underneath.
+
+### 16.9 Navigation chrome plan
+The current root stack layout hardcodes colors from the old static theme.
+
+After the Unistyles migration, stack configuration should derive from the active Unistyles theme so that:
+- `headerTintColor`
+- `headerStyle.backgroundColor`
+- `headerTitleStyle.color`
+- `contentStyle.backgroundColor`
+
+all reflect the active default or party theme.
+
+Header chrome should be fully themed while inside party flows.
+
+### 16.10 Home-screen preview behavior
+The home screen should remain on the default palette overall, but each party card should preview its category theme.
+
+Recommended preview surfaces:
+- accent border
+- accent strip
+- category badge background
+- selected chip colors when appropriate
+
+This gives users visual identity cues without making the whole list screen visually chaotic.
+
+### 16.11 File migration order
+Use a staged migration instead of a big-bang rewrite.
+
+#### Pass A — infrastructure and shared primitives
+- configure Unistyles
+- migrate shared tokens
+- migrate `ThemedText`
+- migrate `ThemedView`
+- migrate `Screen`
+- migrate root stack theming in `_layout.tsx`
+- add home list preview accents
+
+#### Pass B — party flow screens
+Prioritize screens where themed context matters most:
+- party details screen
+- new character card screen
+- character card details screen
+
+#### Pass C — remaining default-flow screens
+- new party screen
+- home screen cleanup if still needed
+- remaining shared/ui components
+
+### 16.12 Data model impact
+No party schema change is required for the MVP.
+
+The existing `themeCategory` field is sufficient to derive runtime styling.
+
+Possible future extensions:
+- `visualThemeOverride`
+- `paletteVariant`
+- category-specific typography metadata
+
+### 16.13 Concrete implementation order
+1. ensure `react-native-unistyles` is installed
+2. enable Expo New Architecture in `app.json`
+3. add `babel.config.js` with:
+   - `babel-preset-expo`
+   - `react-native-unistyles/plugin`
+   - `react-native-reanimated/plugin`
+4. create typed Unistyles theme configuration
+5. call `StyleSheet.configure(...)` before any Unistyles styles are created
+6. refactor current constants into shared token/theme modules
+7. add route-aware theme synchronization in root layout
+8. migrate wrapper components to Unistyles
+9. add home-screen preview accents
+10. migrate party-flow screens to Unistyles `StyleSheet`
+11. migrate remaining screens
+12. run lint and boot verification
+
+### 16.14 Important implementation constraints
+- every migrated stylesheet file must import `StyleSheet` from `react-native-unistyles`, not `react-native`
+- do not re-export `StyleSheet` from barrel files
+- use array style composition instead of object spreading
+- `StyleSheet.configure(...)` must run before any `StyleSheet.create(...)` that relies on Unistyles
+- Expo New Architecture must be enabled before expecting Unistyles 3 to work
+- native rebuilds should be expected after configuration changes
+- deleted or not-yet-hydrated party routes must fall back cleanly so the wrong theme does not stay active
+
+### 16.15 Validation checklist
+- app boots after Babel and native config changes
+- default screens remain on the warm baseline palette
+- entering a party route switches the full palette consistently
+- leaving a party route resets back to default theme
+- party list previews show theme identity without recoloring the entire home screen
+- missing/deleted party routes fall back safely
+- lint passes after migration
