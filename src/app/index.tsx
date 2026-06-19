@@ -3,9 +3,9 @@ import { View } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
 
 import { ThemedText } from '@/components/themed-text'
-import { Button } from '@/shared/components/button'
 import { PartyListItem } from '@/features/parties/components/party-list-item'
 import { usePartyListScreenModel } from '@/features/parties/hooks/use-party-list-screen-model'
+import { Button } from '@/shared/components/button'
 import { Screen } from '@/shared/components/screen'
 import { ScreenStateCard } from '@/shared/components/screen-state-card'
 
@@ -15,14 +15,15 @@ export default function PartyListScreen() {
   return (
     <Screen>
       <View style={styles.header}>
-        <ThemedText type="title" style={styles.title}>
-          LarParty
-        </ThemedText>
         <ThemedText style={styles.subtitle} themeColor="textSecondary">
           Create themed parties and generate character cards for your next
           LARP-inspired event.
         </ThemedText>
       </View>
+
+      <Link href="/party/new" asChild>
+        <Button label="Create a new party" />
+      </Link>
 
       {!hasHydrated ? (
         <ScreenStateCard
@@ -37,25 +38,17 @@ export default function PartyListScreen() {
       ) : (
         <View style={styles.partyList}>
           {items.map(({ party, cardCount }) => (
-            <PartyListItem
-              key={party.id}
-              party={party}
-              cardCount={cardCount}
-            />
+            <PartyListItem key={party.id} party={party} cardCount={cardCount} />
           ))}
         </View>
       )}
-
-      <Link href="/party/new" asChild>
-        <Button label="Create a new party" />
-      </Link>
     </Screen>
   )
 }
 
 const styles = StyleSheet.create((theme) => ({
   header: {
-    gap: theme.spacing.two,
+    paddingTop: theme.spacing.two,
   },
   title: {
     fontSize: 42,
