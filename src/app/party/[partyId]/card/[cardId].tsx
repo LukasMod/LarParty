@@ -3,11 +3,9 @@ import { useTranslation } from 'react-i18next'
 
 import { CardDetailsActions } from '@/features/cards/components/card-details-actions'
 import { CardDetailsHeader } from '@/features/cards/components/card-details-header'
-import { CardDisplayModeSwitch } from '@/features/cards/components/card-display-mode-switch'
 import { CharacterCardView } from '@/features/cards/components/character-card-view'
 import { useCardDetailsActions } from '@/features/cards/hooks/use-card-details-actions'
 import { useCardDetailsScreenModel } from '@/features/cards/hooks/use-card-details-screen-model'
-import { usePreferencesStore } from '@/features/preferences/store/preferences-store'
 import { Screen } from '@/shared/components/screen'
 import { ScreenStateCard } from '@/shared/components/screen-state-card'
 
@@ -18,7 +16,6 @@ export default function CardDetailsScreen() {
     cardId: string
   }>()
   const { status, party, card } = useCardDetailsScreenModel(partyId, cardId)
-  const cardDisplayMode = usePreferencesStore((state) => state.cardDisplayMode)
   const {
     errorMessage,
     isRegenerating,
@@ -60,9 +57,8 @@ export default function CardDetailsScreen() {
         }
         partyTitle={party.title}
       />
-      <CardDisplayModeSwitch />
       <CharacterCardView
-        displayMode={cardDisplayMode}
+        displayMode="collectible"
         partyThemeCategory={party.themeCategory}
         backgroundHistory={card.generated.backgroundHistory}
         characterTraits={card.generated.characterTraits}
