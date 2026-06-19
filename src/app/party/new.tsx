@@ -6,6 +6,7 @@ import { StyleSheet } from 'react-native-unistyles'
 import { ThemedText } from '@/components/themed-text'
 import { ThemedView } from '@/components/themed-view'
 import { usePartyStore } from '@/features/parties/store/party-store'
+import { Button } from '@/shared/components/button'
 import { PartyMood, ThemeCategory } from '@/features/parties/types'
 import { Screen } from '@/shared/components/screen'
 import {
@@ -125,9 +126,7 @@ export default function NewPartyScreen() {
         </View>
       </ThemedView>
 
-      <Pressable style={styles.primaryButton} onPress={handleCreateParty}>
-        <ThemedText style={styles.primaryButtonText}>Save party</ThemedText>
-      </Pressable>
+      <Button label="Save party" onPress={handleCreateParty} />
     </Screen>
   )
 }
@@ -171,17 +170,6 @@ const styles = StyleSheet.create((theme) => ({
     borderColor: theme.colors.primary,
   },
   optionChipTextSelected: {
-    color: theme.colors.primaryText,
-    fontWeight: '700',
-  },
-  primaryButton: {
-    backgroundColor: theme.colors.primary,
-    borderRadius: theme.radius.pill,
-    paddingHorizontal: theme.spacing.four,
-    paddingVertical: theme.spacing.three,
-    alignItems: 'center',
-  },
-  primaryButtonText: {
     color: theme.colors.primaryText,
     fontWeight: '700',
   },

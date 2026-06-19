@@ -1,9 +1,9 @@
 import { useLocalSearchParams } from 'expo-router'
-import { Pressable } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
 
 import { ThemedText } from '@/components/themed-text'
 import { ThemedView } from '@/components/themed-view'
+import { Button } from '@/shared/components/button'
 import { CardDetailsHeader } from '@/features/cards/components/card-details-header'
 import { CardDisplayModeSwitch } from '@/features/cards/components/card-display-mode-switch'
 import { CharacterCardView } from '@/features/cards/components/character-card-view'
@@ -74,24 +74,21 @@ export default function CardDetailsScreen() {
       ) : null}
 
       {card.status === 'draft' ? (
-        <Pressable style={styles.primaryButton} onPress={handleAcceptCard}>
-          <ThemedText style={styles.primaryButtonText}>Accept card</ThemedText>
-        </Pressable>
+        <Button label="Accept card" onPress={handleAcceptCard} />
       ) : null}
 
-      <Pressable
-        style={[styles.secondaryButton, isRegenerating && styles.buttonDisabled]}
+      <Button
         disabled={isRegenerating}
+        label={isRegenerating ? 'Regenerating...' : 'Regenerate card'}
+        variant="secondary"
         onPress={handleRegenerateCard}
-      >
-        <ThemedText>
-          {isRegenerating ? 'Regenerating...' : 'Regenerate card'}
-        </ThemedText>
-      </Pressable>
+      />
 
-      <Pressable style={styles.secondaryButton} onPress={handleDeleteCard}>
-        <ThemedText>Delete card</ThemedText>
-      </Pressable>
+      <Button
+        label="Delete card"
+        variant="secondary"
+        onPress={handleDeleteCard}
+      />
     </Screen>
   )
 }
@@ -101,27 +98,5 @@ const styles = StyleSheet.create((theme) => ({
     borderRadius: theme.radius.card,
     padding: theme.spacing.four,
     gap: theme.spacing.three,
-  },
-  primaryButton: {
-    backgroundColor: theme.colors.primary,
-    borderRadius: theme.radius.pill,
-    paddingHorizontal: theme.spacing.four,
-    paddingVertical: theme.spacing.three,
-    alignItems: 'center',
-  },
-  primaryButtonText: {
-    color: theme.colors.primaryText,
-    fontWeight: '700',
-  },
-  secondaryButton: {
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.pill,
-    paddingHorizontal: theme.spacing.four,
-    paddingVertical: theme.spacing.three,
-    alignItems: 'center',
-  },
-  buttonDisabled: {
-    opacity: 0.65,
   },
 }))

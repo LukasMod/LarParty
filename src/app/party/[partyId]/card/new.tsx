@@ -6,6 +6,7 @@ import { StyleSheet } from 'react-native-unistyles'
 import { ThemedText } from '@/components/themed-text'
 import { ThemedView } from '@/components/themed-view'
 import { useCardStore } from '@/features/cards/store/card-store'
+import { Button } from '@/shared/components/button'
 import {
   CharacterCardInput,
   InputTrait,
@@ -225,18 +226,13 @@ export default function NewCharacterCardScreen() {
             ) : null}
           </ThemedView>
 
-          <Pressable
+          <Button
             disabled={isSubmitting}
-            style={[
-              styles.primaryButton,
-              isSubmitting && styles.primaryButtonDisabled,
-            ]}
+            label={
+              isSubmitting ? 'Generating...' : 'Generate character card'
+            }
             onPress={handleGenerateCard}
-          >
-            <ThemedText style={styles.primaryButtonText}>
-              {isSubmitting ? 'Generating...' : 'Generate character card'}
-            </ThemedText>
-          </Pressable>
+          />
         </>
       )}
     </Screen>
@@ -288,20 +284,6 @@ const styles = StyleSheet.create((theme) => ({
     opacity: 0.45,
   },
   optionChipTextSelected: {
-    color: theme.colors.primaryText,
-    fontWeight: '700',
-  },
-  primaryButton: {
-    backgroundColor: theme.colors.primary,
-    borderRadius: theme.radius.pill,
-    paddingHorizontal: theme.spacing.four,
-    paddingVertical: theme.spacing.three,
-    alignItems: 'center',
-  },
-  primaryButtonDisabled: {
-    opacity: 0.65,
-  },
-  primaryButtonText: {
     color: theme.colors.primaryText,
     fontWeight: '700',
   },

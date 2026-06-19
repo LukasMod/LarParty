@@ -1,9 +1,10 @@
 import { Link } from 'expo-router'
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native'
+import { ScrollView, StyleSheet, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 import { ThemedText } from '@/components/themed-text'
 import { ThemedView } from '@/components/themed-view'
+import { Button } from '@/shared/components/button'
 import { Spacing } from '@/constants/theme'
 
 const checklistItems = [
@@ -38,11 +39,7 @@ export default function ExploreScreen() {
           </ThemedView>
 
           <Link href="/" asChild>
-            <Pressable style={styles.primaryButton}>
-              <ThemedText style={styles.primaryButtonText}>
-                Back to parties
-              </ThemedText>
-            </Pressable>
+            <Button label="Back to parties" />
           </Link>
         </ScrollView>
       </SafeAreaView>
@@ -73,16 +70,5 @@ const styles = StyleSheet.create({
   },
   list: {
     gap: Spacing.two,
-  },
-  primaryButton: {
-    backgroundColor: '#7A3FF2',
-    borderRadius: 999,
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.three,
-    alignItems: 'center',
-  },
-  primaryButtonText: {
-    color: '#FFF8F1',
-    fontWeight: '700',
   },
 })

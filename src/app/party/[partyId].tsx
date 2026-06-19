@@ -5,6 +5,7 @@ import { StyleSheet } from 'react-native-unistyles'
 
 import { ThemedText } from '@/components/themed-text'
 import { ThemedView } from '@/components/themed-view'
+import { Button } from '@/shared/components/button'
 import { getCardsForParty } from '@/features/cards/selectors'
 import { useCardStore } from '@/features/cards/store/card-store'
 import { getPartyById } from '@/features/parties/selectors'
@@ -107,16 +108,14 @@ export default function PartyDetailsScreen() {
             }}
             asChild
           >
-            <Pressable style={styles.primaryButton}>
-              <ThemedText style={styles.primaryButtonText}>
-                Create a character card
-              </ThemedText>
-            </Pressable>
+            <Button label="Create a character card" />
           </Link>
 
-          <Pressable style={styles.secondaryButton} onPress={handleDeleteParty}>
-            <ThemedText>Delete party</ThemedText>
-          </Pressable>
+          <Button
+            label="Delete party"
+            variant="secondary"
+            onPress={handleDeleteParty}
+          />
         </>
       )}
     </Screen>
@@ -141,24 +140,5 @@ const styles = StyleSheet.create((theme) => ({
     paddingHorizontal: theme.spacing.three,
     paddingVertical: theme.spacing.three,
     gap: theme.spacing.one,
-  },
-  primaryButton: {
-    backgroundColor: theme.colors.primary,
-    borderRadius: theme.radius.pill,
-    paddingHorizontal: theme.spacing.four,
-    paddingVertical: theme.spacing.three,
-    alignItems: 'center',
-  },
-  primaryButtonText: {
-    color: theme.colors.primaryText,
-    fontWeight: '700',
-  },
-  secondaryButton: {
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.pill,
-    paddingHorizontal: theme.spacing.four,
-    paddingVertical: theme.spacing.three,
-    alignItems: 'center',
   },
 }))

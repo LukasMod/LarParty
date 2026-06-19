@@ -4,6 +4,7 @@ import { StyleSheet } from 'react-native-unistyles'
 
 import { ThemedText } from '@/components/themed-text'
 import { ThemedView } from '@/components/themed-view'
+import { Button } from '@/shared/components/button'
 import { Colors } from '@/constants/theme'
 import { getCardsForParty } from '@/features/cards/selectors'
 import { useCardStore } from '@/features/cards/store/card-store'
@@ -105,11 +106,7 @@ export default function PartyListScreen() {
       )}
 
       <Link href="/party/new" asChild>
-        <Pressable style={styles.primaryButton}>
-          <ThemedText style={styles.primaryButtonText}>
-            Create a new party
-          </ThemedText>
-        </Pressable>
+        <Button label="Create a new party" />
       </Link>
     </Screen>
   )
@@ -158,16 +155,5 @@ const styles = StyleSheet.create((theme) => ({
     flex: 1,
     fontSize: 24,
     lineHeight: 30,
-  },
-  primaryButton: {
-    backgroundColor: theme.colors.primary,
-    borderRadius: theme.radius.pill,
-    paddingHorizontal: theme.spacing.four,
-    paddingVertical: theme.spacing.three,
-    alignItems: 'center',
-  },
-  primaryButtonText: {
-    color: theme.colors.primaryText,
-    fontWeight: '700',
   },
 }))
