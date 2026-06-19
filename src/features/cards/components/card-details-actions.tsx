@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 import { ThemedText } from '@/components/themed-text'
 import { CardStatus } from '@/features/cards/types'
 import { Button } from '@/shared/components/button'
@@ -19,6 +21,8 @@ export function CardDetailsActions({
   onRegenerateCard,
   onDeleteCard,
 }: CardDetailsActionsProps) {
+  const { t } = useTranslation('common')
+
   return (
     <>
       {errorMessage ? (
@@ -26,17 +30,21 @@ export function CardDetailsActions({
       ) : null}
 
       {status === 'draft' ? (
-        <Button label="Accept card" onPress={onAcceptCard} />
+        <Button label={t('actions.acceptCard')} onPress={onAcceptCard} />
       ) : null}
 
       <Button
         disabled={isRegenerating}
-        label={isRegenerating ? 'Regenerating...' : 'Regenerate card'}
+        label={isRegenerating ? t('actions.regenerating') : t('actions.regenerateCard')}
         variant="secondary"
         onPress={onRegenerateCard}
       />
 
-      <Button label="Delete card" variant="secondary" onPress={onDeleteCard} />
+      <Button
+        label={t('actions.deleteCard')}
+        variant="secondary"
+        onPress={onDeleteCard}
+      />
     </>
   )
 }

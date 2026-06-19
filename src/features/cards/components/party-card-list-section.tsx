@@ -1,5 +1,6 @@
 import { View } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
+import { useTranslation } from 'react-i18next'
 
 import { ThemedText } from '@/components/themed-text'
 import { FormCard } from '@/shared/components/form-card'
@@ -18,12 +19,14 @@ export function PartyCardListSection({
   partyThemeCategory,
   cards,
 }: PartyCardListSectionProps) {
+  const { t } = useTranslation('cards')
+
   return (
     <FormCard style={styles.card}>
-      <ThemedText type="smallBold">Character Cards</ThemedText>
+      <ThemedText type="smallBold">{t('sections.listTitle')}</ThemedText>
       {cards.length === 0 ? (
         <ThemedText themeColor="textSecondary">
-          No cards yet. This party is ready for its first character.
+          {t('sections.emptyList')}
         </ThemedText>
       ) : (
         <View style={styles.cardList}>

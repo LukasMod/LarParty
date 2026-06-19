@@ -1,6 +1,7 @@
 import { Link } from 'expo-router'
 import { Pressable, View } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
+import { useTranslation } from 'react-i18next'
 
 import { ThemedText } from '@/components/themed-text'
 import { ThemedView } from '@/components/themed-view'
@@ -17,6 +18,7 @@ export function PartyListItem({
   party,
   cardCount,
 }: PartyListItemProps) {
+  const { t } = useTranslation('common')
   const partyTheme = getPartyTheme(party.themeCategory)
 
   return (
@@ -44,7 +46,7 @@ export function PartyListItem({
                 {party.title}
               </ThemedText>
               <ThemedText themeOverride={partyTheme} themeColor="textSecondary">
-                {cardCount} {cardCount === 1 ? 'card' : 'cards'}
+                {t('counts.cards', { count: cardCount })}
               </ThemedText>
             </View>
             <PartyMetaLine party={party} themeOverride={partyTheme} />

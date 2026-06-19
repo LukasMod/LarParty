@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 import { ThemedText } from '@/components/themed-text'
 import {
   InputTrait,
@@ -7,12 +9,8 @@ import { FormCard } from '@/shared/components/form-card'
 import { FormField } from '@/shared/components/form-field'
 import { FormTextInput } from '@/shared/components/form-text-input'
 import { ChipOptionGroup } from '@/shared/components/chip-option-group'
-import {
-  cardTraitLabels,
-  cardTraits,
-  sexOptionLabels,
-  sexOptions,
-} from '@/shared/constants/party-options'
+import { cardTraits, sexOptions } from '@/shared/constants/party-options'
+import { getCardTraitLabel, getSexOptionLabel } from '@/shared/i18n/labels'
 
 interface NewCharacterCardFormProps {
   name: string
@@ -39,39 +37,44 @@ export function NewCharacterCardForm({
   onAgeChange,
   onToggleTrait,
 }: NewCharacterCardFormProps) {
+  const { t } = useTranslation(['cards'])
+
   return (
     <FormCard>
-      <FormField label="Character name">
+      <FormField label={t('cards:form.nameLabel')}>
         <FormTextInput
           value={name}
           onChangeText={onNameChange}
-          placeholder="Mira Nightbloom"
+          placeholder={t('cards:form.namePlaceholder')}
         />
       </FormField>
 
-      <FormField label="Sex">
+      <FormField label={t('cards:form.sexLabel')}>
         <ChipOptionGroup
           options={sexOptions}
           selectedOptions={[sex]}
-          getLabel={(option) => sexOptionLabels[option]}
+          getLabel={(option) => getSexOptionLabel(t, option)}
           onPress={onSexChange}
         />
       </FormField>
 
-      <FormField label="Age">
+      <FormField label={t('cards:form.ageLabel')}>
         <FormTextInput
           value={age}
           onChangeText={onAgeChange}
-          placeholder="25"
+          placeholder={t('cards:form.agePlaceholder')}
           keyboardType="number-pad"
         />
       </FormField>
 
-      <FormField label="Traits" helperText={`Pick up to ${maxTraits} traits.`}>
+      <FormField
+        label={t('cards:form.traitsLabel')}
+        helperText={t('cards:form.traitsHelper', { maxTraits })}
+      >
         <ChipOptionGroup
           options={cardTraits}
           selectedOptions={selectedTraits}
-          getLabel={(trait) => cardTraitLabels[trait]}
+          getLabel={(trait) => getCardTraitLabel(t, trait)}
           isOptionDisabled={(trait) =>
             !selectedTraits.includes(trait) && selectedTraits.length >= maxTraits
           }

@@ -2,6 +2,7 @@ import { useLocalSearchParams } from 'expo-router'
 import { useMemo } from 'react'
 import { View } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
+import { useTranslation } from 'react-i18next'
 
 import { ThemedText } from '@/components/themed-text'
 import { NewCharacterCardForm } from '@/features/cards/components/new-character-card-form'
@@ -11,9 +12,10 @@ import { getPartyById } from '@/features/parties/selectors'
 import { usePartyStore } from '@/features/parties/store/party-store'
 import { Screen } from '@/shared/components/screen'
 import { ScreenStateCard } from '@/shared/components/screen-state-card'
-import { themeCategoryLabels } from '@/shared/constants/party-options'
+import { getThemeCategoryLabel } from '@/shared/i18n/labels'
 
 export default function NewCharacterCardScreen() {
+  const { t } = useTranslation(['common', 'cards'])
   const { partyId } = useLocalSearchParams<{ partyId: string }>()
   const parties = usePartyStore((state) => state.parties)
   const party = useMemo(
@@ -39,15 +41,18 @@ export default function NewCharacterCardScreen() {
     <Screen>
       {!party ? (
         <ScreenStateCard
-          title="Party not found"
-          body="This party may have been deleted or is still loading."
+          title={t('state.partyNotFoundTitle')}
+          body={t('state.partyUnavailableBody')}
         />
       ) : (
         <>
           <View style={styles.header}>
-            <ThemedText type="subtitle">Create Character Card</ThemedText>
+            <ThemedText type="subtitle">{t('cards:form.title')}</ThemedText>
             <ThemedText themeColor="textSecondary">
-              {party.title} · {themeCategoryLabels[party.themeCategory]}
+              {t('cards:form.subtitle', {
+                partyTitle: party.title,
+                themeCategory: getThemeCategoryLabel(t, party.themeCategory),
+              })}
             </ThemedText>
           </View>
 
@@ -67,7 +72,9 @@ export default function NewCharacterCardScreen() {
           <Button
             disabled={isSubmitting}
             label={
-              isSubmitting ? 'Generating...' : 'Generate character card'
+              isSubmitting
+                ? t('actions.generating')
+                : t('actions.generateCharacterCard')
             }
             onPress={handleGenerateCard}
           />

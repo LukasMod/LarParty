@@ -1,5 +1,6 @@
 import { router } from 'expo-router'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import {
   CharacterCardInput,
@@ -20,6 +21,7 @@ interface UseNewCharacterCardFormParams {
 export function useNewCharacterCardForm({
   party,
 }: UseNewCharacterCardFormParams) {
+  const { t } = useTranslation('cards')
   const createDraftCard = useCardStore((state) => state.createDraftCard)
   const { resolvedLanguage } = useAppLanguage()
 
@@ -46,7 +48,7 @@ export function useNewCharacterCardForm({
 
   async function handleGenerateCard() {
     if (!party) {
-      setErrorMessage('Party not found.')
+      setErrorMessage(t('form.errors.partyNotFound'))
       return
     }
 
@@ -54,17 +56,17 @@ export function useNewCharacterCardForm({
     const parsedAge = Number.parseInt(age, 10)
 
     if (!trimmedName) {
-      setErrorMessage('Character name is required.')
+      setErrorMessage(t('form.errors.nameRequired'))
       return
     }
 
     if (!Number.isFinite(parsedAge) || parsedAge <= 0) {
-      setErrorMessage('Enter a valid age.')
+      setErrorMessage(t('form.errors.invalidAge'))
       return
     }
 
     if (selectedTraits.length === 0 || selectedTraits.length > MAX_TRAITS) {
-      setErrorMessage('Choose between 1 and 3 traits.')
+      setErrorMessage(t('form.errors.invalidTraits'))
       return
     }
 
@@ -97,9 +99,7 @@ export function useNewCharacterCardForm({
       })
     } catch (error) {
       setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : 'Unable to generate card right now.',
+        error instanceof Error ? error.message : t('form.errors.generationFailed'),
       )
     } finally {
       setIsSubmitting(false)

@@ -1,5 +1,6 @@
 import { router } from 'expo-router'
 import { Alert } from 'react-native'
+import { useTranslation } from 'react-i18next'
 
 import { usePartyStore } from '@/features/parties/store/party-store'
 import { Party } from '@/features/parties/types'
@@ -11,6 +12,7 @@ interface UsePartyDetailsActionsParams {
 export function usePartyDetailsActions({
   party,
 }: UsePartyDetailsActionsParams) {
+  const { t } = useTranslation(['common', 'parties'])
   const deleteParty = usePartyStore((state) => state.deleteParty)
 
   function handleDeleteParty() {
@@ -18,10 +20,12 @@ export function usePartyDetailsActions({
       return
     }
 
-    Alert.alert('Delete party?', `Remove ${party.title} and all saved cards?`, [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('parties:details.deleteTitle'), t('parties:details.deleteBody', {
+      title: party.title,
+    }), [
+      { text: t('actions.cancel'), style: 'cancel' },
       {
-        text: 'Delete',
+        text: t('actions.delete'),
         style: 'destructive',
         onPress: () => {
           deleteParty(party.id)

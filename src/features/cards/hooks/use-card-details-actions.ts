@@ -1,6 +1,7 @@
 import { router } from 'expo-router'
 import { useState } from 'react'
 import { Alert } from 'react-native'
+import { useTranslation } from 'react-i18next'
 
 import { useCardStore } from '@/features/cards/store/card-store'
 import { CharacterCard } from '@/features/cards/types'
@@ -17,6 +18,7 @@ export function useCardDetailsActions({
   party,
   card,
 }: UseCardDetailsActionsParams) {
+  const { t } = useTranslation(['common', 'cards'])
   const acceptCard = useCardStore((state) => state.acceptCard)
   const { resolvedLanguage } = useAppLanguage()
   const createDraftCard = useCardStore((state) => state.createDraftCard)
@@ -38,10 +40,10 @@ export function useCardDetailsActions({
       return
     }
 
-    Alert.alert('Delete card?', 'Remove this saved character card?', [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('cards:details.deleteTitle'), t('cards:details.deleteBody'), [
+      { text: t('actions.cancel'), style: 'cancel' },
       {
-        text: 'Delete',
+        text: t('actions.delete'),
         style: 'destructive',
         onPress: () => {
           deleteCard(card.id)
@@ -60,12 +62,12 @@ export function useCardDetailsActions({
     }
 
     Alert.alert(
-      'Regenerate card?',
-      'Create a new draft variation from the same character input?',
+      t('cards:details.regenerateTitle'),
+      t('cards:details.regenerateBody'),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('actions.cancel'), style: 'cancel' },
         {
-          text: 'Regenerate',
+          text: t('actions.regenerate'),
           onPress: async () => {
             setErrorMessage(null)
             setIsRegenerating(true)
@@ -95,7 +97,7 @@ export function useCardDetailsActions({
               nextErrorMessage =
                 error instanceof Error
                   ? error.message
-                  : 'Unable to regenerate card right now.'
+                  : t('cards:details.regenerationFailed')
             }
 
             setIsRegenerating(false)

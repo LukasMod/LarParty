@@ -1,11 +1,14 @@
 import { View } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
+import { useTranslation } from 'react-i18next'
 
 import { usePreferencesStore } from '@/features/preferences/store/preferences-store'
 import { ChipButton } from '@/shared/components/chip-button'
 import { cardDisplayModes } from '@/shared/constants/party-options'
+import { getCardDisplayModeLabel } from '@/shared/i18n/labels'
 
 export function CardDisplayModeSwitch() {
+  const { t } = useTranslation()
   const cardDisplayMode = usePreferencesStore((state) => state.cardDisplayMode)
   const setCardDisplayMode = usePreferencesStore(
     (state) => state.setCardDisplayMode,
@@ -19,7 +22,7 @@ export function CardDisplayModeSwitch() {
         return (
           <ChipButton
             key={mode}
-            label={mode === 'collectible' ? 'Collectible view' : 'Info view'}
+            label={getCardDisplayModeLabel(t, mode)}
             selected={isSelected}
             onPress={() => setCardDisplayMode(mode)}
           />

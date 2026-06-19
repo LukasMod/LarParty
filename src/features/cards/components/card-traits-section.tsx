@@ -1,5 +1,6 @@
 import { View } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
+import { useTranslation } from 'react-i18next'
 
 import { ThemedText } from '@/components/themed-text'
 import { ThemedView } from '@/components/themed-view'
@@ -16,10 +17,11 @@ export function CardTraitsSection({
   characterTraits,
   partyThemeCategory,
 }: CardTraitsSectionProps) {
+  const { t } = useTranslation('cards')
   const partyTheme = getPartyTheme(partyThemeCategory)
 
   return (
-    <CardSection title="Character traits" themeOverride={partyTheme}>
+    <CardSection title={t('sections.traits')} themeOverride={partyTheme}>
       <View style={styles.traitList}>
         {characterTraits.map((trait) => (
           <ThemedView

@@ -1,4 +1,6 @@
 import { useLocalSearchParams } from 'expo-router'
+import { useTranslation } from 'react-i18next'
+
 import { CardDetailsActions } from '@/features/cards/components/card-details-actions'
 import { CardDetailsHeader } from '@/features/cards/components/card-details-header'
 import { CardDisplayModeSwitch } from '@/features/cards/components/card-display-mode-switch'
@@ -10,6 +12,7 @@ import { Screen } from '@/shared/components/screen'
 import { ScreenStateCard } from '@/shared/components/screen-state-card'
 
 export default function CardDetailsScreen() {
+  const { t } = useTranslation('common')
   const { partyId, cardId } = useLocalSearchParams<{
     partyId: string
     cardId: string
@@ -28,8 +31,8 @@ export default function CardDetailsScreen() {
     return (
       <Screen>
         <ScreenStateCard
-          title="Loading card..."
-          body="Restoring saved party and card data."
+          title={t('state.loadingCardTitle')}
+          body={t('state.restoringCardData')}
         />
       </Screen>
     )
@@ -39,8 +42,8 @@ export default function CardDetailsScreen() {
     return (
       <Screen>
         <ScreenStateCard
-          title="Card not found"
-          body="This card may have been deleted or does not belong to this party."
+          title={t('state.cardNotFoundTitle')}
+          body={t('state.cardNotFoundBody')}
         />
       </Screen>
     )
@@ -50,7 +53,11 @@ export default function CardDetailsScreen() {
     <Screen>
       <CardDetailsHeader
         generatedNameWithClass={card.generated.generatedNameWithClass}
-        statusLabel={card.status === 'accepted' ? 'Accepted card' : 'Draft card'}
+        statusLabel={
+          card.status === 'accepted'
+            ? t('status.acceptedCard')
+            : t('status.draftCard')
+        }
         partyTitle={party.title}
       />
       <CardDisplayModeSwitch />

@@ -1,6 +1,7 @@
 import { Link } from 'expo-router'
 import { Pressable } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
+import { useTranslation } from 'react-i18next'
 
 import { ThemedText } from '@/components/themed-text'
 import { CharacterCard, CardStatus } from '@/features/cards/types'
@@ -18,6 +19,7 @@ export function CharacterCardListItem({
   partyThemeCategory,
   card,
 }: CharacterCardListItemProps) {
+  const { t } = useTranslation('common')
   const partyTheme = getPartyTheme(partyThemeCategory)
 
   return (
@@ -33,7 +35,7 @@ export function CharacterCardListItem({
           {card.generated.generatedNameWithClass}
         </ThemedText>
         <ThemedText themeOverride={partyTheme} themeColor="textSecondary">
-          {card.status === 'accepted' ? 'Accepted' : 'Draft'} · {card.input.name}
+          {card.status === 'accepted' ? t('status.accepted') : t('status.draft')} · {card.input.name}
         </ThemedText>
       </Pressable>
     </Link>

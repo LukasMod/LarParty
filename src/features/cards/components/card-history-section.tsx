@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 import { ThemedText } from '@/components/themed-text'
 import { CardSection } from '@/features/cards/components/card-section'
 import { ThemeCategory } from '@/features/parties/types'
@@ -12,10 +14,11 @@ export function CardHistorySection({
   partyThemeCategory,
   backgroundHistory,
 }: CardHistorySectionProps) {
+  const { t } = useTranslation('cards')
   const partyTheme = getPartyTheme(partyThemeCategory)
 
   return (
-    <CardSection title="Background" themeOverride={partyTheme}>
+    <CardSection title={t('sections.background')} themeOverride={partyTheme}>
       <ThemedText themeOverride={partyTheme}>{backgroundHistory}</ThemedText>
     </CardSection>
   )

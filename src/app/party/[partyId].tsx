@@ -1,6 +1,7 @@
 import { Link, useLocalSearchParams } from 'expo-router'
 import { View } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
+import { useTranslation } from 'react-i18next'
 
 import { ThemedText } from '@/components/themed-text'
 import { PartyCardListSection } from '@/features/cards/components/party-card-list-section'
@@ -12,6 +13,7 @@ import { Screen } from '@/shared/components/screen'
 import { ScreenStateCard } from '@/shared/components/screen-state-card'
 
 export default function PartyDetailsScreen() {
+  const { t } = useTranslation(['common'])
   const { partyId } = useLocalSearchParams<{ partyId: string }>()
   const { status, party, cards } = usePartyDetailsScreenModel(partyId)
   const { handleDeleteParty } = usePartyDetailsActions({ party })
@@ -20,13 +22,13 @@ export default function PartyDetailsScreen() {
     <Screen>
       {status === 'loading' ? (
         <ScreenStateCard
-          title="Loading party..."
-          body="Restoring your saved local party data."
+          title={t('state.loadingPartyTitle')}
+          body={t('state.restoringPartyData')}
         />
       ) : status === 'missing' ? (
         <ScreenStateCard
-          title="Party not found"
-          body="This party may have been deleted or does not exist."
+          title={t('state.partyNotFoundTitle')}
+          body={t('state.partyNotFoundBody')}
         />
       ) : (
         <>
@@ -48,11 +50,11 @@ export default function PartyDetailsScreen() {
             }}
             asChild
           >
-            <Button label="Create a character card" />
+            <Button label={t('actions.createCharacterCard')} />
           </Link>
 
           <Button
-            label="Delete party"
+            label={t('actions.deleteParty')}
             variant="secondary"
             onPress={handleDeleteParty}
           />

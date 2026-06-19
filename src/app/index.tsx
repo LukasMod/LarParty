@@ -12,7 +12,7 @@ import { Screen } from '@/shared/components/screen'
 import { ScreenStateCard } from '@/shared/components/screen-state-card'
 
 export default function PartyListScreen() {
-  const { t } = useTranslation()
+  const { t } = useTranslation(['common', 'home'])
   const { hasHydrated, items } = usePartyListScreenModel()
 
   return (
@@ -44,24 +44,23 @@ export default function PartyListScreen() {
       <Screen>
       <View style={styles.header}>
         <ThemedText style={styles.subtitle} themeColor="textSecondary">
-          Create themed parties and generate character cards for your next
-          LARP-inspired event.
+          {t('home:subtitle')}
         </ThemedText>
       </View>
 
       <Link href="/party/new" asChild>
-        <Button label="Create a new party" />
+        <Button label={t('actions.createParty')} />
       </Link>
 
       {!hasHydrated ? (
         <ScreenStateCard
-          title="Loading parties..."
-          body="Restoring your saved local party data."
+          title={t('state.loadingPartiesTitle')}
+          body={t('state.restoringPartyData')}
         />
       ) : items.length === 0 ? (
         <ScreenStateCard
-          title="Party List"
-          body="No parties yet. Create your first party to start generating character cards."
+          title={t('home:emptyTitle')}
+          body={t('home:emptyBody')}
         />
       ) : (
         <View style={styles.partyList}>

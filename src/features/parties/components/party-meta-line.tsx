@@ -1,10 +1,12 @@
+import { useTranslation } from 'react-i18next'
+
 import { ThemedText } from '@/components/themed-text'
 import { Party } from '@/features/parties/types'
-import { AppTheme } from '@/shared/theme/unistyles'
 import {
-  partyMoodLabels,
-  themeCategoryLabels,
-} from '@/shared/constants/party-options'
+  getPartyMoodLabel,
+  getThemeCategoryLabel,
+} from '@/shared/i18n/labels'
+import { AppTheme } from '@/shared/theme/unistyles'
 
 interface PartyMetaLineProps {
   party: Pick<Party, 'themeCategory' | 'mood'>
@@ -12,9 +14,11 @@ interface PartyMetaLineProps {
 }
 
 export function PartyMetaLine({ party, themeOverride }: PartyMetaLineProps) {
+  const { t } = useTranslation()
+
   return (
     <ThemedText themeOverride={themeOverride} themeColor="textSecondary">
-      {themeCategoryLabels[party.themeCategory]} · {partyMoodLabels[party.mood]}
+      {getThemeCategoryLabel(t, party.themeCategory)} · {getPartyMoodLabel(t, party.mood)}
     </ThemedText>
   )
 }
