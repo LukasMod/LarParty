@@ -10,6 +10,7 @@
 - **Styling**: Unistyles
 - **State & Persistence**: Zustand persisted to MMKV
 - **Platforms**: iOS and Android first, web second
+- **React Compiler**: enabled; prefer plain derived values in render and avoid `useMemo`/`useCallback` unless there is a proven need outside compiler optimization
 
 ## Product Context
 
