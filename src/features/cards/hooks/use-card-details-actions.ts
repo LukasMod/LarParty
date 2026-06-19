@@ -6,6 +6,7 @@ import { useCardStore } from '@/features/cards/store/card-store'
 import { CharacterCard } from '@/features/cards/types'
 import { generateCharacterCard } from '@/features/generation/gemini'
 import { Party } from '@/features/parties/types'
+import { useAppLanguage } from '@/shared/i18n/use-app-language'
 
 interface UseCardDetailsActionsParams {
   party: Party | null
@@ -17,6 +18,7 @@ export function useCardDetailsActions({
   card,
 }: UseCardDetailsActionsParams) {
   const acceptCard = useCardStore((state) => state.acceptCard)
+  const { resolvedLanguage } = useAppLanguage()
   const createDraftCard = useCardStore((state) => state.createDraftCard)
   const deleteCard = useCardStore((state) => state.deleteCard)
 
@@ -74,6 +76,7 @@ export function useCardDetailsActions({
               const generated = await generateCharacterCard({
                 party,
                 input: card.input,
+                outputLanguage: resolvedLanguage,
               })
 
               const nextCardId = createDraftCard({

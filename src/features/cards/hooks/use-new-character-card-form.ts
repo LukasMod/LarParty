@@ -9,6 +9,7 @@ import {
 import { useCardStore } from '@/features/cards/store/card-store'
 import { generateCharacterCard } from '@/features/generation/gemini'
 import { Party } from '@/features/parties/types'
+import { useAppLanguage } from '@/shared/i18n/use-app-language'
 
 const MAX_TRAITS = 3
 
@@ -20,6 +21,7 @@ export function useNewCharacterCardForm({
   party,
 }: UseNewCharacterCardFormParams) {
   const createDraftCard = useCardStore((state) => state.createDraftCard)
+  const { resolvedLanguage } = useAppLanguage()
 
   const [name, setName] = useState('')
   const [sex, setSex] = useState<SexOption>('other')
@@ -80,6 +82,7 @@ export function useNewCharacterCardForm({
       const generated = await generateCharacterCard({
         party,
         input,
+        outputLanguage: resolvedLanguage,
       })
 
       const cardId = createDraftCard({

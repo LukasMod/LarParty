@@ -1,6 +1,8 @@
-import { Link } from 'expo-router'
-import { View } from 'react-native'
+import { SymbolView } from 'expo-symbols'
+import { Link, Stack } from 'expo-router'
+import { Pressable, View } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
+import { useTranslation } from 'react-i18next'
 
 import { ThemedText } from '@/components/themed-text'
 import { PartyListItem } from '@/features/parties/components/party-list-item'
@@ -10,10 +12,36 @@ import { Screen } from '@/shared/components/screen'
 import { ScreenStateCard } from '@/shared/components/screen-state-card'
 
 export default function PartyListScreen() {
+  const { t } = useTranslation()
   const { hasHydrated, items } = usePartyListScreenModel()
 
   return (
-    <Screen>
+    <>
+      <Stack.Screen
+        options={{
+          headerRight: () => (
+            <Link href="/settings" asChild>
+              <Pressable
+                accessibilityLabel={t('actions.openSettings')}
+                accessibilityRole="button"
+                hitSlop={8}
+                style={({ pressed }) => [
+                  styles.headerAction,
+                  pressed && styles.headerActionPressed,
+                ]}
+              >
+                <SymbolView
+                  name="gearshape"
+                  size={18}
+                  tintColor={styles.headerActionIcon.color}
+                />
+              </Pressable>
+            </Link>
+          ),
+        }}
+      />
+
+      <Screen>
       <View style={styles.header}>
         <ThemedText style={styles.subtitle} themeColor="textSecondary">
           Create themed parties and generate character cards for your next
@@ -42,7 +70,8 @@ export default function PartyListScreen() {
           ))}
         </View>
       )}
-    </Screen>
+      </Screen>
+    </>
   )
 }
 
@@ -57,5 +86,15 @@ const styles = StyleSheet.create((theme) => ({
   subtitle: {},
   partyList: {
     gap: theme.spacing.three,
+  },
+  headerAction: {
+    paddingVertical: theme.spacing.one,
+    paddingLeft: theme.spacing.two,
+  },
+  headerActionPressed: {
+    opacity: 0.6,
+  },
+  headerActionIcon: {
+    color: theme.colors.primary,
   },
 }))

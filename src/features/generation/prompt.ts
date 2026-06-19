@@ -7,9 +7,15 @@ import {
 
 import { GenerateCharacterCardRequest } from '@/features/generation/types'
 
+const languageNames = {
+  en: 'English',
+  pl: 'Polish',
+} as const
+
 export function buildCharacterCardPrompt({
   party,
   input,
+  outputLanguage,
 }: GenerateCharacterCardRequest) {
   const selectedTraits = input.selectedTraits
     .map((trait) => cardTraitLabels[trait])
@@ -19,6 +25,8 @@ export function buildCharacterCardPrompt({
     'You create playful and imaginative LARP character cards for party guests.',
     'Keep the tone creative, safe for a broad age range, and easy to read aloud.',
     'Use the theme as inspiration, but avoid copying exact canon characters, factions, or plotlines.',
+    `Write all generated field values in ${languageNames[outputLanguage]}.`,
+    'Keep the JSON schema keys exactly as requested and localize only the string values.',
     'Return only valid JSON matching the requested schema.',
     '',
     'Party setup:',
