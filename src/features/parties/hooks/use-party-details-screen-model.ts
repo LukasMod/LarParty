@@ -1,4 +1,3 @@
-import { getCardsForParty } from '@/features/cards/selectors'
 import { useCardStore } from '@/features/cards/store/card-store'
 import { CharacterCard } from '@/features/cards/types'
 import { getPartyById } from '@/features/parties/selectors'
@@ -28,7 +27,11 @@ export function usePartyDetailsScreenModel(
   const partiesHaveHydrated = usePartyStore((state) => state.hasHydrated)
   const cardsHaveHydrated = useCardStore((state) => state.hasHydrated)
   const party = usePartyStore((state) => getPartyById(state.parties, partyId))
-  const cards = useCardStore((state) => getCardsForParty(state.cards, partyId))
+  const allCards = useCardStore((state) => state.cards)
+
+  const cards = allCards
+    .filter((card) => card.partyId === partyId)
+    .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt))
 
   if (!partiesHaveHydrated || !cardsHaveHydrated) {
     return {

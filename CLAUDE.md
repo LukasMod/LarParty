@@ -94,6 +94,7 @@ Use the docs for deeper product and architecture context:
 - [Implementation plan](./docs/implementation-plan.md) — architecture rationale, route plan, domain model, persistence strategy, generation flow
 - [Build checklist](./docs/build-checklist.md) — execution checklist by phase
 - [Discovery questions](./docs/discovery-questions.md) — unresolved product and UX questions before scope changes
+- [Theming guide](./docs/theming-guide.md) — app theme architecture, theme override usage, and Unistyles styling conventions
 - [Phase 1 tasks](./docs/phase-1-tasks.md) — early shell-migration plan explaining route/layout direction
 - [Agent Device smoke tests](./docs/agent-device-smoke-tests.md) — practical iOS simulator runbook and screen-by-screen QA checks for AI-driven app verification
 

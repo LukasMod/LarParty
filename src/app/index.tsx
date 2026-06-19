@@ -36,12 +36,11 @@ export default function PartyListScreen() {
         />
       ) : (
         <View style={styles.partyList}>
-          {items.map(({ party, cardCount, accentColor }) => (
+          {items.map(({ party, cardCount }) => (
             <PartyListItem
               key={party.id}
               party={party}
               cardCount={cardCount}
-              accentColor={accentColor}
             />
           ))}
         </View>

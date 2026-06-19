@@ -56,6 +56,7 @@ export default function CardDetailsScreen() {
       <CardDisplayModeSwitch />
       <CharacterCardView
         displayMode={cardDisplayMode}
+        partyThemeCategory={party.themeCategory}
         backgroundHistory={card.generated.backgroundHistory}
         characterTraits={card.generated.characterTraits}
         specialMovement={card.generated.specialMovement}

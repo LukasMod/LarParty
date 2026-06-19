@@ -3,6 +3,7 @@ import { StyleSheet } from 'react-native-unistyles'
 
 import { ThemeColor } from '@/constants/theme'
 import { useTheme } from '@/hooks/use-theme'
+import { AppTheme } from '@/shared/theme/unistyles'
 
 export type ThemedTextProps = TextProps & {
   type?:
@@ -15,17 +16,20 @@ export type ThemedTextProps = TextProps & {
     | 'linkPrimary'
     | 'code'
   themeColor?: ThemeColor
+  themeOverride?: AppTheme
 }
 
 export function ThemedText({
   style,
   type = 'default',
   themeColor,
+  themeOverride,
   ...rest
 }: ThemedTextProps) {
   const theme = useTheme()
+  const colors = themeOverride?.colors ?? theme
   const color =
-    type === 'linkPrimary' ? theme.primary : theme[themeColor ?? 'text']
+    type === 'linkPrimary' ? colors.primary : colors[themeColor ?? 'text']
 
   return (
     <Text

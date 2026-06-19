@@ -4,20 +4,21 @@ import { StyleSheet } from 'react-native-unistyles'
 
 import { ThemedText } from '@/components/themed-text'
 import { ThemedView } from '@/components/themed-view'
-import { Party } from '@/features/parties/types'
 import { PartyMetaLine } from '@/features/parties/components/party-meta-line'
+import { Party } from '@/features/parties/types'
+import { getPartyTheme } from '@/shared/theme/party-theme'
 
 interface PartyListItemProps {
   party: Party
   cardCount: number
-  accentColor: string
 }
 
 export function PartyListItem({
   party,
   cardCount,
-  accentColor,
 }: PartyListItemProps) {
+  const partyTheme = getPartyTheme(party.themeCategory)
+
   return (
     <Link
       href={{
@@ -27,23 +28,26 @@ export function PartyListItem({
       asChild
     >
       <Pressable>
-        <ThemedView type="backgroundElement" style={styles.partyCard}>
-          <View
-            style={[
-              styles.partyAccent,
-              { backgroundColor: accentColor },
-            ]}
+        <ThemedView themeOverride={partyTheme} type="surface" style={styles.partyCard}>
+          <ThemedView
+            themeOverride={partyTheme}
+            type="cardPreviewAccent"
+            style={styles.partyAccent}
           />
           <View style={styles.partyCardContent}>
             <View style={styles.partyCardHeader}>
-              <ThemedText type="subtitle" style={styles.partyCardTitle}>
+              <ThemedText
+                type="subtitle"
+                themeOverride={partyTheme}
+                style={styles.partyCardTitle}
+              >
                 {party.title}
               </ThemedText>
-              <ThemedText themeColor="textSecondary">
+              <ThemedText themeOverride={partyTheme} themeColor="textSecondary">
                 {cardCount} {cardCount === 1 ? 'card' : 'cards'}
               </ThemedText>
             </View>
-            <PartyMetaLine party={party} />
+            <PartyMetaLine party={party} themeOverride={partyTheme} />
           </View>
         </ThemedView>
       </Pressable>
@@ -58,6 +62,8 @@ const styles = StyleSheet.create((theme) => ({
     gap: theme.spacing.three,
     flexDirection: 'row',
     alignItems: 'stretch',
+    borderWidth: 1,
+    borderColor: theme.colors.border,
   },
   partyAccent: {
     width: 8,

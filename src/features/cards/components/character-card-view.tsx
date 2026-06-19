@@ -6,9 +6,12 @@ import { CardSpecialPhraseSection } from '@/features/cards/components/card-speci
 import { CardTraitsSection } from '@/features/cards/components/card-traits-section'
 import { ThemedView } from '@/components/themed-view'
 import { CardDisplayMode } from '@/features/cards/types'
+import { ThemeCategory } from '@/features/parties/types'
+import { getPartyTheme } from '@/shared/theme/party-theme'
 
 interface CharacterCardViewProps {
   displayMode: CardDisplayMode
+  partyThemeCategory: ThemeCategory
   backgroundHistory: string
   characterTraits: readonly string[]
   specialMovement: string
@@ -17,41 +20,49 @@ interface CharacterCardViewProps {
 
 export function CharacterCardView({
   displayMode,
+  partyThemeCategory,
   backgroundHistory,
   characterTraits,
   specialMovement,
   specialPhrase,
 }: CharacterCardViewProps) {
+  const partyTheme = getPartyTheme(partyThemeCategory)
+
   return (
     <ThemedView
-      type="backgroundElement"
-      style={[
-        styles.card,
-        displayMode === 'collectible'
-          ? styles.collectibleCard
-          : styles.infoCard,
-      ]}
+      themeOverride={partyTheme}
+      type={displayMode === 'collectible' ? 'surface' : 'backgroundMuted'}
+      style={styles.card(partyTheme, displayMode)}
     >
-      <CardHistorySection backgroundHistory={backgroundHistory} />
-      <CardTraitsSection characterTraits={characterTraits} />
-      <CardSpecialMovementSection specialMovement={specialMovement} />
-      <CardSpecialPhraseSection specialPhrase={specialPhrase} />
+      <CardHistorySection
+        partyThemeCategory={partyThemeCategory}
+        backgroundHistory={backgroundHistory}
+      />
+      <CardTraitsSection
+        characterTraits={characterTraits}
+        partyThemeCategory={partyThemeCategory}
+      />
+      <CardSpecialMovementSection
+        partyThemeCategory={partyThemeCategory}
+        specialMovement={specialMovement}
+      />
+      <CardSpecialPhraseSection
+        partyThemeCategory={partyThemeCategory}
+        specialPhrase={specialPhrase}
+      />
     </ThemedView>
   )
 }
 
 const styles = StyleSheet.create((theme) => ({
-  card: {
+  card: (partyTheme: ReturnType<typeof getPartyTheme>, displayMode: CardDisplayMode) => ({
     borderRadius: theme.radius.card,
     padding: theme.spacing.four,
     gap: theme.spacing.three,
-  },
-  collectibleCard: {
-    borderWidth: 2,
-    borderColor: theme.colors.cardPreviewAccent,
-  },
-  infoCard: {
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-  },
+    borderWidth: displayMode === 'collectible' ? 2 : 1,
+    borderColor:
+      displayMode === 'collectible'
+        ? partyTheme.colors.cardPreviewAccent
+        : partyTheme.colors.border,
+  }),
 }))

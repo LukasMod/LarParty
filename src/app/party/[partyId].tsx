@@ -35,7 +35,11 @@ export default function PartyDetailsScreen() {
             <PartyMetaLine party={party} />
           </View>
 
-          <PartyCardListSection partyId={party.id} cards={cards} />
+          <PartyCardListSection
+            partyId={party.id}
+            partyThemeCategory={party.themeCategory}
+            cards={cards}
+          />
 
           <Link
             href={{

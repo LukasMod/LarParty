@@ -3,16 +3,19 @@ import { StyleSheet } from 'react-native-unistyles'
 
 import { ThemedText } from '@/components/themed-text'
 import { FormCard } from '@/shared/components/form-card'
-import { CharacterCard } from '@/features/cards/types'
 import { CharacterCardListItem } from '@/features/cards/components/character-card-list-item'
+import { CharacterCard } from '@/features/cards/types'
+import { ThemeCategory } from '@/features/parties/types'
 
 interface PartyCardListSectionProps {
   partyId: string
+  partyThemeCategory: ThemeCategory
   cards: CharacterCard[]
 }
 
 export function PartyCardListSection({
   partyId,
+  partyThemeCategory,
   cards,
 }: PartyCardListSectionProps) {
   return (
@@ -25,7 +28,12 @@ export function PartyCardListSection({
       ) : (
         <View style={styles.cardList}>
           {cards.map((card) => (
-            <CharacterCardListItem key={card.id} partyId={partyId} card={card} />
+            <CharacterCardListItem
+              key={card.id}
+              partyId={partyId}
+              partyThemeCategory={partyThemeCategory}
+              card={card}
+            />
           ))}
         </View>
       )}
