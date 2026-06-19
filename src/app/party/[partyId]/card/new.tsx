@@ -1,12 +1,13 @@
 import { router, useLocalSearchParams } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Pressable, TextInput, View } from 'react-native'
+import { TextInput, View } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
 
 import { ThemedText } from '@/components/themed-text'
 import { ThemedView } from '@/components/themed-view'
 import { useCardStore } from '@/features/cards/store/card-store'
 import { Button } from '@/shared/components/button'
+import { ChipButton } from '@/shared/components/chip-button'
 import {
   CharacterCardInput,
   InputTrait,
@@ -154,22 +155,12 @@ export default function NewCharacterCardScreen() {
                   const isSelected = option === sex
 
                   return (
-                    <Pressable
+                    <ChipButton
                       key={option}
+                      label={sexOptionLabels[option]}
+                      selected={isSelected}
                       onPress={() => setSex(option)}
-                      style={[
-                        styles.optionChip,
-                        isSelected && styles.optionChipSelected,
-                      ]}
-                    >
-                      <ThemedText
-                        style={
-                          isSelected ? styles.optionChipTextSelected : undefined
-                        }
-                      >
-                        {sexOptionLabels[option]}
-                      </ThemedText>
-                    </Pressable>
+                    />
                   )
                 })}
               </View>
@@ -199,23 +190,13 @@ export default function NewCharacterCardScreen() {
                     !isSelected && selectedTraits.length >= MAX_TRAITS
 
                   return (
-                    <Pressable
+                    <ChipButton
                       key={trait}
+                      disabled={isDisabled}
+                      label={cardTraitLabels[trait]}
+                      selected={isSelected}
                       onPress={() => toggleTrait(trait)}
-                      style={[
-                        styles.optionChip,
-                        isSelected && styles.optionChipSelected,
-                        isDisabled && styles.optionChipDisabled,
-                      ]}
-                    >
-                      <ThemedText
-                        style={
-                          isSelected ? styles.optionChipTextSelected : undefined
-                        }
-                      >
-                        {cardTraitLabels[trait]}
-                      </ThemedText>
-                    </Pressable>
+                    />
                   )
                 })}
               </View>
@@ -267,24 +248,5 @@ const styles = StyleSheet.create((theme) => ({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: theme.spacing.two,
-  },
-  optionChip: {
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.pill,
-    paddingHorizontal: theme.spacing.three,
-    paddingVertical: theme.spacing.two,
-    backgroundColor: theme.colors.inputBackground,
-  },
-  optionChipSelected: {
-    backgroundColor: theme.colors.primary,
-    borderColor: theme.colors.primary,
-  },
-  optionChipDisabled: {
-    opacity: 0.45,
-  },
-  optionChipTextSelected: {
-    color: theme.colors.primaryText,
-    fontWeight: '700',
   },
 }))

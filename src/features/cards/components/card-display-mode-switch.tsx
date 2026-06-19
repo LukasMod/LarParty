@@ -1,8 +1,8 @@
-import { Pressable, View } from 'react-native'
+import { View } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
 
-import { ThemedText } from '@/components/themed-text'
 import { usePreferencesStore } from '@/features/preferences/store/preferences-store'
+import { ChipButton } from '@/shared/components/chip-button'
 import { cardDisplayModes } from '@/shared/constants/party-options'
 
 export function CardDisplayModeSwitch() {
@@ -17,17 +17,12 @@ export function CardDisplayModeSwitch() {
         const isSelected = mode === cardDisplayMode
 
         return (
-          <Pressable
+          <ChipButton
             key={mode}
+            label={mode === 'collectible' ? 'Collectible view' : 'Info view'}
+            selected={isSelected}
             onPress={() => setCardDisplayMode(mode)}
-            style={[styles.modeChip, isSelected && styles.modeChipSelected]}
-          >
-            <ThemedText
-              style={isSelected ? styles.modeChipTextSelected : undefined}
-            >
-              {mode === 'collectible' ? 'Collectible view' : 'Info view'}
-            </ThemedText>
-          </Pressable>
+          />
         )
       })}
     </View>
@@ -39,21 +34,5 @@ const styles = StyleSheet.create((theme) => ({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: theme.spacing.two,
-  },
-  modeChip: {
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.pill,
-    paddingHorizontal: theme.spacing.three,
-    paddingVertical: theme.spacing.two,
-    backgroundColor: theme.colors.inputBackground,
-  },
-  modeChipSelected: {
-    backgroundColor: theme.colors.primary,
-    borderColor: theme.colors.primary,
-  },
-  modeChipTextSelected: {
-    color: theme.colors.primaryText,
-    fontWeight: '700',
   },
 }))

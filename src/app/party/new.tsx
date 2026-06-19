@@ -1,12 +1,13 @@
 import { router } from 'expo-router'
 import { useState } from 'react'
-import { Pressable, TextInput, View } from 'react-native'
+import { TextInput, View } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
 
 import { ThemedText } from '@/components/themed-text'
 import { ThemedView } from '@/components/themed-view'
 import { usePartyStore } from '@/features/parties/store/party-store'
 import { Button } from '@/shared/components/button'
+import { ChipButton } from '@/shared/components/chip-button'
 import { PartyMood, ThemeCategory } from '@/features/parties/types'
 import { Screen } from '@/shared/components/screen'
 import {
@@ -76,22 +77,12 @@ export default function NewPartyScreen() {
               const isSelected = option === themeCategory
 
               return (
-                <Pressable
+                <ChipButton
                   key={option}
+                  label={themeCategoryLabels[option]}
+                  selected={isSelected}
                   onPress={() => setThemeCategory(option)}
-                  style={[
-                    styles.optionChip,
-                    isSelected && styles.optionChipSelected,
-                  ]}
-                >
-                  <ThemedText
-                    style={
-                      isSelected ? styles.optionChipTextSelected : undefined
-                    }
-                  >
-                    {themeCategoryLabels[option]}
-                  </ThemedText>
-                </Pressable>
+                />
               )
             })}
           </View>
@@ -104,22 +95,12 @@ export default function NewPartyScreen() {
               const isSelected = option === mood
 
               return (
-                <Pressable
+                <ChipButton
                   key={option}
+                  label={partyMoodLabels[option]}
+                  selected={isSelected}
                   onPress={() => setMood(option)}
-                  style={[
-                    styles.optionChip,
-                    isSelected && styles.optionChipSelected,
-                  ]}
-                >
-                  <ThemedText
-                    style={
-                      isSelected ? styles.optionChipTextSelected : undefined
-                    }
-                  >
-                    {partyMoodLabels[option]}
-                  </ThemedText>
-                </Pressable>
+                />
               )
             })}
           </View>
@@ -156,21 +137,5 @@ const styles = StyleSheet.create((theme) => ({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: theme.spacing.two,
-  },
-  optionChip: {
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.pill,
-    paddingHorizontal: theme.spacing.three,
-    paddingVertical: theme.spacing.two,
-    backgroundColor: theme.colors.inputBackground,
-  },
-  optionChipSelected: {
-    backgroundColor: theme.colors.primary,
-    borderColor: theme.colors.primary,
-  },
-  optionChipTextSelected: {
-    color: theme.colors.primaryText,
-    fontWeight: '700',
   },
 }))
