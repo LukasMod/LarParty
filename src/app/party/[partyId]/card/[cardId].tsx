@@ -1,287 +1,106 @@
-import { router, useLocalSearchParams } from 'expo-router'
-import { useMemo, useState } from 'react'
-import { Alert, Pressable, View } from 'react-native'
+import { useLocalSearchParams } from 'expo-router'
+import { Pressable } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
 
 import { ThemedText } from '@/components/themed-text'
 import { ThemedView } from '@/components/themed-view'
-import { useCardStore } from '@/features/cards/store/card-store'
-import { generateCharacterCard } from '@/features/generation/gemini'
-import { getPartyById } from '@/features/parties/selectors'
-import { usePartyStore } from '@/features/parties/store/party-store'
+import { CardDetailsHeader } from '@/features/cards/components/card-details-header'
+import { CardDisplayModeSwitch } from '@/features/cards/components/card-display-mode-switch'
+import { CharacterCardView } from '@/features/cards/components/character-card-view'
+import { useCardDetailsActions } from '@/features/cards/hooks/use-card-details-actions'
+import { useCardDetailsScreenModel } from '@/features/cards/hooks/use-card-details-screen-model'
 import { usePreferencesStore } from '@/features/preferences/store/preferences-store'
 import { Screen } from '@/shared/components/screen'
-import { cardDisplayModes } from '@/shared/constants/party-options'
 
 export default function CardDetailsScreen() {
   const { partyId, cardId } = useLocalSearchParams<{
     partyId: string
     cardId: string
   }>()
-  const parties = usePartyStore((state) => state.parties)
-  const party = useMemo(
-    () => getPartyById(parties, partyId),
-    [parties, partyId],
-  )
-
-  const cards = useCardStore((state) => state.cards)
-  const acceptCard = useCardStore((state) => state.acceptCard)
-  const createDraftCard = useCardStore((state) => state.createDraftCard)
-  const deleteCard = useCardStore((state) => state.deleteCard)
-
-  const card = useMemo(
-    () => cards.find((entry) => entry.id === cardId),
-    [cards, cardId],
-  )
-
+  const { status, party, card } = useCardDetailsScreenModel(partyId, cardId)
   const cardDisplayMode = usePreferencesStore((state) => state.cardDisplayMode)
-  const setCardDisplayMode = usePreferencesStore(
-    (state) => state.setCardDisplayMode,
-  )
+  const {
+    errorMessage,
+    isRegenerating,
+    handleAcceptCard,
+    handleDeleteCard,
+    handleRegenerateCard,
+  } = useCardDetailsActions({ party, card })
 
-  const [isRegenerating, setIsRegenerating] = useState(false)
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
-
-  function handleAcceptCard() {
-    if (!card || card.status === 'accepted') {
-      return
-    }
-
-    acceptCard(card.id)
+  if (status === 'loading') {
+    return (
+      <Screen>
+        <ThemedView type="backgroundElement" style={styles.card}>
+          <ThemedText type="subtitle">Loading card...</ThemedText>
+          <ThemedText themeColor="textSecondary">
+            Restoring saved party and card data.
+          </ThemedText>
+        </ThemedView>
+      </Screen>
+    )
   }
 
-  function handleDeleteCard() {
-    if (!card) {
-      return
-    }
-
-    Alert.alert('Delete card?', 'Remove this saved character card?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Delete',
-        style: 'destructive',
-        onPress: () => {
-          deleteCard(card.id)
-          router.replace({
-            pathname: '/party/[partyId]',
-            params: { partyId: card.partyId },
-          })
-        },
-      },
-    ])
-  }
-
-  function handleRegenerateCard() {
-    if (!card || !party) {
-      return
-    }
-
-    Alert.alert(
-      'Regenerate card?',
-      'Create a new draft variation from the same character input?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Regenerate',
-          onPress: async () => {
-            setErrorMessage(null)
-            setIsRegenerating(true)
-
-            try {
-              const generated = await generateCharacterCard({
-                party,
-                input: card.input,
-              })
-
-              const nextCardId = createDraftCard({
-                partyId: card.partyId,
-                input: card.input,
-                generated,
-                basedOnCardId: card.id,
-                generationGroupId: card.generationGroupId,
-              })
-
-              router.replace({
-                pathname: '/party/[partyId]/card/[cardId]',
-                params: { partyId: card.partyId, cardId: nextCardId },
-              })
-            } catch (error) {
-              setErrorMessage(
-                error instanceof Error
-                  ? error.message
-                  : 'Unable to regenerate card right now.',
-              )
-            } finally {
-              setIsRegenerating(false)
-            }
-          },
-        },
-      ],
+  if (status === 'missing') {
+    return (
+      <Screen>
+        <ThemedView type="backgroundElement" style={styles.card}>
+          <ThemedText type="subtitle">Card not found</ThemedText>
+          <ThemedText themeColor="textSecondary">
+            This card may have been deleted or does not belong to this party.
+          </ThemedText>
+        </ThemedView>
+      </Screen>
     )
   }
 
   return (
     <Screen>
-      {!party || !card ? (
-        <ThemedView type="backgroundElement" style={styles.card}>
-          <ThemedText type="subtitle">Card not found</ThemedText>
-          <ThemedText themeColor="textSecondary">
-            This card may have been deleted or is still loading.
-          </ThemedText>
-        </ThemedView>
-      ) : (
-        <>
-          <View style={styles.header}>
-            <ThemedText type="subtitle">
-              {card.generated.generatedNameWithClass}
-            </ThemedText>
-            <ThemedText themeColor="textSecondary">
-              {card.status === 'accepted' ? 'Accepted card' : 'Draft card'} ·{' '}
-              {party.title}
-            </ThemedText>
-          </View>
+      <CardDetailsHeader
+        generatedNameWithClass={card.generated.generatedNameWithClass}
+        statusLabel={card.status === 'accepted' ? 'Accepted card' : 'Draft card'}
+        partyTitle={party.title}
+      />
+      <CardDisplayModeSwitch />
+      <CharacterCardView
+        displayMode={cardDisplayMode}
+        backgroundHistory={card.generated.backgroundHistory}
+        characterTraits={card.generated.characterTraits}
+        specialMovement={card.generated.specialMovement}
+        specialPhrase={card.generated.specialPhrase}
+      />
 
-          <View style={styles.modeSwitch}>
-            {cardDisplayModes.map((mode) => {
-              const isSelected = mode === cardDisplayMode
+      {errorMessage ? (
+        <ThemedText themeColor="textSecondary">{errorMessage}</ThemedText>
+      ) : null}
 
-              return (
-                <Pressable
-                  key={mode}
-                  onPress={() => setCardDisplayMode(mode)}
-                  style={[
-                    styles.modeChip,
-                    isSelected && styles.modeChipSelected,
-                  ]}
-                >
-                  <ThemedText
-                    style={isSelected ? styles.modeChipTextSelected : undefined}
-                  >
-                    {mode === 'collectible' ? 'Collectible view' : 'Info view'}
-                  </ThemedText>
-                </Pressable>
-              )
-            })}
-          </View>
+      {card.status === 'draft' ? (
+        <Pressable style={styles.primaryButton} onPress={handleAcceptCard}>
+          <ThemedText style={styles.primaryButtonText}>Accept card</ThemedText>
+        </Pressable>
+      ) : null}
 
-          <ThemedView
-            type="backgroundElement"
-            style={[
-              styles.card,
-              cardDisplayMode === 'collectible'
-                ? styles.collectibleCard
-                : styles.infoCard,
-            ]}
-          >
-            <View style={styles.section}>
-              <ThemedText type="smallBold">Background</ThemedText>
-              <ThemedText>{card.generated.backgroundHistory}</ThemedText>
-            </View>
+      <Pressable
+        style={[styles.secondaryButton, isRegenerating && styles.buttonDisabled]}
+        disabled={isRegenerating}
+        onPress={handleRegenerateCard}
+      >
+        <ThemedText>
+          {isRegenerating ? 'Regenerating...' : 'Regenerate card'}
+        </ThemedText>
+      </Pressable>
 
-            <View style={styles.section}>
-              <ThemedText type="smallBold">Character traits</ThemedText>
-              <View style={styles.traitList}>
-                {card.generated.characterTraits.map((trait) => (
-                  <ThemedView key={trait} style={styles.traitItem}>
-                    <ThemedText>{trait}</ThemedText>
-                  </ThemedView>
-                ))}
-              </View>
-            </View>
-
-            <View style={styles.section}>
-              <ThemedText type="smallBold">Special movement</ThemedText>
-              <ThemedText>{card.generated.specialMovement}</ThemedText>
-            </View>
-
-            <View style={styles.section}>
-              <ThemedText type="smallBold">Special phrase</ThemedText>
-              <ThemedText>“{card.generated.specialPhrase}”</ThemedText>
-            </View>
-          </ThemedView>
-
-          {errorMessage ? (
-            <ThemedText themeColor="textSecondary">{errorMessage}</ThemedText>
-          ) : null}
-
-          {card.status === 'draft' ? (
-            <Pressable style={styles.primaryButton} onPress={handleAcceptCard}>
-              <ThemedText style={styles.primaryButtonText}>
-                Accept card
-              </ThemedText>
-            </Pressable>
-          ) : null}
-
-          <Pressable
-            style={[
-              styles.secondaryButton,
-              isRegenerating && styles.buttonDisabled,
-            ]}
-            disabled={isRegenerating}
-            onPress={handleRegenerateCard}
-          >
-            <ThemedText>
-              {isRegenerating ? 'Regenerating...' : 'Regenerate card'}
-            </ThemedText>
-          </Pressable>
-
-          <Pressable style={styles.secondaryButton} onPress={handleDeleteCard}>
-            <ThemedText>Delete card</ThemedText>
-          </Pressable>
-        </>
-      )}
+      <Pressable style={styles.secondaryButton} onPress={handleDeleteCard}>
+        <ThemedText>Delete card</ThemedText>
+      </Pressable>
     </Screen>
   )
 }
 
 const styles = StyleSheet.create((theme) => ({
-  header: {
-    gap: theme.spacing.one,
-  },
-  modeSwitch: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: theme.spacing.two,
-  },
-  modeChip: {
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.pill,
-    paddingHorizontal: theme.spacing.three,
-    paddingVertical: theme.spacing.two,
-    backgroundColor: theme.colors.inputBackground,
-  },
-  modeChipSelected: {
-    backgroundColor: theme.colors.primary,
-    borderColor: theme.colors.primary,
-  },
-  modeChipTextSelected: {
-    color: theme.colors.primaryText,
-    fontWeight: '700',
-  },
   card: {
     borderRadius: theme.radius.card,
     padding: theme.spacing.four,
     gap: theme.spacing.three,
-  },
-  collectibleCard: {
-    borderWidth: 2,
-    borderColor: theme.colors.cardPreviewAccent,
-  },
-  infoCard: {
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-  },
-  section: {
-    gap: theme.spacing.two,
-  },
-  traitList: {
-    gap: theme.spacing.two,
-  },
-  traitItem: {
-    borderRadius: theme.radius.control,
-    paddingHorizontal: theme.spacing.three,
-    paddingVertical: theme.spacing.two,
   },
   primaryButton: {
     backgroundColor: theme.colors.primary,
