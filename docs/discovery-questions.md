@@ -1,77 +1,71 @@
 # LarParty PoC — Discovery Questions
 
-These questions should be answered before or during the implementation planning session to reduce ambiguity.
+Questions raised before the planning session. Most are settled — answers live in
+[`mvp-decisions.md`](./mvp-decisions.md) and in the code. Keep this file for what is
+genuinely still open. Add new scope questions here **before** changing scope.
 
-## 1. AI Provider and Integration
+## Open
 
-- Which AI provider should be used for the PoC?
-- Should the provider support native JSON mode or schema-constrained output?
-- How will API credentials be handled during PoC development if calls are made directly from the client?
-- Is there a fallback behavior if generation fails?
-- Should regenerate reuse the same prompt with slight variation, or intentionally ask for a fresh interpretation?
+### Card presentation mode (regressed)
 
-## 2. Prompt Design
+`mvp-decisions.md` freezes two display modes with a user-facing switch, but
+`src/app/party/[partyId]/card/[cardId].tsx` hardcodes `displayMode="collectible"` and
+never renders `CardDisplayModeSwitch`. The persisted `cardDisplayMode` preference affects
+no screen. Decide: rewire the switch, or drop the feature and the preference.
 
-- Should theme categories be stored as internal enum-like values and displayed with friendlier labels?
-- Should mood influence only tone, or also the level of dramatic/silly content?
-- Should the entered name always be preserved exactly, or can AI reinterpret it slightly?
-- Should the prompt forbid copyrighted franchise-specific references when using inspired themes like StarWars-inspired or Harry-Potter-inspired?
-- Should content safety rules be enforced for younger users?
+### Offline generation UX
 
-## 3. Party Creation UX
+Settled as policy: no local LLM, so generation/regeneration always need connectivity, while
+saved content stays browsable offline. Open is only the _presentation_:
 
-- How many theme categories should be available in MVP?
-- How many mood options should be available in MVP?
-- Should users be allowed to create a party without cards?
-- Should party list items show card count?
-- Should delete party require confirmation?
+- Should the generate button be disabled when offline, or stay enabled and surface an error?
+- Detect connectivity, or attempt and report the failure?
+- Should an offline attempt preserve the typed form input? (Today it does, since nothing is
+  submitted or saved on failure.)
+- Error copy should be translated and distinguish "no connection" from "provider failed" —
+  see the generation-errors hazard in [`architecture.md`](./architecture.md#dead-code-and-hazards).
 
-## 4. Character Creation UX
-
-- Should trait selection have a maximum number of selected traits?
-- Should age be a numeric input only?
-- Should sex be free text, segmented options, or optional?
-- Should name be required?
-- Should there be starter defaults for faster testing?
-
-## 5. Card Lifecycle
-
-- What is the exact difference in UI between draft and accepted cards?
-- Should a regenerated card remain draft even if the previous version had been accepted?
-- Should accepted cards still be regeneratable?
-- Should deletion of a card require confirmation?
-- Should drafts appear in the same list as accepted cards?
-
-## 6. Card Presentation
+### Still unanswered
 
 - What is the preferred default view mode on the card details screen?
-- Should the selected card view mode be remembered globally or only per session?
 - Should collectible mode prioritize visuals over density?
 - Should info-sheet mode prioritize readability and sharing/printing potential?
+- Should an in-app reset option exist, or is uninstall the only wipe path?
+- Should generation failures persist a failed draft, or stay unsaved? (Today: unsaved.)
+- How much effort should web parity get? Should web support keyboard-driven forms?
+- Should tablet layouts get any real treatment?
+- Should each theme category also vary icons, textures, or typography — not just color?
+- How bold should the "Party Crazy" style become?
+- Future: account-based auth or anonymous sync first?
+- Future: should a backend own prompts centrally?
+- Future: sharing, export, or print?
+- Future: separate player-facing and host-facing modes?
 
-## 7. Offline and Persistence
+## Resolved — for history
 
-- Should the app preload any seed/demo data on first launch?
-- Should local persistence be wiped on uninstall only, or should there be an in-app reset option?
-- Should web storage behavior be treated as best effort only?
-- Should generation failures produce unsaved temporary states or persisted failed drafts?
+Do not re-litigate here. Verify against code before treating any of these as open.
 
-## 8. Platform Priorities
-
-- How much effort should be spent on web parity in the PoC?
-- Should tablet layouts be ignored for now?
-- Should the app support keyboard-friendly web form interactions from the start?
-
-## 9. Design System Direction
-
-- What visual tokens should change by theme: colors, icons, textures, borders, typography accents?
-- Should each theme category have a predefined accent palette?
-- Should the party list use theme previews or remain visually neutral?
-- How bold should the Party Crazy style be in MVP?
-
-## 10. Future Evolution
-
-- Should future auth be user account based or anonymous cloud sync first?
-- Should future backend own generation prompts centrally?
-- Should future versions support sharing/export/print?
-- Should future versions allow player-facing and host-facing modes?
+| Area                            | Resolution                                                                                                 |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| AI provider                     | Gemini `gemini-2.5-flash-lite`, client-side, schema-constrained JSON. Key via `EXPO_PUBLIC_GEMINI_API_KEY` |
+| Generation failure UX           | Errors surface as inline message; nothing is saved                                                         |
+| Theme/mood storage              | Internal enum values with translated display labels                                                        |
+| Copyrighted franchises          | Prompt forbids copying canon characters, factions, plotlines                                               |
+| Content safety                  | Prompt requires broad-age-appropriate, non-explicit output                                                 |
+| Theme category count            | 6                                                                                                          |
+| Mood count                      | 18 (grown past the originally frozen 8)                                                                    |
+| Party without cards             | Allowed; empty state shown                                                                                 |
+| Card count in list              | Shown, pluralized                                                                                          |
+| Delete party                    | Confirmation required; cascades to cards                                                                   |
+| Trait max                       | 3                                                                                                          |
+| Age input                       | Numeric string input, parsed and validated                                                                 |
+| Sex input                       | Enum of 3 options                                                                                          |
+| Name required                   | Yes; starter default only for age (`25`)                                                                   |
+| Draft vs accepted UI            | Status badge and status-dependent actions                                                                  |
+| Regenerate after accept         | New draft, accepted version preserved                                                                      |
+| Accepted cards regeneratable    | Yes                                                                                                        |
+| Delete card                     | Confirmation required                                                                                      |
+| Drafts in same list as accepted | Yes                                                                                                        |
+| View mode persistence           | Global via preferences store — but see the regression above                                                |
+| Seed/demo data                  | None on first launch                                                                                       |
+| Web storage                     | Best effort; mobile first                                                                                  |

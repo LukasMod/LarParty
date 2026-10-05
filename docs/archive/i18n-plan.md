@@ -1,5 +1,8 @@
 # react-i18next internationalization plan
 
+> **ARCHIVED.** This proposal landed as English + Polish. Read
+> [`../i18n-guide.md`](../i18n-guide.md) for how the wiring actually works today.
+
 ## Goal
 
 Add app-level internationalization with [`react-i18next`](https://github.com/i18next/react-i18next) and a small dedicated Settings screen so LarParty can:

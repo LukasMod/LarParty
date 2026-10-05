@@ -46,6 +46,12 @@ No date, description, or location in MVP.
 
 ## Frozen select options
 
+> **Source of truth is `src/shared/constants/party-options.ts`.** The lists below are a
+> readable snapshot and drift. The mood list has already grown past what was originally
+> frozen here. Add values in the code file first, then update the snapshot and the
+> `options.*` labels (in the `common` namespace) in both locale files — see
+> [`i18n-guide.md`](./i18n-guide.md).
+
 ### Theme categories
 
 - Fantasy
@@ -57,6 +63,8 @@ No date, description, or location in MVP.
 
 ### Mood options
 
+Snapshot as of the i18n work (18 values):
+
 - fun
 - serious
 - scary
@@ -65,6 +73,16 @@ No date, description, or location in MVP.
 - chaotic
 - mysterious
 - adventurous
+- epic
+- playful
+- dark
+- tense
+- whimsical
+- romantic
+- noble
+- melancholic
+- rebellious
+- cozy
 
 ### Character traits
 
@@ -86,7 +104,11 @@ No date, description, or location in MVP.
 ## Card generation rules
 
 - AI generation is a must-have feature
-- Primary AI direction: local LLM first
+- Provider: Google Gemini (`gemini-2.5-flash-lite`), called directly from the client for
+  the PoC. The earlier local-LLM-first direction was dropped
+- API key comes from `EXPO_PUBLIC_GEMINI_API_KEY`
+- Generated field values are written in the resolved app language; JSON schema keys stay
+  English — see [`i18n-guide.md`](./i18n-guide.md)
 - AI output must be strict structured JSON
 - Generated card output must contain:
   - full name with class/archetype
@@ -133,6 +155,18 @@ This means multiple related versions may exist.
 
 ## Offline rules
 
+Local persistence exists for **reading** saved content offline. It does not make the app
+work offline end-to-end.
+
+### Decided: generation requires connectivity
+
+- AI generation and regeneration call a hosted provider over the network. They **require an
+  internet connection and access to the provider (Gemini)**.
+- There is no offline generation, no on-device model, and no queue-and-sync. This is a
+  deliberate product decision, not a temporary limitation.
+- A user with saved cards and no connectivity can still browse everything they saved. They
+  just cannot create new cards until they reconnect.
+
 ### Must work offline
 
 - viewing saved parties
@@ -145,7 +179,7 @@ This means multiple related versions may exist.
 
 - generation
 - regeneration
-- AI runtime unless proven feasible later
+- any AI runtime — always remote
 
 ## Web support rule
 
@@ -153,4 +187,7 @@ Web is nice-to-have. Do not let web parity slow down the mobile-first MVP.
 
 ## Open technical uncertainty
 
-The biggest unresolved technical question is the exact local LLM path and its compatibility with Expo and web support. This requires follow-up validation before final implementation package choices are locked.
+Resolved: the local-LLM path was rejected. Generation uses a hosted provider (Gemini) over
+the network, which is why generation needs connectivity.
+
+Remaining open items are UX-level, tracked in [`discovery-questions.md`](./discovery-questions.md).

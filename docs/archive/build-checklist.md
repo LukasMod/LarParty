@@ -1,5 +1,8 @@
 # LarParty PoC — Build Checklist
 
+> **ARCHIVED.** Historical execution plan from before the build. The PoC shipped; the
+> boxes were never ticked. See [`../README.md`](../README.md) for current docs.
+
 This checklist translates the approved implementation plan into practical execution steps.
 
 ---
