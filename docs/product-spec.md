@@ -1,5 +1,10 @@
 # LarParty PoC — Product Specification
 
+> Product scope and intent. Current as of the shipped PoC. For frozen domain rules use
+> [`mvp-decisions.md`](./mvp-decisions.md); for how it is built use
+> [`architecture.md`](./architecture.md). §14's open questions were all answered — see
+> [`discovery-questions.md`](./discovery-questions.md).
+
 ## 1. Overview
 
 LarParty is a React Native Expo proof-of-concept app for people who enjoy LARP and themed parties. The app helps a user create a party theme and generate AI-powered character cards for party members.
@@ -149,7 +154,9 @@ A character card is an AI-generated role profile associated with one party.
    - saved cards
    - accepted cards
    - drafted cards already stored locally
-3. AI generation/regeneration may be unavailable offline
+3. AI generation and regeneration are unavailable — they always call a remote provider. The
+   user can still create a party and fill the character form offline; only the generate call
+   fails. See [`mvp-decisions.md`](./mvp-decisions.md).
 
 ## 7. Screens
 
@@ -241,9 +248,10 @@ Purpose: create a new character seed for AI generation.
 
 ## 8.1 AI integration approach
 
-- Real API integration from the start
-- Direct client-side API call for PoC
-- No backend abstraction required for initial delivery, but code structure should make later backend migration possible
+Shipped as specced: real API integration, direct client-side call, no backend. Provider
+is Google Gemini (`gemini-2.5-flash-lite`), isolated behind the `CharacterCardGenerator`
+interface in `src/features/generation/` so a later backend swap stays contained. Key is
+`EXPO_PUBLIC_GEMINI_API_KEY`. See [`architecture.md`](./architecture.md).
 
 ## 8.2 Response format
 
@@ -302,6 +310,10 @@ The app must store enough data locally so that users can access saved parties an
 
 - AI generation
 - AI regeneration
+
+Generation and regeneration are network-bound by design: they call a hosted provider and
+cannot run offline. Party creation and the character form work offline; only the generate
+call needs a connection.
 
 ## 10. UX and Visual Direction
 

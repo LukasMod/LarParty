@@ -1,5 +1,8 @@
 # LarParty PoC — Planning Session Prompt
 
+> **ARCHIVED.** The original prompt that produced the plan. Not for reuse — parts of it
+> are superseded, including the local-LLM direction (Gemini shipped instead).
+
 Use this prompt in a future planning session to produce a detailed technical implementation plan.
 
 ---

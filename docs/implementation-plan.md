@@ -1,20 +1,111 @@
 # LarParty PoC — Implementation Plan
 
+> **The PoC is built.** **Current Status** (below) is the live forward plan. Everything from
+> §1 down is the original pre-build rationale — still useful for _why_ the code is shaped
+> this way, but the code is the source of truth. Where they disagree,
+> [`architecture.md`](./architecture.md) and the code win.
+>
+> Sections that are pure pre-build speculation and should not be implemented from:
+>
+> | Section | Why it is dead                                                                            |
+> | ------- | ----------------------------------------------------------------------------------------- |
+> | §2      | Baseline describes the starter template. Replaced long ago                                |
+> | §13     | Original build order. All phases shipped — see Current Status for what is actually left   |
+> | §14.1   | Local-LLM risk. Rejected outright: generation is hosted-only                              |
+> | §15     | Context7 validation pass. Was never needed                                                |
+> | §16.1   | Unistyles "not yet configured" baseline. Setup, babel plugin, and New Architecture landed |
+>
+> Specific drift to trust the code over: §3.2 enums (mood list grew —
+> `src/shared/constants/party-options.ts` wins), §4.1 folder structure (actual: `store/` not
+> `storage/`; `generation/` is flat files; there is no `shared/validation/`), §5.2 routes
+> (`/settings` shipped, not in the original plan), §8 (plan rejected a state library; we
+> shipped Zustand + MMKV anyway).
+
+## Current Status
+
+### Shipped and working
+
+The full PoC flow is implemented: party list → create party → party details → create card →
+Gemini generation → card details → accept/regenerate/delete. Local persistence to MMKV,
+offline browsing, en + pl, per-party theming. The domain rules in
+[`mvp-decisions.md`](./mvp-decisions.md) are implemented as written, including draft/accepted
+lifecycle and regenerate-preserves-history.
+
+Note on verification: this reflects reading the code, plus the earlier recorded iOS
+simulator pass in [`agent-device-smoke-tests.md`](./agent-device-smoke-tests.md). There is no
+automated test suite and no CI, so treat the flow as unverified until re-run. Android and
+web have not been smoke-tested at all.
+
+Generation is **remote-only** by decision: Gemini over the network, requires internet. No
+local LLM was pursued. Offline browsing of saved content works; creating cards does not.
+Details in [`architecture.md`](./architecture.md#generation-flow).
+
+### What is actually left
+
+Ordered roughly by value. Each is scoped small enough to be its own PR.
+
+1. **Restore card display-mode switching.** Two parts, and the second is the real work:
+   - **Wiring.** `src/app/party/[partyId]/card/[cardId].tsx` hardcodes
+     `displayMode="collectible"` and never mounts the existing `CardDisplayModeSwitch`, so
+     the persisted `cardDisplayMode` preference is unreachable.
+   - **Design.** `character-card-view.tsx` implements both modes as the same section list,
+     differing only by surface color and border width. The readable "info sheet" described in
+     §11.4 was never built, so wiring the toggle alone yields a near-identical card. Either
+     build a real info layout, or cut the feature and the preference.
+     Decide which in [`discovery-questions.md`](./discovery-questions.md) before coding.
+2. **Translate generation errors.** Catch blocks surface `error.message` raw, so offline and
+   provider failures show untranslated SDK text — even in Polish. Generation now explicitly
+   needs connectivity, so this is a common path, not an edge case. Map failures to
+   translated keys; keep `error.message` for logs. See the hazard in
+   [`architecture.md`](./architecture.md#dead-code-and-hazards).
+3. **Clear the 15 pre-existing typecheck errors.** All i18n typing, root cause and a
+   verified 2-file fix are written up in
+   [`architecture.md`](./architecture.md#npm-run-typecheck-fails-on-a-clean-checkout). This
+   currently makes `npm run check` red on a clean checkout, which trains agents to ignore it.
+4. **Remove dead starter code.** `src/components/*` (keep `themed-text`/`themed-view`),
+   dead hooks in `src/hooks/`, and the orphaned `/explore` route. `constants/theme.ts` also
+   keeps `Colors` (live) alongside `Fonts`/`Radius`/`MaxContentWidth` that only dead code
+   imports. Full inventory, including what must _not_ be deleted, in
+   [`architecture.md`](./architecture.md#dead-code-and-hazards). Also drop the leftover
+   `console.log` in `settings.tsx` and the redundant `useMemo` in `card/new.tsx`.
+5. **Replace `README.md`.** Still the default Expo template. Its setup steps tell readers to
+   run `npm run reset-project`, which moves `src/` and `scripts/` into `example/` — i.e. it
+   destroys the app. It also never mentions `EXPO_PUBLIC_GEMINI_API_KEY`, without which
+   generation throws on first use. Write real setup, commands, and API-key instructions, and
+   drop or guard the `reset-project` script.
+6. **Add a test runner.** Highest-leverage missing safety net. There is no CI and no tests,
+   so `agent-device` smoke tests are the only regression check today. Start with the pure
+   seams that need no UI: card selectors, generation schema parsing, the form validation
+   rules, and the cascade-delete store logic. Also add an i18n key-coverage test comparing
+   `en` and `pl` — but normalize plural suffixes first, since Polish legitimately has
+   `_few`/`_many` keys English lacks (see [`i18n-guide.md`](./i18n-guide.md#plurals)); a raw
+   key-set diff would report false failures.
+
+### Explicitly not doing
+
+- Local/on-device LLM — rejected. Remote Gemini only.
+- Backend sync, auth, payments, notifications — out of PoC scope.
+- Partial editing of accepted cards — future product decision, not a PoC gap.
+- Web parity beyond "it runs". Mobile-first per `mvp-decisions.md`.
+
+---
+
+## Historical plan follows
+
+Everything below is the original plan, kept for rationale. Read §3–§12 and §16 for _why_
+the architecture looks the way it does. Skip §13–§15 per the table at the top.
+
 ## 1. Planning Status
 
-This implementation plan is based on:
+This implementation plan was based on:
 
-- the current repository structure
+- the repository structure at planning time
 - the approved MVP decisions
 - product clarifications gathered during discovery
 
-A follow-up documentation validation pass with Context7 is still required for:
-
-- Expo-specific package guidance
-- React Native-specific package guidance
-- local LLM feasibility details in Expo
-
-Because shell-based Context7 access was unavailable during planning, this document should be treated as the approved implementation direction pending final framework-doc validation.
+A follow-up documentation validation pass with Context7 was originally considered required
+for Expo-specific, React Native-specific, and local-LLM guidance. None of it proved
+necessary: the local-LLM path was dropped and the hosted approach validated in practice.
 
 ---
 
@@ -193,6 +284,7 @@ The natural user journey is:
 - `/party/[partyId]` → Party Details Screen
 - `/party/[partyId]/card/new` → Create Character Card Screen
 - `/party/[partyId]/card/[cardId]` → Card Details Screen
+- `/settings` → Settings Screen (added during i18n work; not in the original plan)
 
 ## 5.3 Navigation type
 
@@ -336,6 +428,10 @@ Use a single app-level storage interface rather than storage calls scattered thr
 
 ## 7.4 Offline support
 
+> **As written, except the last line.** This list shipped as specced. The local-LLM caveat
+> is now resolved: generation/regeneration are remote-only and always need connectivity.
+> Current wording lives in [`mvp-decisions.md`](./mvp-decisions.md).
+
 ### Must work offline
 
 - party list
@@ -348,7 +444,8 @@ Use a single app-level storage interface rather than storage calls scattered thr
 
 - generation
 - regeneration
-- any local LLM workflow unless confirmed later by implementation feasibility
+- any local LLM workflow unless confirmed later by implementation feasibility _(superseded:
+  no local LLM; generation is permanently remote)_
 
 ## 7.5 Deletion behavior
 
@@ -359,6 +456,11 @@ Use a single app-level storage interface rather than storage calls scattered thr
 ---
 
 ## 8. State Management Plan
+
+> **Superseded.** This section recommends against a state library and proposes plain hooks.
+> We shipped Zustand + `persist` → MMKV instead. The hook _names_ below did not ship either;
+> the real shape is screen-model and actions hooks. Read
+> [`architecture.md`](./architecture.md#stores) for what exists.
 
 ## 8.1 Recommendation
 
@@ -439,6 +541,10 @@ If validation fails:
 ---
 
 ## 10. AI Generation Architecture
+
+> **Superseded.** Local LLM was rejected. Gemini is the only provider and generation is
+> remote-only. §10.3's provider-interface idea did ship (`CharacterCardGenerator`); the
+> local-LLM framing did not. See [`architecture.md`](./architecture.md#generation-flow).
 
 ## 10.1 Main planning direction
 
@@ -571,6 +677,12 @@ Each theme category should define accent tokens for:
 - Witcher → worn leather, silver, medieval-dark accents
 
 ## 11.4 Card detail display modes
+
+> **Partly unimplemented.** Both modes render the _same_ section components in the same
+> order. `character-card-view.tsx` differs only in surface color and a 1px vs 2px border.
+> The distinct info-sheet layout described below (simpler layout, stronger scanning
+> hierarchy) was never built — so rewiring the toggle alone gives a near-identical card.
+> Reflected in the Current Status item.
 
 ### Collectible mode
 
@@ -755,6 +867,9 @@ Display generated card and its current state.
 
 ## 13. Suggested Implementation Order
 
+> **Complete — do not implement from this.** Every phase below shipped. For what is left,
+> see **Current Status** at the top. Kept only to show the original build sequence.
+
 ## Phase 1 — App shell
 
 - replace starter tab navigation
@@ -805,6 +920,10 @@ Display generated card and its current state.
 
 ## 14.1 Local LLM risk
 
+> **Moot.** Local LLM was rejected. Generation is hosted-only, so this risk no longer
+> exists. The real constraint now is that generation requires connectivity — see
+> [`mvp-decisions.md`](./mvp-decisions.md).
+
 This is the highest technical uncertainty.
 
 Questions that still need validation:
@@ -831,6 +950,10 @@ Theme flavor should be expressed through tokenized accents, not radically differ
 
 ## 15. Required Follow-Up After Context7 Becomes Available
 
+> **Never happened, and is no longer needed.** The framework questions below were answered
+> by shipping the app: Expo Router stack, MMKV persistence, and hosted Gemini all work on
+> iOS and Android. Do not schedule this.
+
 Before starting final implementation, validate with Context7:
 
 - current Expo navigation and storage best-practice guidance for the installed Expo generation
@@ -843,6 +966,21 @@ Before starting final implementation, validate with Context7:
 ## 16. Unistyles 3 Per-Party Theming Plan
 
 ### 16.1 Current baseline
+
+> **Stale.** Unistyles shipped, but not shaped like §16.3–§16.5 describe. Before relying on
+> any of it, check [`architecture.md`](./architecture.md#theming) and
+> [`theming-guide.md`](./theming-guide.md). Specifically what diverged:
+>
+> | Claimed here                                          | Shipped instead                                                                                          |
+> | ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+> | Switch the active theme at runtime per party route    | Active theme is **fixed to `default`**; party palettes are passed as `themeOverride` props to components |
+> | Theme affects whole app in a party flow, incl. header | Header chrome is hardcoded to `Colors.default` in `_layout.tsx`; only card/list components recolor       |
+> | Theme names `party-fantasy`, `party-sci-fi`, …        | Keys are bare: `fantasy`, `'sci-fi'`, … plus `default` (`src/shared/theme/unistyles.ts`)                 |
+> | `src/shared/theme/tokens.ts` + `themes.ts`            | Only `unistyles.ts` + `party-theme.ts`. Tokens live inline in `unistyles.ts`                             |
+>
+> The §16.2 _product intent_ (full-palette theming, bold palettes, category-only, default
+> beige retained) is what actually shipped in spirit. The mechanical sections after it are not
+> accurate.
 
 The current app is already structurally compatible with a Unistyles migration, but it is not yet configured for it.
 

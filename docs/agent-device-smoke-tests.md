@@ -24,7 +24,13 @@ Covers the current PoC screens:
 - Party Details
 - Create Character Card
 - Card Details
-- Explore
+- Settings
+- Explore (orphaned route, not in the stack config — see below)
+
+> **Labels are translated.** Every string quoted below is the **English** copy. If the
+> simulator language is Polish, all of these checks fail spuriously — force English via
+> the simulator language, or set the in-app preference to `English` on the Settings
+> screen first. There is no `en` override flag; resolution follows the device locale.
 
 ## Preconditions
 
@@ -142,8 +148,7 @@ This is the exact flow that worked during the iOS simulator check in this reposi
 8. Confirm navigation to Card Details showing at least:
    - generated title
    - `Draft card · Agent Device Tavern`
-   - `Collectible view`
-   - `Info view`
+   - `Background`, `Character traits`, `Special movement`, `Special phrase`
 
 ## Known automation gotchas
 
@@ -449,9 +454,6 @@ Look for:
 
 - generated card title
 - card status line (`Draft card` or `Accepted card`)
-- display mode chips:
-  - `Collectible view`
-  - `Info view`
 - sections:
   - `Background`
   - `Character traits`
@@ -462,6 +464,11 @@ Look for:
   - `Regenerate card`
   - `Delete card`
 
+Do **not** expect display-mode chips. `CardDisplayModeSwitch` is not mounted on this
+screen — the route hardcodes `displayMode="collectible"`. Seeing `Collectible view` /
+`Info view` here means the regression was fixed. See
+[`discovery-questions.md`](./discovery-questions.md).
+
 ### Checks
 
 #### A. Visual smoke
@@ -470,14 +477,11 @@ Look for:
 2. Confirm the layout looks coherent in the default mode.
 3. Confirm there is visible separation between sections and no obviously broken formatting.
 
-#### B. Display mode switch
+#### B. Display mode switch — SKIP (known regression)
 
-1. Tap `Info view` if `Collectible view` is selected.
-2. Snapshot.
-3. Confirm the same content is still present in the alternate mode.
-4. Tap `Collectible view`.
-5. Snapshot again.
-6. Confirm the toggle still works and the card remains readable.
+Not reachable. Confirm only that no mode chips render. If they do render, run the original
+check: tap `Info view`, snapshot, confirm the same content survives the switch, tap
+`Collectible view`, snapshot.
 
 #### C. Draft acceptance
 
@@ -501,15 +505,61 @@ Look for:
 ### Pass criteria
 
 - Card details render fully.
-- Display mode switching works.
+- No display-mode chips appear (regression still present).
 - Accept action updates the UI correctly.
 - Regenerate and delete both require confirmation.
 
 ---
 
-## 6. Explore Screen
+## 6. Settings Screen
 
-Route source: `src/app/explore.tsx`
+Route source: `src/app/settings.tsx`
+
+### Goal
+
+Verify the language preference renders, switches, and actually changes app copy.
+
+### Reach this screen
+
+From Party List, tap the gear icon in the header (accessibility label `Settings`).
+
+### Expected visible content
+
+- `App language` section title
+- chips: `System default`, `English`, `Polish`
+- a line confirming the current language, or that the app is following the device language
+
+### Checks
+
+1. Open Settings and snapshot.
+2. Confirm the current-language line reflects the resolved language.
+3. Tap `Polish`.
+4. Go back to Party List. Snapshot.
+5. Confirm headings and buttons are now Polish. Reliable markers: the create CTA reads
+   `Utwórz nową imprezę`, the gear's label is `Ustawienia`, and the section title reads
+   `Język aplikacji`.
+6. Return to Settings, set `System default`, and confirm the line reports the device
+   language.
+
+### Pass criteria
+
+- Preference persists across navigation.
+- Selecting `Polish` changes visible copy app-wide, including navigation titles.
+- `System default` resolves to a supported language rather than blank text.
+
+### Note
+
+Generation output language follows this setting too. A full i18n check would generate a
+card in Polish and confirm the generated text is Polish. That costs an API call, so run it
+only when touching i18n or generation.
+
+---
+
+## 7. Explore Screen
+
+Route source: `src/app/explore.tsx` — **orphaned**. Not declared in the stack in
+`src/app/_layout.tsx`, and nothing links to it. Its copy still claims "local LLM
+generation", which was never built.
 
 ### Goal
 
@@ -517,7 +567,7 @@ Verify the secondary informational screen still renders and the back navigation 
 
 ### Reach this screen
 
-Navigate to the Explore route if it is exposed in the running app build.
+Deep-link or hand-edit the route, e.g. `larparty://explore`, since no UI path reaches it.
 
 ### Expected visible content
 
@@ -542,6 +592,44 @@ Look for:
 
 ---
 
+## 8. Offline Behavior
+
+Generation requires internet by design. Verify offline browsing still works and generation
+fails without corrupting saved state.
+
+### Setup
+
+Generate at least one saved party and one accepted card while online. Then enable airplane
+mode (or disable the simulator's network).
+
+### Checks
+
+1. Launch/foreground the app offline.
+2. Confirm Party List renders saved parties (not the empty state).
+3. Open Party Details. Confirm saved cards render.
+4. Open a card. Confirm its content renders.
+5. Tap `Create a new party` and create a party. Confirm it saves and appears in the list.
+6. Open the new party, fill a valid character form, tap `Generate character card`.
+7. Confirm an error is shown and the button returns to its normal (non-loading) label.
+8. Go back. Confirm no new card was created.
+9. Re-enable the network and confirm generation succeeds.
+
+### Pass criteria
+
+- All saved content browsable offline.
+- Party creation works offline (local persistence only).
+- Offline generation fails gracefully: no navigation, no half-saved card, no stuck
+  `Generating...` state.
+- Recovery works after reconnecting with no restart.
+
+### Known issue
+
+The failure text is currently the raw SDK/network message, not translated copy. Expect
+English technical text here. See
+[`architecture.md`](./architecture.md#dead-code-and-hazards).
+
+---
+
 ## Recommended end-to-end smoke flow
 
 Use this when you want one practical regression pass instead of isolated screen checks.
@@ -557,7 +645,6 @@ Use this when you want one practical regression pass instead of isolated screen 
 9. Attempt generation.
 10. If generation succeeds:
     - verify Card Details
-    - switch between `Collectible view` and `Info view`
     - accept the card
     - verify accepted state
     - verify regenerate confirmation
@@ -566,6 +653,9 @@ Use this when you want one practical regression pass instead of isolated screen 
 12. Confirm the saved card appears in the list.
 13. Return to Party List.
 14. Confirm the saved party appears in the list.
+15. Open Settings from the header gear.
+16. Switch language to `Polish` and confirm app copy changes.
+17. Switch back to `System default`.
 
 ## Failure reporting format
 
@@ -589,11 +679,14 @@ Example:
 
 Update this doc when any of these change:
 
-- visible CTA labels
+- visible CTA labels — they live in `src/shared/i18n/locales/en.ts`; this file quotes the
+  English copy, so a copy change breaks these checks silently
 - validation copy
 - route flow between screens
 - card actions
 - display mode labels
+- the display-mode regression (rewiring `CardDisplayModeSwitch` re-enables check 5.B)
+- language options, or new keys under `settings.language`
 - generation prerequisites
 
 Prefer keeping these checks anchored to visible UX labels rather than internal implementation details so AI agents can continue using them after refactors.

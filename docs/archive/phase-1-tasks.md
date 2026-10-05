@@ -1,5 +1,8 @@
 # LarParty PoC — Phase 1 Tasks
 
+> **ARCHIVED.** Completed. Routes, layout, and theming foundation described here as
+> "to build" already exist. See [`../implementation-plan.md`](../implementation-plan.md).
+
 This file breaks Phase 1 into concrete execution tasks for the first coding session.
 
 ## Phase 1 Goal

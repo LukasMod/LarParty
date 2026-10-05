@@ -1,5 +1,9 @@
 # Theme and Mood Proposals
 
+> **ARCHIVED.** Brainstorm only. None of the proposed theme directions shipped. The
+> "current" lists below are also stale — the live enums are in
+> `src/shared/constants/party-options.ts`.
+
 ## Current theme categories
 
 The app currently has these six theme categories:
