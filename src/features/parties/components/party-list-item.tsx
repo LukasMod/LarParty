@@ -33,7 +33,7 @@ export function PartyListItem({
         <ThemedView themeOverride={partyTheme} type="surface" style={styles.partyCard}>
           <ThemedView
             themeOverride={partyTheme}
-            type="cardPreviewAccent"
+            type="accent"
             style={styles.partyAccent}
           />
           <View style={styles.partyCardContent}>

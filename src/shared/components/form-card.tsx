@@ -10,7 +10,7 @@ type FormCardProps = PropsWithChildren<{
 
 export function FormCard({ children, style }: FormCardProps) {
   return (
-    <ThemedView type="backgroundElement" style={[styles.card, style]}>
+    <ThemedView type="surface" style={[styles.card, style]}>
       {children}
     </ThemedView>
   )

@@ -1,11 +1,4 @@
-export const themeCategories = [
-  'fantasy',
-  'sci-fi',
-  'horror',
-  'magic',
-  'casual',
-  'corporation',
-] as const
+export const themeCategories = ['fantasy', 'sci-fi', 'horror'] as const
 
 export const themeCategoryLabels: Record<
   (typeof themeCategories)[number],
@@ -14,50 +7,31 @@ export const themeCategoryLabels: Record<
   fantasy: 'Fantasy',
   'sci-fi': 'Sci-Fi',
   horror: 'Horror',
-  magic: 'Magic',
-  casual: 'Casual',
-  corporation: 'Corporation',
 }
 
 export const partyMoods = [
   'fun',
   'serious',
-  'scary',
-  'silly',
   'dramatic',
-  'chaotic',
   'mysterious',
   'adventurous',
   'epic',
-  'playful',
   'dark',
-  'tense',
-  'whimsical',
   'romantic',
-  'noble',
-  'melancholic',
-  'rebellious',
+  'chaotic',
   'cozy',
 ] as const
 
 export const partyMoodLabels: Record<(typeof partyMoods)[number], string> = {
   fun: 'Fun',
   serious: 'Serious',
-  scary: 'Scary',
-  silly: 'Silly',
   dramatic: 'Dramatic',
-  chaotic: 'Chaotic',
   mysterious: 'Mysterious',
   adventurous: 'Adventurous',
   epic: 'Epic',
-  playful: 'Playful',
   dark: 'Dark',
-  tense: 'Tense',
-  whimsical: 'Whimsical',
   romantic: 'Romantic',
-  noble: 'Noble',
-  melancholic: 'Melancholic',
-  rebellious: 'Rebellious',
+  chaotic: 'Chaotic',
   cozy: 'Cozy',
 }
 

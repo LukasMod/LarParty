@@ -52,7 +52,7 @@ const styles = StyleSheet.create((theme) => ({
     backgroundColor:
       status === 'accepted'
         ? partyTheme.colors.surfaceSelected
-        : partyTheme.colors.surfaceMuted,
+        : partyTheme.colors.surface,
     borderColor: partyTheme.colors.border,
   }),
 }))

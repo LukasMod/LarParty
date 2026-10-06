@@ -9,9 +9,6 @@ export const Colors = {
   fantasy: appThemes.fantasy.colors,
   'sci-fi': appThemes['sci-fi'].colors,
   horror: appThemes.horror.colors,
-  magic: appThemes.magic.colors,
-  casual: appThemes.casual.colors,
-  corporation: appThemes.corporation.colors,
 } as const
 
 export const Fonts = appThemes.default.fonts

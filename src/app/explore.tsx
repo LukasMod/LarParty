@@ -27,7 +27,7 @@ export default function ExploreScreen() {
             </ThemedText>
           </View>
 
-          <ThemedView type="backgroundElement" style={styles.card}>
+          <ThemedView type="surface" style={styles.card}>
             <ThemedText type="smallBold">Current progress</ThemedText>
             <View style={styles.list}>
               {checklistItems.map((item) => (
