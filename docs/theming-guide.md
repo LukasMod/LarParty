@@ -74,21 +74,32 @@ const partyTheme = getPartyTheme(party.themeCategory)
 
 ## Semantic tokens first
 
-Always prefer semantic theme tokens over raw color values.
-
-Good examples:
+Every theme declares the same nine color tokens:
 
 - `text`
 - `textSecondary`
 - `background`
-- `backgroundMuted`
 - `surface`
 - `surfaceSelected`
 - `border`
 - `primary`
-- `cardPreviewAccent`
+- `primaryText`
+- `accent`
 
-Avoid building UI around direct hex values or ad hoc color names in feature code.
+Always prefer semantic theme tokens over raw color values. Avoid building UI around
+direct hex values or ad hoc color names in feature code.
+
+The three party themes share one neutral base — `text`, `textSecondary`, `background`
+and `surface` are identical across them and listed once in `partyThemeBaseColors`. Only
+`primary`, `primaryText`, `border`, `surfaceSelected` and `accent` carry a theme's
+identity. A new party theme copies the base and supplies those five.
+
+`npm run contrast` reads the palettes straight out of `unistyles.ts` and checks every
+theme against one shared set of WCAG ratios (4.5:1 for text, 3:1 for large text and UI
+boundaries such as borders and accents). The rules are theme independent — a new theme
+has to satisfy the same checks, so it cannot ship with a contrast pass list of its own.
+The script also fails if a party theme drifts from the shared base. It runs as part of
+`npm run check`.
 
 ## Unistyles guidelines we should follow
 
@@ -112,7 +123,7 @@ prefer dynamic functions inside the stylesheet.
 Example:
 
 ```tsx
-const styles = StyleSheet.create(theme => ({
+const styles = StyleSheet.create((theme) => ({
   card: (isAccepted: boolean) => ({
     borderRadius: theme.radius.control,
     borderWidth: 1,

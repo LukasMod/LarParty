@@ -1,10 +1,9 @@
 # Architecture
 
-What the code is **today**. Written against the repo, not a plan. If this and
-[`implementation-plan.md`](./implementation-plan.md) disagree, this file is right.
+How the code works. Where this and the code disagree, the code wins — fix this file.
 
-Small codebase: ~80 TypeScript files, ~4.3k lines. Most files are under 100 lines, so
-reading the real file is usually faster than reading prose.
+Small codebase: ~80 TypeScript files, ~4.3k lines, 72 of them under 100 lines. Reading the
+real file is often faster than reading prose.
 
 ## Stack
 
@@ -117,8 +116,17 @@ Load-bearing details:
   `generation-<uuid>`. Prefixes are part of the id format.
 - **Timestamps** are `new Date().toISOString()` strings, compared with
   `localeCompare`. Do not switch to `Date.parse` ordering without touching all sorts.
-- There is no schema versioning or migration in `persist`. Adding a field with a non-
-  default requirement needs a `version`/`migrate` plan, or existing installs break.
+- **No store has schema versioning.** None of `party-store`, `card-store`, or
+  `preferences-store` set a `version` or `migrate`. MMKV survives app rebuilds and persisted
+  JSON bypasses the TypeScript types entirely — the compiler will not warn you when a stored
+  shape drifts from the type.
+- **Removing an enum value breaks existing local data.** `getPartyTheme` is a total map
+  (`Record<ThemeCategory, AppTheme>`), so a saved party holding a value absent from the enum
+  makes the lookup return `undefined` and `partyTheme.colors.accent` throws — a
+  white screen on party and card details, not a graceful fallback. There is no migration layer.
+  The MVP has no users, so the accepted handling is to clear local storage (or reinstall) after
+  trimming an enum; a fresh install never holds a dropped value. If real installs ever hold
+  data, add a `persist` `version` + `migrate` first.
 
 ## Domain rules worth knowing before editing
 
@@ -127,10 +135,12 @@ Load-bearing details:
 - Regenerate creates a **new** card carrying `basedOnCardId` (previous card) and reusing
   `generationGroupId`. If `generationGroupId` is absent, `createDraftCard` mints one, so
   the first generation also establishes a group. Accepted versions are never overwritten.
+  Grouping by `generationGroupId` is what keeps version history queryable without a separate
+  versioning engine.
 - `generated.characterTraits` is a 3-tuple in both the TS type and the Zod schema.
 - Trait selection is capped at 3 (`MAX_TRAITS` in `use-new-character-card-form.ts`).
-- Validation is hand-rolled in the form hooks. Zod guards **only** AI output.
-  `shared/validation/` was planned and does not exist.
+- Validation is hand-rolled in the form hooks. Zod guards **only** AI output. There is no
+  `shared/validation/` directory.
 
 ## Generation flow
 
@@ -157,10 +167,10 @@ Output language follows the resolved app language. See [`i18n-guide.md`](./i18n-
 
 ## Theming
 
-Seven themes in `src/shared/theme/unistyles.ts`: `default` (the app's active theme) plus
-one per `themeCategory`. Registered via `StyleSheet.configure` at import time from
-`index.ts`. `party-theme.ts` maps a category to a theme object; card components take
-`partyThemeCategory` as a prop and call `getPartyTheme(...)` themselves.
+Four themes in `src/shared/theme/unistyles.ts`: `default` (the app's active theme) plus one
+per `themeCategory` — `fantasy`, `'sci-fi'`, `horror`. Registered via `StyleSheet.configure`
+at import time from `index.ts`. `party-theme.ts` maps a category to a theme object; card
+components take `partyThemeCategory` as a prop and call `getPartyTheme(...)` themselves.
 
 Note the double meaning of "theme": the app's active theme is fixed to `default`
 (`initialTheme`), and party themes are applied as **overrides**, not by switching the
@@ -178,9 +188,9 @@ Known and verified. Do not "discover" these again; do not imitate them either.
   are live, and they are imported everywhere. `animated-icon*`, `app-tabs*`,
   `external-link`, `hint-row`, `web-badge`, `ui/collapsible`, and the `.module.css` are
   imported by nothing. **Do not delete `themed-text.tsx` / `themed-view.tsx`.**
-- **`src/app/explore.tsx`** — reachable route, not in the stack config, no links to it,
-  and its copy still advertises "local LLM generation" that was never built. Also uses
-  plain RN `StyleSheet` instead of Unistyles.
+- **`src/app/explore.tsx`** — reachable route, absent from the stack config, linked from
+  nothing. Its copy advertises "local LLM generation", which the app does not have. It also
+  uses plain RN `StyleSheet` instead of Unistyles.
 - **`src/components/app-tabs.tsx`** is the only consumer of `assets/images/tabIcons/`, so
   deleting it orphans those assets.
 - **`src/hooks/`** — `use-color-scheme*.ts` unused. `use-theme.ts` is live (used by
@@ -204,9 +214,9 @@ Known and verified. Do not "discover" these again; do not imitate them either.
   offline (`TypeError: Network request failed`), 4xx auth failures, and invalid-JSON
   responses — so `error.message` almost always wins and the translated `generationFailed` /
   `regenerationFailed` strings are near-dead code. Net effect: users see raw English
-  SDK/debug text, untranslated, including in Polish. Since generation now explicitly
-  requires connectivity, the offline case is a first-class path, not an edge case — map
-  failures to translated keys and keep `error.message` for logs only.
+  SDK/debug text, untranslated, including in Polish. Generation requires connectivity, so the
+  offline failure is a common path rather than an edge case — map failures to translated keys
+  and keep `error.message` for logs only.
 - **Manual memoization against React Compiler.** `party/[partyId]/card/new.tsx:21` wraps
   `getPartyById(parties, partyId)` in `useMemo`. That is the only `useMemo`/`useCallback`
   left in `src`, and it is redundant with the compiler enabled. Drop it rather than copy
@@ -216,7 +226,9 @@ Known and verified. Do not "discover" these again; do not imitate them either.
 
 No test runner is configured. Nothing here is automated:
 
-- `npm run check` — lint (`expo lint`) then `tsc --noEmit`. Requires `npm install` first.
+- `npm run check` — lint (`expo lint`), then `tsc --noEmit`, then `npm run contrast`. Requires `npm install` first.
+- `npm run contrast` — `scripts/contrast-check.mjs` parses the palettes out of
+  `src/shared/theme/unistyles.ts` and applies one WCAG rule set to every theme. Plain Node, no test runner.
 - `npm run format` — Prettier: no semicolons, single quotes.
 - `.claude/settings.json` auto-runs `eslint --fix` + `prettier --write` on edited files.
 - Runtime QA is manual or agent-driven. See
@@ -225,11 +237,14 @@ No test runner is configured. Nothing here is automated:
 
 ### `npm run typecheck` fails on a clean checkout
 
-Verified against `main` with a clean working tree and no source changes. Lint passes.
-`tsc --noEmit` reports **15 pre-existing errors**, all i18n typing, none in app logic:
+`tsc --noEmit` reports 15 errors on a clean tree. Lint passes. All are i18n typing, none in
+app logic:
 
 `src/shared/i18n/labels.ts` (5), `party/new.tsx` (2), `party/[partyId]/card/new.tsx` (1),
 `new-character-card-form.tsx` (4), `party-meta-line.tsx` (2), `card-display-mode-switch.tsx` (1).
+
+Reproduce before assuming a change of yours caused them: if the count and files match the
+list above, they are these.
 
 **Root cause.** i18next 26 custom types accept an `ns:` key prefix only when `t` knows two
 or more namespaces. `labels.ts` helpers take a bare `TFunction` and prefix every key with
@@ -238,7 +253,7 @@ instead of `string`. That `unknown` cascades into every `getLabel={(o) => getXxx
 call site and any place interpolating the result. Keys are valid at runtime; only the types
 are wrong.
 
-**Verified fix (2 files, 15 errors → 0).** Both edits are required:
+**Fix (2 files, clears all 15).** Both edits are required:
 
 1. In `src/shared/i18n/labels.ts`, drop the `common:` prefix from all five keys —
    `common` is `defaultNS`, so bare keys resolve.
@@ -247,15 +262,15 @@ are wrong.
    component's `t` is `TFunction<readonly ["cards"]>`, which is not assignable to the
    `TFunction<'common'>` the helpers require.
 
-Confirmed runtime-safe: the default namespace for a `t` from `useTranslation(['common', 'cards'])`
+This is runtime-safe: the default namespace for a `t` from `useTranslation(['common', 'cards'])`
 is the first entry, and `createResourceTranslator` in `generation.ts` strips a leading
 `common:` when present and leaves bare keys untouched, so both forms resolve there.
 
 **Do not "fix" this by loosening `tsconfig` or deleting `i18next.d.ts`.** The custom types
 are what catch missing keys in `en`.
 
-**Until it is fixed:** expect 15 errors from `npm run check`. Count them, don't assume you
-caused them — and compare against the list above rather than a clean build.
+**Expect 15 errors from `npm run check`** while this stands. Count them and compare against
+the list above rather than assuming a clean build.
 
 Because there are no tests, the smoke-test runbook is the only regression net. Changes to
 persistence, card lifecycle, or cascade deletes deserve a simulator pass.
