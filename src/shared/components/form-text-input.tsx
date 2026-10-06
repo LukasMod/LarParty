@@ -20,12 +20,12 @@ const styles = StyleSheet.create((theme) => ({
     color: theme.colors.textSecondary,
   },
   input: {
-    backgroundColor: theme.colors.inputBackground,
+    backgroundColor: theme.colors.background,
     color: theme.colors.text,
     borderRadius: theme.radius.control,
     paddingHorizontal: theme.spacing.three,
     paddingVertical: theme.spacing.three,
     borderWidth: 1,
-    borderColor: theme.colors.inputBorder,
+    borderColor: theme.colors.border,
   },
 }))

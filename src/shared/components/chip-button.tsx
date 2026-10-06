@@ -54,7 +54,7 @@ const styles = StyleSheet.create((theme) => ({
     borderRadius: theme.radius.pill,
     paddingHorizontal: theme.spacing.three,
     paddingVertical: theme.spacing.two,
-    backgroundColor: theme.colors.inputBackground,
+    backgroundColor: theme.colors.background,
   },
   chipSelected: {
     backgroundColor: theme.colors.primary,

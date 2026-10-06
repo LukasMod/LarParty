@@ -1,9 +1,9 @@
 # LarParty PoC — Product Specification
 
-> Product scope and intent. Current as of the shipped PoC. For frozen domain rules use
-> [`mvp-decisions.md`](./mvp-decisions.md); for how it is built use
-> [`architecture.md`](./architecture.md). §14's open questions were all answered — see
-> [`discovery-questions.md`](./discovery-questions.md).
+Product scope, user flows, and screen intent. Domain rules live in
+[`mvp-decisions.md`](./mvp-decisions.md); how the code is built lives in
+[`architecture.md`](./architecture.md); open questions live in
+[`discovery-questions.md`](./discovery-questions.md).
 
 ## 1. Overview
 
@@ -166,8 +166,10 @@ Purpose: main entry screen with all parties.
 
 #### Content
 
-- list of parties
+- list of parties, newest first
+- per-party card count
 - create new party CTA
+- settings entry point in the header
 - empty state if no parties exist
 
 #### Actions
@@ -183,9 +185,8 @@ Purpose: show one party and all cards belonging to it.
 #### Content
 
 - party name/title
-- theme category
-- mood
-- list of cards
+- theme category and mood
+- list of cards, drafts and accepted together, most recently updated first
 - create card CTA
 
 #### Actions
@@ -210,12 +211,13 @@ Purpose: show generated character card in detail.
 
 #### Display mode requirement
 
-PoC should explore two display variants:
+The card supports two display variants:
 
 - stylized collectible-card presentation
 - readable info-sheet presentation
 
-A local UI switch/toggle should allow changing between both views.
+A local UI switch/toggle changes between the two views. See
+[`discovery-questions.md`](./discovery-questions.md) for the current gap in this feature.
 
 #### Actions
 
@@ -248,9 +250,9 @@ Purpose: create a new character seed for AI generation.
 
 ## 8.1 AI integration approach
 
-Shipped as specced: real API integration, direct client-side call, no backend. Provider
-is Google Gemini (`gemini-2.5-flash-lite`), isolated behind the `CharacterCardGenerator`
-interface in `src/features/generation/` so a later backend swap stays contained. Key is
+Real API integration with a direct client-side call and no backend. Provider is Google Gemini
+(`gemini-2.5-flash-lite`), isolated behind the `CharacterCardGenerator` interface in
+`src/features/generation/` so a later backend swap stays contained. Key is
 `EXPO_PUBLIC_GEMINI_API_KEY`. See [`architecture.md`](./architecture.md).
 
 ## 8.2 Response format
@@ -290,6 +292,10 @@ The prompt should aim for:
 - no explicit/inappropriate content
 - clear output consistency
 - theme-aware flavor
+
+Theme categories are original labels rather than franchise names. The prompt instructs the
+model to draw on the theme for inspiration while avoiding exact canon characters, factions,
+and plotlines, so themed output does not reproduce protected material.
 
 ## 9. Data and Persistence Requirements
 
@@ -331,9 +337,9 @@ The app should use one core design system, but visual accents should adapt to th
 
 Examples:
 
-- Fantasy: magical, elegant, parchment/gold accents
-- Sci-Fi: neon, metallic, futuristic accents
-- Horror: eerie, dramatic, high-contrast accents
+- Fantasy: violet primary, mint accent
+- Sci-Fi: cyan primary, lime accent
+- Horror: red primary, olive accent
 - Wizard-school-inspired: whimsical academic accents
 
 ## 10.3 Styling technology
@@ -371,12 +377,3 @@ Examples:
 - Structured JSON responses may still require validation and fallback handling
 - Offline storage behavior differs between native and web and should be planned carefully
 - Theme-adaptive UI can grow in complexity if not constrained to tokenized visual accents
-
-## 14. Open Questions for Later Planning
-
-- Which AI provider should be used for the PoC?
-- How should API keys be handled in a direct client-side setup during development?
-- Should trait selection allow a fixed max count?
-- Should there be confirmation dialogs for delete/regenerate actions?
-- What exact visual switch UX should be used for collectible card vs info sheet mode?
-- Should the app include seed/example demo parties for first launch?

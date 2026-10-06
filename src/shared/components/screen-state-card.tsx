@@ -10,7 +10,7 @@ interface ScreenStateCardProps {
 
 export function ScreenStateCard({ title, body }: ScreenStateCardProps) {
   return (
-    <ThemedView type="backgroundElement" style={styles.card}>
+    <ThemedView type="surface" style={styles.card}>
       <ThemedText type="subtitle">{title}</ThemedText>
       <ThemedText themeColor="textSecondary">{body}</ThemedText>
     </ThemedView>

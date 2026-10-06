@@ -464,10 +464,9 @@ Look for:
   - `Regenerate card`
   - `Delete card`
 
-Do **not** expect display-mode chips. `CardDisplayModeSwitch` is not mounted on this
-screen — the route hardcodes `displayMode="collectible"`. Seeing `Collectible view` /
-`Info view` here means the regression was fixed. See
-[`discovery-questions.md`](./discovery-questions.md).
+This screen has no display-mode chips: the route passes a fixed `displayMode="collectible"`
+and does not mount `CardDisplayModeSwitch`. If `Collectible view` / `Info view` appear here,
+the screen has changed — update this doc and [`discovery-questions.md`](./discovery-questions.md).
 
 ### Checks
 
@@ -477,11 +476,10 @@ screen — the route hardcodes `displayMode="collectible"`. Seeing `Collectible 
 2. Confirm the layout looks coherent in the default mode.
 3. Confirm there is visible separation between sections and no obviously broken formatting.
 
-#### B. Display mode switch — SKIP (known regression)
+#### B. Display mode switch — not reachable
 
-Not reachable. Confirm only that no mode chips render. If they do render, run the original
-check: tap `Info view`, snapshot, confirm the same content survives the switch, tap
-`Collectible view`, snapshot.
+Confirm no mode chips render. If they do, the feature has been wired: tap `Info view`,
+snapshot, confirm the same content survives the switch, tap `Collectible view`, snapshot.
 
 #### C. Draft acceptance
 
@@ -505,7 +503,7 @@ check: tap `Info view`, snapshot, confirm the same content survives the switch, 
 ### Pass criteria
 
 - Card details render fully.
-- No display-mode chips appear (regression still present).
+- No display-mode chips appear.
 - Accept action updates the UI correctly.
 - Regenerate and delete both require confirmation.
 
@@ -517,7 +515,7 @@ Route source: `src/app/settings.tsx`
 
 ### Goal
 
-Verify the language preference renders, switches, and actually changes app copy.
+Verify the language preference renders, switches, and changes app copy.
 
 ### Reach this screen
 
@@ -558,12 +556,12 @@ only when touching i18n or generation.
 ## 7. Explore Screen
 
 Route source: `src/app/explore.tsx` — **orphaned**. Not declared in the stack in
-`src/app/_layout.tsx`, and nothing links to it. Its copy still claims "local LLM
-generation", which was never built.
+`src/app/_layout.tsx`, and nothing links to it. Its copy claims "local LLM generation",
+which the app does not have.
 
 ### Goal
 
-Verify the secondary informational screen still renders and the back navigation CTA works.
+Verify the secondary informational screen renders and the back navigation CTA works.
 
 ### Reach this screen
 
@@ -685,7 +683,7 @@ Update this doc when any of these change:
 - route flow between screens
 - card actions
 - display mode labels
-- the display-mode regression (rewiring `CardDisplayModeSwitch` re-enables check 5.B)
+- display mode wiring (mounting `CardDisplayModeSwitch` makes check 5.B reachable)
 - language options, or new keys under `settings.language`
 - generation prerequisites
 

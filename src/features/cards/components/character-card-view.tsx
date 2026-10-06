@@ -31,7 +31,7 @@ export function CharacterCardView({
   return (
     <ThemedView
       themeOverride={partyTheme}
-      type={displayMode === 'collectible' ? 'surface' : 'backgroundMuted'}
+      type={displayMode === 'collectible' ? 'surface' : 'background'}
       style={styles.card(partyTheme, displayMode)}
     >
       <CardHistorySection
@@ -62,7 +62,7 @@ const styles = StyleSheet.create((theme) => ({
     borderWidth: displayMode === 'collectible' ? 2 : 1,
     borderColor:
       displayMode === 'collectible'
-        ? partyTheme.colors.cardPreviewAccent
+        ? partyTheme.colors.accent
         : partyTheme.colors.border,
   }),
 }))

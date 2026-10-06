@@ -47,42 +47,38 @@ No date, description, or location in MVP.
 ## Frozen select options
 
 > **Source of truth is `src/shared/constants/party-options.ts`.** The lists below are a
-> readable snapshot and drift. The mood list has already grown past what was originally
-> frozen here. Add values in the code file first, then update the snapshot and the
+> readable snapshot. Add values in the code file first, then update the snapshot and the
 > `options.*` labels (in the `common` namespace) in both locale files — see
 > [`i18n-guide.md`](./i18n-guide.md).
+>
+> **Removing a value affects existing local data.** Parties are persisted to MMKV with no type
+> checking at the storage boundary, and `getPartyTheme` is a total map — a saved party
+> holding a value absent from the enum crashes party and card details. There is no migration
+> layer (the MVP has no users), so after trimming the enums clear local storage or reinstall.
+> See [`architecture.md`](./architecture.md#stores).
 
 ### Theme categories
 
 - Fantasy
 - Sci-Fi
 - Horror
-- Magic
-- Casual
-- Corporation
 
 ### Mood options
 
-Snapshot as of the i18n work (18 values):
-
 - fun
 - serious
-- scary
-- silly
 - dramatic
-- chaotic
 - mysterious
 - adventurous
 - epic
-- playful
 - dark
-- tense
-- whimsical
 - romantic
-- noble
-- melancholic
-- rebellious
+- chaotic
 - cozy
+
+Moods are separated so each names a distinct tone. Overlapping candidates (e.g. `silly` vs
+`playful`, `scary` vs `dark`, `tense` vs `dramatic`) collapse into the one that reads most
+generally.
 
 ### Character traits
 
@@ -104,8 +100,7 @@ Snapshot as of the i18n work (18 values):
 ## Card generation rules
 
 - AI generation is a must-have feature
-- Provider: Google Gemini (`gemini-2.5-flash-lite`), called directly from the client for
-  the PoC. The earlier local-LLM-first direction was dropped
+- Provider: Google Gemini (`gemini-2.5-flash-lite`), called directly from the client
 - API key comes from `EXPO_PUBLIC_GEMINI_API_KEY`
 - Generated field values are written in the resolved app language; JSON schema keys stay
   English — see [`i18n-guide.md`](./i18n-guide.md)
@@ -158,14 +153,13 @@ This means multiple related versions may exist.
 Local persistence exists for **reading** saved content offline. It does not make the app
 work offline end-to-end.
 
-### Decided: generation requires connectivity
+### Generation requires connectivity
 
 - AI generation and regeneration call a hosted provider over the network. They **require an
   internet connection and access to the provider (Gemini)**.
-- There is no offline generation, no on-device model, and no queue-and-sync. This is a
-  deliberate product decision, not a temporary limitation.
+- There is no offline generation, no on-device model, and no queue-and-sync.
 - A user with saved cards and no connectivity can still browse everything they saved. They
-  just cannot create new cards until they reconnect.
+  cannot create new cards until they reconnect.
 
 ### Must work offline
 
@@ -185,9 +179,6 @@ work offline end-to-end.
 
 Web is nice-to-have. Do not let web parity slow down the mobile-first MVP.
 
-## Open technical uncertainty
+## Open questions
 
-Resolved: the local-LLM path was rejected. Generation uses a hosted provider (Gemini) over
-the network, which is why generation needs connectivity.
-
-Remaining open items are UX-level, tracked in [`discovery-questions.md`](./discovery-questions.md).
+UX-level items are tracked in [`discovery-questions.md`](./discovery-questions.md).

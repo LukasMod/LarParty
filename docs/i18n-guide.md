@@ -156,7 +156,7 @@ The schema keys themselves (`generatedNameWithClass`, `backgroundHistory`,
   is a single-namespace `t`. Rejected calls return `unknown`, which then fails every
   downstream `string`. This is exactly the trap in `labels.ts`, whose helpers take a bare
   `TFunction` (which resolves to the `defaultNS`, i.e. `common`) and prefix everything with
-  `common:` — the cause of the pre-existing typecheck failure in
+  `common:` — the cause of the typecheck failure in
   [`architecture.md`](./architecture.md#npm-run-typecheck-fails-on-a-clean-checkout).
   Safe rule: **write `common` keys bare** — `t('options.sex.male')`, not
   `t('common:options.sex.male')`. Non-default namespaces always take their prefix:

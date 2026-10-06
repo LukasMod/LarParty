@@ -84,34 +84,50 @@ Shared code lives in `src/shared`:
 - `npm run web`
 - `npm run lint`
 - `npm run typecheck`
-- `npm run check` — run lint + typecheck
+- `npm run check` — run lint + typecheck + contrast
 - `npm run format` — Prettier (no semicolons, single quotes)
 - `npx expo start --clear` — clear Metro cache
 
 ### Testing
 
-- No test runner is configured yet.
-- No single-test command exists yet.
-- **`npm run typecheck` fails on a clean checkout** with 15 pre-existing i18n typing
-  errors. Lint passes. Do not assume you caused them, and do not "fix" it by deleting
+- No test runner is configured. No single-test command exists.
+- **`npm run typecheck` fails on a clean checkout** with 15 i18n typing errors. Lint
+  passes. Do not assume you caused them, and do not "fix" it by deleting
   `src/shared/i18n/i18next.d.ts` or loosening `tsconfig`. Root cause and a verified
-  partial fix are in
+  2-file fix are in
   [docs/architecture.md](./docs/architecture.md#npm-run-typecheck-fails-on-a-clean-checkout).
 
 ## Documentation Resources
 
-Start with [docs/README.md](./docs/README.md) for what each doc is for and how far to
-trust it.
+Start with [docs/README.md](./docs/README.md) for what each doc is for.
 
-- [Architecture](./docs/architecture.md) — **how the code is today**: layout, screen-model pattern, stores, generation flow, known dead code
+### Docs policy — mandatory
+
+- **Docs describe the present, always.** Every live doc states how things work _now_, in
+  present tense. No "previously / originally / used to / no longer / still", no before-and-after
+  comparisons, no "reduced from X to Y", no drift tables, no notes about what a section used to
+  say.
+- **Update in place, in the same change as the code.** When behavior, enums, routes, or rules
+  change, rewrite the affected doc to the new truth. Do not annotate the old text, do not keep a
+  record of it, do not add a banner explaining the change.
+- **Resolved items get deleted, not marked resolved.** A fixed bug, completed task, answered
+  question, or superseded decision is removed from the doc entirely. Open issues stay, described
+  in present tense ("this throws when…", not "this regressed when…").
+- **History lives only in git.** If old reasoning matters, either keep it as present-tense
+  rationale ("grouping by `generationGroupId` avoids a versioning engine") or let `git log` hold
+  it. Never mix the two in one file.
+- **Code beats prose.** If a doc disagrees with the code, fix the doc immediately.
+
+### Current docs
+
+- [Architecture](./docs/architecture.md) — how the code works: layout, screen-model pattern, stores, generation flow, current hazards
 - [Product spec](./docs/product-spec.md) — product scope, user flows, screen purposes, AI output contract, offline rules
-- [MVP decisions](./docs/mvp-decisions.md) — frozen MVP rules, enums, lifecycle rules, platform priorities, display-mode behavior
+- [MVP decisions](./docs/mvp-decisions.md) — current domain rules, enums, lifecycle, platform priorities
 - [i18n guide](./docs/i18n-guide.md) — namespaces, adding strings, adding a locale, localizing AI output
-- [Theming guide](./docs/theming-guide.md) — app theme architecture, theme override usage, and Unistyles styling conventions
-- [Implementation plan](./docs/implementation-plan.md) — **Current Status** at the top is the live forward plan (remaining work). Below it is the original architecture rationale, with a drift table.
-- [Discovery questions](./docs/discovery-questions.md) — unresolved product and UX questions before scope changes
-- [Agent Device smoke tests](./docs/agent-device-smoke-tests.md) — practical iOS simulator runbook and screen-by-screen QA checks for AI-driven app verification
-- [Archive](./docs/archive/) — completed/stale planning docs. Do not implement from these
+- [Theming guide](./docs/theming-guide.md) — theme architecture, theme override usage, Unistyles conventions
+- [Roadmap](./docs/roadmap.md) — remaining work and explicit non-goals
+- [Discovery questions](./docs/discovery-questions.md) — currently open product and UX questions
+- [Agent Device smoke tests](./docs/agent-device-smoke-tests.md) — iOS simulator runbook and screen-by-screen QA checks
 
 ## Repo Hazards
 
@@ -120,8 +136,9 @@ before deleting or imitating anything. In short:
 
 - `src/components/` and `src/hooks/` hold Expo starter leftovers. Only `themed-text.tsx`,
   `themed-view.tsx`, and `use-theme.ts` are live — they are imported across the app.
-- `src/app/explore.tsx` is an orphaned route with outdated copy.
+- `src/app/explore.tsx` is an orphaned route whose copy describes features the app lacks.
 - `CardDisplayModeSwitch` is orphaned, so the persisted `cardDisplayMode` preference has
-  no effect. Known regression, tracked in discovery questions.
+  no effect. Tracked in discovery questions.
 
-[README](./README.md) is still mostly the default Expo template.
+`README.md` is the default Expo template and tells readers to run `npm run reset-project`,
+which removes the app.

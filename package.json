@@ -54,8 +54,9 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",
+    "contrast": "node scripts/contrast-check.mjs",
     "healthcheck:react-compiler": "npx react-compiler-healthcheck@latest",
-    "check": "npm run lint && npm run typecheck",
+    "check": "npm run lint && npm run typecheck && npm run contrast",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\""
   },
   "private": true
