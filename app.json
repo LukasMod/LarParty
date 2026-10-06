@@ -36,12 +36,16 @@
             "imageWidth": 76
           }
         }
-      ]
+      ],
+      "expo-image",
+      "expo-web-browser",
+      "expo-font",
+      "expo-localization",
+      "expo-status-bar"
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    },
-    "newArchEnabled": true
+    }
   }
 }

@@ -100,7 +100,7 @@ generally.
 ## Card generation rules
 
 - AI generation is a must-have feature
-- Provider: Google Gemini (`gemini-2.5-flash-lite`), called directly from the client
+- Provider: Google Gemini (`gemini-3.5-flash-lite`), called directly from the client
 - API key comes from `EXPO_PUBLIC_GEMINI_API_KEY`
 - Generated field values are written in the resolved app language; JSON schema keys stay
   English — see [`i18n-guide.md`](./i18n-guide.md)
