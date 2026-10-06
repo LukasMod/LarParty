@@ -10,7 +10,7 @@ import {
   GenerateCharacterCardRequest,
 } from '@/features/generation/types'
 
-const GEMINI_MODEL = 'gemini-2.5-flash-lite'
+const GEMINI_MODEL = 'gemini-3.5-flash-lite'
 const GEMINI_API_KEY = process.env.EXPO_PUBLIC_GEMINI_API_KEY
 
 class GeminiCharacterCardGenerator implements CharacterCardGenerator {

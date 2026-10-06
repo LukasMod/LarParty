@@ -251,7 +251,7 @@ Purpose: create a new character seed for AI generation.
 ## 8.1 AI integration approach
 
 Real API integration with a direct client-side call and no backend. Provider is Google Gemini
-(`gemini-2.5-flash-lite`), isolated behind the `CharacterCardGenerator` interface in
+(`gemini-3.5-flash-lite`), isolated behind the `CharacterCardGenerator` interface in
 `src/features/generation/` so a later backend swap stays contained. Key is
 `EXPO_PUBLIC_GEMINI_API_KEY`. See [`architecture.md`](./architecture.md).
 

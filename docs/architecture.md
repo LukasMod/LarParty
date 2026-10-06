@@ -9,13 +9,13 @@ real file is often faster than reading prose.
 
 | Concern             | Choice                                                                         |
 | ------------------- | ------------------------------------------------------------------------------ |
-| Runtime             | Expo SDK 56, React Native 0.85.3, React 19.2.3, New Architecture on            |
+| Runtime             | Expo SDK 57, React Native 0.86.3, React 19.2.3, New Architecture on            |
 | Routing             | Expo Router, typed routes on                                                   |
 | Styling             | react-native-unistyles v3 (babel plugin scoped to `src`)                       |
 | State + persistence | Zustand v5 + `persist` → MMKV (`react-native-mmkv` v4, Nitro)                  |
 | Validation          | Zod v4 (AI response only)                                                      |
 | i18n                | i18next + react-i18next, en + pl                                               |
-| AI                  | `@google/genai`, `gemini-2.5-flash-lite`                                       |
+| AI                  | `@google/genai`, `gemini-3.5-flash-lite`                                       |
 | Compiler            | React Compiler enabled; forms still use `useState`, and some `useMemo` remains |
 
 Path alias `@/*` → `src/*`, plus `@/assets/*`. Precedent for `@/assets` is in
