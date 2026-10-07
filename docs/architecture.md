@@ -51,9 +51,11 @@ Feature module convention (`parties`, `cards`):
 ## Routes
 
 `src/app/_layout.tsx` declares one stack and translates every title with `t('screens.*')`.
-Titles are set there, not in the screens — except `/`, which overrides the header
-in-screen via `<Stack.Screen>`: a serif wordmark on the left, and on the right a create-party
-`+` (only when parties exist) plus the settings gear.
+`/` and `/party/[partyId]` set `headerShown: false` and draw their own header with
+`ScreenHeader` (`src/shared/components/screen-header.tsx`): the home screen shows the serif
+`LarParty` wordmark with separate circular icon buttons for create-party `+` (only when parties
+exist) and settings; party details shows a circular back button, the serif party title, and a
+circular `+` that opens the new-card form. `IconButton` renders those circular buttons.
 
 | Route                            | File                                          |
 | -------------------------------- | --------------------------------------------- |
