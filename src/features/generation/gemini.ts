@@ -27,6 +27,7 @@ class GeminiCharacterCardGenerator implements CharacterCardGenerator {
       config: {
         responseMimeType: 'application/json',
         responseSchema: generatedCharacterCardJsonSchema,
+        abortSignal: request.signal,
       },
     })
 

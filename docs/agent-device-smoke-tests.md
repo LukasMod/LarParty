@@ -423,8 +423,17 @@ Look for:
    - `Calm`, `Funny`, `Loyal`
 2. Tap `Generate character card`.
 3. Snapshot during and after submission.
-4. If AI is configured and generation succeeds, confirm navigation to Card Details.
-5. If AI is not configured or fails externally, capture the error state and mark this as blocked or failed based on the actual message.
+4. While in flight, confirm the generating overlay covers the screen with a `Cancel` button and
+   that the form behind it is not tappable.
+5. If AI is configured and generation succeeds, confirm navigation to Card Details.
+6. If AI is not configured or fails externally, capture the error state and mark this as blocked or failed based on the actual message.
+
+#### E. Cancel mid-generation
+
+1. Submit a valid form again.
+2. Tap `Cancel` on the overlay before the response arrives.
+3. Confirm the overlay hides, the form keeps its values, and no card was created.
+4. Confirm the back gesture and the generate button work again.
 
 ### Pass criteria
 
@@ -432,6 +441,7 @@ Look for:
 - Trait selection stays bounded to three.
 - Generation can be attempted.
 - On success, app navigates to Card Details.
+- Cancel aborts the request, hides the overlay, and saves nothing.
 
 ---
 
@@ -492,7 +502,10 @@ snapshot, confirm the same content survives the switch, tap `Collectible view`, 
 1. Tap `Regenerate card`.
 2. Confirm the confirmation dialog appears.
 3. Cancel once for dialog verification.
-4. If running a full regeneration check and AI is configured, trigger it again and confirm a new draft is created and opened.
+4. If running a full regeneration check and AI is configured, trigger it again and confirm the
+   generating overlay appears and a new draft is created and opened.
+5. To check cancellation, trigger it once more and tap `Cancel` on the overlay: the overlay
+   hides, the current card stays open, and no new draft is saved.
 
 #### E. Delete dialog
 
@@ -608,7 +621,7 @@ mode (or disable the simulator's network).
 4. Open a card. Confirm its content renders.
 5. Tap `Create a new party` and create a party. Confirm it saves and appears in the list.
 6. Open the new party, fill a valid character form, tap `Generate character card`.
-7. Confirm an error is shown and the button returns to its normal (non-loading) label.
+7. Confirm an error is shown, the generating overlay hides, and the button is enabled again.
 8. Go back. Confirm no new card was created.
 9. Re-enable the network and confirm generation succeeds.
 
@@ -616,8 +629,8 @@ mode (or disable the simulator's network).
 
 - All saved content browsable offline.
 - Party creation works offline (local persistence only).
-- Offline generation fails gracefully: no navigation, no half-saved card, no stuck
-  `Generating...` state.
+- Offline generation fails gracefully: no navigation, no half-saved card, and no stuck
+  generating overlay.
 - Recovery works after reconnecting with no restart.
 
 ### Known issue

@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 
 import { useCardStore } from '@/features/cards/store/card-store'
 import { CharacterCard } from '@/features/cards/types'
-import { generateCharacterCard } from '@/features/generation/gemini'
+import { useCharacterCardGeneration } from '@/features/generation/hooks/use-character-card-generation'
 import { Party } from '@/features/parties/types'
 import { useAppLanguage } from '@/shared/i18n/use-app-language'
 
@@ -23,8 +23,8 @@ export function useCardDetailsActions({
   const { resolvedLanguage } = useAppLanguage()
   const createDraftCard = useCardStore((state) => state.createDraftCard)
   const deleteCard = useCardStore((state) => state.deleteCard)
+  const generation = useCharacterCardGeneration()
 
-  const [isRegenerating, setIsRegenerating] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   function handleAcceptCard() {
@@ -70,16 +70,19 @@ export function useCardDetailsActions({
           text: t('actions.regenerate'),
           onPress: async () => {
             setErrorMessage(null)
-            setIsRegenerating(true)
 
             let nextErrorMessage: string | null = null
 
             try {
-              const generated = await generateCharacterCard({
+              const { generated, cancelled } = await generation.start({
                 party,
                 input: card.input,
                 outputLanguage: resolvedLanguage,
               })
+
+              if (cancelled || !generated) {
+                return
+              }
 
               const nextCardId = createDraftCard({
                 partyId: card.partyId,
@@ -100,8 +103,6 @@ export function useCardDetailsActions({
                   : t('cards:details.regenerationFailed')
             }
 
-            setIsRegenerating(false)
-
             if (nextErrorMessage) {
               setErrorMessage(nextErrorMessage)
             }
@@ -113,9 +114,10 @@ export function useCardDetailsActions({
 
   return {
     errorMessage,
-    isRegenerating,
+    isRegenerating: generation.isGenerating,
     handleAcceptCard,
     handleDeleteCard,
     handleRegenerateCard,
+    cancelRegeneration: generation.cancel,
   }
 }

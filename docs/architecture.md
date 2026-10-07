@@ -31,7 +31,7 @@ src/
   features/
     parties/  cards/        types.ts, selectors.ts, store/, hooks/, components/
     preferences/store/      display mode + language preference
-    generation/             gemini.ts, prompt.ts, schemas.ts, types.ts (flat)
+    generation/             gemini.ts, prompt.ts, schemas.ts, types.ts, hooks/, components/
   hooks/                    starter hooks; only use-theme.ts is live
   shared/
     components/ constants/ i18n/ storage/ theme/ utils/
@@ -161,6 +161,16 @@ and saves nothing.
 Two schemas must stay in lockstep with the domain type: the hand-written Gemini JSON
 schema and the Zod schema, both in `schemas.ts`, plus `CharacterCardGenerated` in
 `features/cards/types.ts`. Changing generated fields means editing all three.
+
+Both write hooks (`use-new-character-card-form.ts`, `use-card-details-actions.ts`) call
+`useCharacterCardGeneration()` (`generation/hooks/`) instead of `generateCharacterCard`
+directly. That hook owns one `AbortController` per request, exposes `{ isGenerating, start,
+cancel }`, and reports `{ generated, cancelled }`. While `isGenerating` is true the screen
+renders `GeneratingOverlay` (`generation/components/`) — a full-screen `Modal` with a Cancel
+button — and sets `gestureEnabled: false` on its `Stack.Screen` so the iOS swipe-back cannot
+leave mid-request. Cancel aborts the signal, and `start()` resolves as `cancelled`; the hooks
+then return early without saving a draft. `gemini.ts` forwards the request's `signal` into
+`generateContent`'s `config.abortSignal`, so cancelling also aborts the HTTP call.
 
 The generator sits behind a `CharacterCardGenerator` interface, and
 `getCharacterCardGenerator()` caches a singleton. That seam is the intended place for a

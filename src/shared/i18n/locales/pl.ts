@@ -6,10 +6,8 @@ export const pl = {
       createParty: 'Utwórz nową imprezę',
       createCharacterCard: 'Utwórz kartę postaci',
       generateCharacterCard: 'Wygeneruj kartę postaci',
-      generating: 'Generowanie...',
       acceptCard: 'Akceptuj kartę',
       regenerateCard: 'Wygeneruj ponownie',
-      regenerating: 'Ponowne generowanie...',
       deleteCard: 'Usuń kartę',
       deleteParty: 'Usuń imprezę',
       cancel: 'Anuluj',
@@ -22,6 +20,10 @@ export const pl = {
       acceptedCard: 'Zaakceptowana karta',
       draft: 'Szkic',
       draftCard: 'Szkic karty',
+    },
+    generating: {
+      title: 'Tworzymy Twoją postać',
+      body: 'To może potrwać kilka sekund.',
     },
     languages: {
       en: 'Angielski',

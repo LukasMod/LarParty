@@ -6,10 +6,8 @@ export const en = {
       createParty: 'Create a new party',
       createCharacterCard: 'Create a character card',
       generateCharacterCard: 'Generate character card',
-      generating: 'Generating...',
       acceptCard: 'Accept card',
       regenerateCard: 'Regenerate card',
-      regenerating: 'Regenerating...',
       deleteCard: 'Delete card',
       deleteParty: 'Delete party',
       cancel: 'Cancel',
@@ -22,6 +20,10 @@ export const en = {
       acceptedCard: 'Accepted card',
       draft: 'Draft',
       draftCard: 'Draft card',
+    },
+    generating: {
+      title: 'Creating your character',
+      body: 'This can take a few seconds.',
     },
     languages: {
       en: 'English',

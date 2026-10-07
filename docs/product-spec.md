@@ -137,13 +137,18 @@ A character card is an AI-generated role profile associated with one party.
    - party theme category
    - party mood
    - card input form values
-5. App calls AI directly from client for PoC
-6. App stores returned card as draft automatically
-7. User sees generated result
-8. User can:
-   - accept card
-   - regenerate full card
-   - delete card
+ 5. App calls AI directly from client for PoC and shows a blocking generating overlay
+ 6. App stores returned card as draft automatically
+ 7. User sees generated result
+ 8. User can:
+    - accept card
+    - regenerate full card
+    - delete card
+
+While a generation is in flight the overlay covers the screen and is the only control: the
+generate/regenerate button is disabled, the iOS swipe-back gesture is off, and the overlay's
+**Cancel** button aborts the request, hides the overlay, and leaves the form (or the current
+card) untouched. Nothing is saved for a cancelled generation.
 
 ### Flow C — Browse saved content offline
 
@@ -273,6 +278,8 @@ The app should require strict structured JSON from the AI output and map that in
 - User may accept the draft
 - User may regenerate the full card
 - Regeneration replaces the generated fields while preserving original input fields
+- While a generation or regeneration is in flight, a blocking overlay is shown with a cancel
+  control; cancelling aborts the request and saves nothing
 
 ## 8.4 Prompting constraints
 
