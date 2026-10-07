@@ -179,7 +179,7 @@ Fine for the PoC, not for release.
 
 Output language follows the resolved app language. See [`i18n-guide.md`](./i18n-guide.md).
 
-## Dev-only debug fixtures
+## Debug tools (dev only)
 
 `src/shared/debug/` seeds the persisted stores with fake data so screens, lists, and
 cascade deletes can be exercised without any Gemini call or API key.

@@ -162,11 +162,9 @@ export const en = {
     },
   },
   debug: {
-    sectionTitle: 'Debug fixtures',
-    intro:
-      'Dev-only. Replaces saved parties and cards with locally generated fixtures. No API calls.',
-    seedSmall: 'Load small fixture ({{parties}} parties, {{cards}} card each)',
-    seedLarge: 'Load large fixture ({{parties}} parties, {{cards}} cards each)',
+    sectionTitle: 'Debug tools',
+    seedSmall: 'Add parties (small set)',
+    seedLarge: 'Add parties (large set)',
     clearAction: 'Clear all parties and cards',
     clear: {
       title: 'Clear all local data?',

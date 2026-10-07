@@ -167,11 +167,9 @@ export const pl = {
     },
   },
   debug: {
-    sectionTitle: 'Dane testowe',
-    intro:
-      'Tylko w wersji deweloperskiej. Zastępuje zapisane imprezy i karty lokalnie wygenerowanymi danymi testowymi. Bez wywołań API.',
-    seedSmall: 'Wczytaj mały zestaw ({{parties}} imprezy, po {{cards}} karcie)',
-    seedLarge: 'Wczytaj duży zestaw ({{parties}} imprez, po {{cards}} kartach)',
+    sectionTitle: 'Narzędzia debugowania',
+    seedSmall: 'Dodaj imprezy (mały zestaw)',
+    seedLarge: 'Dodaj imprezy (duży zestaw)',
     clearAction: 'Usuń wszystkie imprezy i karty',
     clear: {
       title: 'Usunąć wszystkie dane lokalne?',

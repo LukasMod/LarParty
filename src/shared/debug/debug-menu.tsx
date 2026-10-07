@@ -3,12 +3,6 @@ import { useTranslation } from 'react-i18next'
 import { ThemedText } from '@/components/themed-text'
 import { Button } from '@/shared/components/button'
 import { FormCard } from '@/shared/components/form-card'
-import {
-  DEBUG_LARGE_CARDS_PER_PARTY,
-  DEBUG_LARGE_PARTY_COUNT,
-  DEBUG_SMALL_CARDS_PER_PARTY,
-  DEBUG_SMALL_PARTY_COUNT,
-} from '@/shared/debug/debug-data'
 import { useDebugActions } from '@/shared/debug/use-debug-actions'
 
 // Render this only inside `__DEV__`; it has no runtime guard of its own.
@@ -19,22 +13,13 @@ export function DebugMenu() {
   return (
     <FormCard>
       <ThemedText type="subtitle">{t('debug:sectionTitle')}</ThemedText>
-      <ThemedText type="small" themeColor="textSecondary">
-        {t('debug:intro')}
-      </ThemedText>
       <Button
-        label={t('debug:seedSmall', {
-          parties: DEBUG_SMALL_PARTY_COUNT,
-          cards: DEBUG_SMALL_CARDS_PER_PARTY,
-        })}
+        label={t('debug:seedSmall')}
         variant="secondary"
         onPress={handleSeedSmall}
       />
       <Button
-        label={t('debug:seedLarge', {
-          parties: DEBUG_LARGE_PARTY_COUNT,
-          cards: DEBUG_LARGE_CARDS_PER_PARTY,
-        })}
+        label={t('debug:seedLarge')}
         variant="secondary"
         onPress={handleSeedLarge}
       />
