@@ -9,6 +9,7 @@ import { ThemedText } from '@/components/themed-text'
 import { ThemedView } from '@/components/themed-view'
 import { CharacterCard } from '@/features/cards/types'
 import { ThemeCategory } from '@/features/parties/types'
+import { CardGlow } from '@/shared/components/card-glow'
 import { withAlpha } from '@/shared/theme/alpha'
 import { getPartyTheme } from '@/shared/theme/party-theme'
 
@@ -43,10 +44,17 @@ export function CharacterCardListItem({
           style={styles.cardItem}
         >
           {isAccepted ? (
-            <LinearGradient
-              colors={[withAlpha(primary, 0.22), withAlpha(primary, 0)]}
-              style={StyleSheet.absoluteFill}
-            />
+            <>
+              <LinearGradient
+                colors={[withAlpha(primary, 0.22), withAlpha(primary, 0)]}
+                style={StyleSheet.absoluteFill}
+              />
+              <CardGlow
+                color={partyTheme.colors.accent}
+                seed={card.id}
+                peakAlpha={0.24}
+              />
+            </>
           ) : null}
           <LinearGradient
             colors={[
