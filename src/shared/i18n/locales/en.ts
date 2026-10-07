@@ -13,6 +13,7 @@ export const en = {
       deleteCard: 'Delete card',
       deleteParty: 'Delete party',
       cancel: 'Cancel',
+      back: 'Back',
       delete: 'Delete',
       regenerate: 'Regenerate',
     },

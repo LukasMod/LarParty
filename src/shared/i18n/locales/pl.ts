@@ -13,6 +13,7 @@ export const pl = {
       deleteCard: 'Usuń kartę',
       deleteParty: 'Usuń imprezę',
       cancel: 'Anuluj',
+      back: 'Wstecz',
       delete: 'Usuń',
       regenerate: 'Generuj ponownie',
     },
