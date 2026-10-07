@@ -8,6 +8,7 @@ import { CardDetailsActions } from '@/features/cards/components/card-details-act
 import { CharacterCardView } from '@/features/cards/components/character-card-view'
 import { useCardDetailsActions } from '@/features/cards/hooks/use-card-details-actions'
 import { useCardDetailsScreenModel } from '@/features/cards/hooks/use-card-details-screen-model'
+import { GeneratingOverlay } from '@/features/generation/components/generating-overlay'
 import { IconButton } from '@/shared/components/icon-button'
 import { Screen } from '@/shared/components/screen'
 import { ScreenHeader } from '@/shared/components/screen-header'
@@ -26,11 +27,14 @@ export default function CardDetailsScreen() {
     handleAcceptCard,
     handleDeleteCard,
     handleRegenerateCard,
+    cancelRegeneration,
   } = useCardDetailsActions({ party, card })
 
   return (
     <View style={styles.container}>
-      <Stack.Screen options={{ headerShown: false }} />
+      <Stack.Screen
+        options={{ headerShown: false, gestureEnabled: !isRegenerating }}
+      />
 
       <ScreenHeader
         leading={
@@ -86,6 +90,11 @@ export default function CardDetailsScreen() {
           </>
         )}
       </Screen>
+
+      <GeneratingOverlay
+        visible={isRegenerating}
+        onCancel={cancelRegeneration}
+      />
     </View>
   )
 }

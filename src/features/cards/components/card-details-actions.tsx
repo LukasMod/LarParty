@@ -35,7 +35,7 @@ export function CardDetailsActions({
 
       <Button
         disabled={isRegenerating}
-        label={isRegenerating ? t('actions.regenerating') : t('actions.regenerateCard')}
+        label={t('actions.regenerateCard')}
         variant="secondary"
         onPress={onRegenerateCard}
       />

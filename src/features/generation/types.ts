@@ -9,6 +9,7 @@ export interface GenerateCharacterCardRequest {
   party: Party
   input: CharacterCardInput
   outputLanguage: SupportedLanguageCode
+  signal?: AbortSignal
 }
 
 export interface CharacterCardGenerator {

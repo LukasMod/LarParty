@@ -8,7 +8,7 @@ import {
   SexOption,
 } from '@/features/cards/types'
 import { useCardStore } from '@/features/cards/store/card-store'
-import { generateCharacterCard } from '@/features/generation/gemini'
+import { useCharacterCardGeneration } from '@/features/generation/hooks/use-character-card-generation'
 import { Party } from '@/features/parties/types'
 import { useAppLanguage } from '@/shared/i18n/use-app-language'
 
@@ -24,12 +24,12 @@ export function useNewCharacterCardForm({
   const { t } = useTranslation('cards')
   const createDraftCard = useCardStore((state) => state.createDraftCard)
   const { resolvedLanguage } = useAppLanguage()
+  const generation = useCharacterCardGeneration()
 
   const [name, setName] = useState('')
   const [sex, setSex] = useState<SexOption>('other')
   const [age, setAge] = useState('25')
   const [selectedTraits, setSelectedTraits] = useState<InputTrait[]>([])
-  const [isSubmitting, setIsSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   function toggleTrait(trait: InputTrait) {
@@ -78,14 +78,17 @@ export function useNewCharacterCardForm({
     }
 
     setErrorMessage(null)
-    setIsSubmitting(true)
 
     try {
-      const generated = await generateCharacterCard({
+      const { generated, cancelled } = await generation.start({
         party,
         input,
         outputLanguage: resolvedLanguage,
       })
+
+      if (cancelled || !generated) {
+        return
+      }
 
       const cardId = createDraftCard({
         partyId: party.id,
@@ -99,10 +102,10 @@ export function useNewCharacterCardForm({
       })
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : t('form.errors.generationFailed'),
+        error instanceof Error
+          ? error.message
+          : t('form.errors.generationFailed'),
       )
-    } finally {
-      setIsSubmitting(false)
     }
   }
 
@@ -112,12 +115,13 @@ export function useNewCharacterCardForm({
     age,
     selectedTraits,
     errorMessage,
-    isSubmitting,
+    isGenerating: generation.isGenerating,
     maxTraits: MAX_TRAITS,
     setName,
     setSex,
     setAge,
     toggleTrait,
     handleGenerateCard,
+    cancelGeneration: generation.cancel,
   }
 }

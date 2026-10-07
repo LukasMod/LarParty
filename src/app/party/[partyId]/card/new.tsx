@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from 'expo-router'
+import { Stack, useLocalSearchParams } from 'expo-router'
 import { useMemo } from 'react'
 import { View } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { ThemedText } from '@/components/themed-text'
 import { NewCharacterCardForm } from '@/features/cards/components/new-character-card-form'
 import { useNewCharacterCardForm } from '@/features/cards/hooks/use-new-character-card-form'
+import { GeneratingOverlay } from '@/features/generation/components/generating-overlay'
 import { Button } from '@/shared/components/button'
 import { getPartyById } from '@/features/parties/selectors'
 import { usePartyStore } from '@/features/parties/store/party-store'
@@ -28,59 +29,62 @@ export default function NewCharacterCardScreen() {
     age,
     selectedTraits,
     errorMessage,
-    isSubmitting,
+    isGenerating,
     maxTraits,
     setName,
     setSex,
     setAge,
     toggleTrait,
     handleGenerateCard,
+    cancelGeneration,
   } = useNewCharacterCardForm({ party })
 
   return (
-    <Screen>
-      {!party ? (
-        <ScreenStateCard
-          title={t('state.partyNotFoundTitle')}
-          body={t('state.partyUnavailableBody')}
-        />
-      ) : (
-        <>
-          <View style={styles.header}>
-            <ThemedText type="subtitle">{t('cards:form.title')}</ThemedText>
-            <ThemedText themeColor="textSecondary">
-              {t('cards:form.subtitle', {
-                partyTitle: party.title,
-                themeCategory: getThemeCategoryLabel(t, party.themeCategory),
-              })}
-            </ThemedText>
-          </View>
+    <>
+      <Stack.Screen options={{ gestureEnabled: !isGenerating }} />
 
-          <NewCharacterCardForm
-            name={name}
-            sex={sex}
-            age={age}
-            selectedTraits={selectedTraits}
-            maxTraits={maxTraits}
-            errorMessage={errorMessage}
-            onNameChange={setName}
-            onSexChange={setSex}
-            onAgeChange={setAge}
-            onToggleTrait={toggleTrait}
+      <Screen>
+        {!party ? (
+          <ScreenStateCard
+            title={t('state.partyNotFoundTitle')}
+            body={t('state.partyUnavailableBody')}
           />
+        ) : (
+          <>
+            <View style={styles.header}>
+              <ThemedText type="subtitle">{t('cards:form.title')}</ThemedText>
+              <ThemedText themeColor="textSecondary">
+                {t('cards:form.subtitle', {
+                  partyTitle: party.title,
+                  themeCategory: getThemeCategoryLabel(t, party.themeCategory),
+                })}
+              </ThemedText>
+            </View>
 
-          <Button
-            disabled={isSubmitting}
-            label={
-              isSubmitting
-                ? t('actions.generating')
-                : t('actions.generateCharacterCard')
-            }
-            onPress={handleGenerateCard}
-          />
-        </>
-      )}
-    </Screen>
+            <NewCharacterCardForm
+              name={name}
+              sex={sex}
+              age={age}
+              selectedTraits={selectedTraits}
+              maxTraits={maxTraits}
+              errorMessage={errorMessage}
+              onNameChange={setName}
+              onSexChange={setSex}
+              onAgeChange={setAge}
+              onToggleTrait={toggleTrait}
+            />
+
+            <Button
+              disabled={isGenerating}
+              label={t('actions.generateCharacterCard')}
+              onPress={handleGenerateCard}
+            />
+          </>
+        )}
+      </Screen>
+
+      <GeneratingOverlay visible={isGenerating} onCancel={cancelGeneration} />
+    </>
   )
 }
 
