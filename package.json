@@ -61,6 +61,10 @@
     "check": "npm run lint && npm run typecheck && npm run contrast",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\""
   },
+  "overrides": {
+    "react-native": "$react-native",
+    "react-native-worklets": "$react-native-worklets"
+  },
   "expo": {
     "install": {
       "exclude": [
