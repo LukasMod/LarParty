@@ -8,6 +8,7 @@ import { CardTraitsSection } from '@/features/cards/components/card-traits-secti
 import { ThemedView } from '@/components/themed-view'
 import { CardDisplayMode } from '@/features/cards/types'
 import { ThemeCategory } from '@/features/parties/types'
+import { CardGlow } from '@/shared/components/card-glow'
 import { withAlpha } from '@/shared/theme/alpha'
 import { getPartyTheme } from '@/shared/theme/party-theme'
 
@@ -43,6 +44,7 @@ export function CharacterCardView({
         ]}
         style={StyleSheet.absoluteFill}
       />
+      <CardGlow color={partyTheme.colors.accent} peakAlpha={0.34} />
       <CardHistorySection
         partyThemeCategory={partyThemeCategory}
         backgroundHistory={backgroundHistory}
