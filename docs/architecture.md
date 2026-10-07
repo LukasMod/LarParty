@@ -9,7 +9,7 @@ real file is often faster than reading prose.
 
 | Concern             | Choice                                                                         |
 | ------------------- | ------------------------------------------------------------------------------ |
-| Runtime             | Expo SDK 57, React Native 0.86.3, React 19.2.3, New Architecture on            |
+| Runtime             | Expo SDK 58 beta, React Native 0.88.0-rc.3, React 19.3.0, New Architecture on   |
 | Routing             | Expo Router, typed routes on                                                   |
 | Styling             | react-native-unistyles v3 (babel plugin scoped to `src`)                       |
 | State + persistence | Zustand v5 + `persist` → MMKV (`react-native-mmkv` v4, Nitro)                  |
@@ -302,6 +302,12 @@ is the first entry, and `createResourceTranslator` in `generation.ts` strips a l
 
 **Do not "fix" this by loosening `tsconfig` or deleting `i18next.d.ts`.** The custom types
 are what catch missing keys in `en`.
+
+Separately, `tsconfig.json` sets `"customConditions": ["react-native", "react-native-legacy-deep-imports"]`.
+That is React Native's opt-out from the Strict TypeScript API that became the default in 0.87
+(deep imports from `react-native/Libraries/*` would otherwise be type errors, refs use
+instance types). It suppresses unrelated SDK 58 type noise, not these 15 i18n errors. The
+opt-out is removed after RN 0.88, so the strict-API migration is owed before RN 0.89.
 
 **Expect 15 errors from `npm run check`** while this stands. Count them and compare against
 the list above rather than assuming a clean build.
