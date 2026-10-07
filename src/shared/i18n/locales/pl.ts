@@ -166,4 +166,16 @@ export const pl = {
       followingSystem: 'Język urządzenia: {{language}}',
     },
   },
+  debug: {
+    sectionTitle: 'Dane testowe',
+    intro:
+      'Tylko w wersji deweloperskiej. Zastępuje zapisane imprezy i karty lokalnie wygenerowanymi danymi testowymi. Bez wywołań API.',
+    seedSmall: 'Wczytaj mały zestaw ({{parties}} imprezy, po {{cards}} karcie)',
+    seedLarge: 'Wczytaj duży zestaw ({{parties}} imprez, po {{cards}} kartach)',
+    clearAction: 'Usuń wszystkie imprezy i karty',
+    clear: {
+      title: 'Usunąć wszystkie dane lokalne?',
+      body: 'Usunąć wszystkie zapisane imprezy i karty z tego urządzenia.',
+    },
+  },
 } as const

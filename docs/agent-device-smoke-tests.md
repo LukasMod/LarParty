@@ -195,6 +195,31 @@ agent-device snapshot -i
 
 Use stable, repeatable input values.
 
+### Seeding fake data instead of typing it
+
+For checks that only need parties and cards to **exist** — list rendering, counts,
+navigation, cascade deletes, offline browsing — seed the debug fixtures instead of driving
+the create forms and spending API calls. On the **Settings** screen (dev builds only) the
+**Debug fixtures** section offers:
+
+- `Load small fixture (3 parties, 1 card each)` — one party per theme category.
+- `Load large fixture (10 parties, 10 cards each)` — enough rows to
+  scroll and to check list performance.
+- `Clear all parties and cards` — destructive, confirmation-gated; empties both stores.
+
+Seeding writes straight into the persisted stores, calls no API, and needs no
+`EXPO_PUBLIC_GEMINI_API_KEY`. It **replaces** all saved parties and cards rather than
+appending, and the data persists across reloads. Generation-dependent checks (create card,
+regenerate) still require a real key and network. Mechanics are in
+[`architecture.md`](./architecture.md#dev-only-debug-fixtures).
+
+Typical use:
+
+1. Open Settings and tap a fixture button; the app lands on the Party List.
+2. Snapshot and confirm party cards with titles, `Theme · Mood` lines, and character counts.
+3. Run the list/details/delete checks against that data.
+4. Tap `Clear all parties and cards` to return to the empty state.
+
 ### Party fixture
 
 - Party name: `Agent Device Tavern`

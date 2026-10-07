@@ -161,4 +161,16 @@ export const en = {
       followingSystem: 'Following device language: {{language}}',
     },
   },
+  debug: {
+    sectionTitle: 'Debug fixtures',
+    intro:
+      'Dev-only. Replaces saved parties and cards with locally generated fixtures. No API calls.',
+    seedSmall: 'Load small fixture ({{parties}} parties, {{cards}} card each)',
+    seedLarge: 'Load large fixture ({{parties}} parties, {{cards}} cards each)',
+    clearAction: 'Clear all parties and cards',
+    clear: {
+      title: 'Clear all local data?',
+      body: 'Remove every saved party and card from this device.',
+    },
+  },
 } as const

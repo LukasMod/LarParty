@@ -69,6 +69,7 @@ Shared code lives in `src/shared`:
 ## Environment & Runtime Notes
 
 - Character generation requires `EXPO_PUBLIC_GEMINI_API_KEY` in `src/features/generation/gemini.ts`.
+- Dev builds have a **Debug fixtures** section on the Settings screen (`src/shared/debug/`) that seeds the stores with fake parties and cards, or clears them, with no API calls. Use it to test list/details/cascade-delete flows without spending generation requests. Details in [architecture.md](./docs/architecture.md#dev-only-debug-fixtures).
 - AI generation is a direct client-side integration for the PoC.
 - State is local-only; there is no backend sync.
 - Mobile is the priority target. Do not let web parity slow down the MVP.
