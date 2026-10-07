@@ -3,7 +3,6 @@ import { StyleSheet } from 'react-native-unistyles'
 import { useTranslation } from 'react-i18next'
 
 import { ThemedText } from '@/components/themed-text'
-import { FormCard } from '@/shared/components/form-card'
 import { CharacterCardListItem } from '@/features/cards/components/character-card-list-item'
 import { CharacterCard } from '@/features/cards/types'
 import { ThemeCategory } from '@/features/parties/types'
@@ -22,10 +21,10 @@ export function PartyCardListSection({
   const { t } = useTranslation('cards')
 
   return (
-    <FormCard style={styles.card}>
+    <View style={styles.section}>
       <ThemedText type="smallBold">{t('sections.listTitle')}</ThemedText>
       {cards.length === 0 ? (
-        <ThemedText themeColor="textSecondary">
+        <ThemedText themeColor="textSecondary" style={styles.emptyList}>
           {t('sections.emptyList')}
         </ThemedText>
       ) : (
@@ -40,16 +39,21 @@ export function PartyCardListSection({
           ))}
         </View>
       )}
-    </FormCard>
+    </View>
   )
 }
 
 const styles = StyleSheet.create((theme) => ({
-  card: {
-    gap: theme.spacing.two,
+  section: {
+    gap: theme.spacing.three,
+  },
+  emptyList: {
+    borderRadius: theme.radius.card,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    padding: theme.spacing.three,
   },
   cardList: {
-    gap: theme.spacing.two,
-    marginTop: theme.spacing.two,
+    gap: theme.spacing.three,
   },
 }))

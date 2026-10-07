@@ -1,11 +1,15 @@
 import { Link } from 'expo-router'
-import { Pressable } from 'react-native'
+import { SymbolView } from 'expo-symbols'
+import { LinearGradient } from 'expo-linear-gradient'
+import { Pressable, View } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
 import { useTranslation } from 'react-i18next'
 
 import { ThemedText } from '@/components/themed-text'
-import { CharacterCard, CardStatus } from '@/features/cards/types'
+import { ThemedView } from '@/components/themed-view'
+import { CharacterCard } from '@/features/cards/types'
 import { ThemeCategory } from '@/features/parties/types'
+import { withAlpha } from '@/shared/theme/alpha'
 import { getPartyTheme } from '@/shared/theme/party-theme'
 
 interface CharacterCardListItemProps {
@@ -21,6 +25,8 @@ export function CharacterCardListItem({
 }: CharacterCardListItemProps) {
   const { t } = useTranslation('common')
   const partyTheme = getPartyTheme(partyThemeCategory)
+  const { primary } = partyTheme.colors
+  const isAccepted = card.status === 'accepted'
 
   return (
     <Link
@@ -30,29 +36,82 @@ export function CharacterCardListItem({
       }}
       asChild
     >
-      <Pressable style={styles.cardItem(partyTheme, card.status)}>
-        <ThemedText type="smallBold" themeOverride={partyTheme}>
-          {card.generated.generatedNameWithClass}
-        </ThemedText>
-        <ThemedText themeOverride={partyTheme} themeColor="textSecondary">
-          {card.status === 'accepted' ? t('status.accepted') : t('status.draft')} · {card.input.name}
-        </ThemedText>
+      <Pressable>
+        <ThemedView
+          themeOverride={partyTheme}
+          type="background"
+          style={styles.cardItem}
+        >
+          {isAccepted ? (
+            <LinearGradient
+              colors={[withAlpha(primary, 0.22), withAlpha(primary, 0)]}
+              style={StyleSheet.absoluteFill}
+            />
+          ) : null}
+          <LinearGradient
+            colors={[
+              isAccepted ? primary : withAlpha(primary, 0.4),
+              withAlpha(primary, 0),
+            ]}
+            style={styles.accent}
+          />
+          <View style={styles.content}>
+            <ThemedText
+              type="displaySmall"
+              themeOverride={partyTheme}
+              style={styles.title}
+            >
+              {card.generated.generatedNameWithClass}
+            </ThemedText>
+            <ThemedText
+              type="small"
+              themeOverride={partyTheme}
+              themeColor="textSecondary"
+            >
+              {isAccepted ? t('status.accepted') : t('status.draft')} ·{' '}
+              {card.input.name}
+            </ThemedText>
+          </View>
+          <SymbolView
+            name="chevron.right"
+            size={16}
+            tintColor={partyTheme.colors.textSecondary}
+            style={styles.chevron}
+          />
+        </ThemedView>
       </Pressable>
     </Link>
   )
 }
 
 const styles = StyleSheet.create((theme) => ({
-  cardItem: (partyTheme: ReturnType<typeof getPartyTheme>, status: CardStatus) => ({
-    borderRadius: theme.radius.control,
-    paddingHorizontal: theme.spacing.three,
-    paddingVertical: theme.spacing.three,
-    gap: theme.spacing.one,
+  cardItem: {
+    borderRadius: theme.radius.card,
+    padding: theme.spacing.three,
+    paddingLeft: theme.spacing.four,
+    gap: theme.spacing.three,
+    flexDirection: 'row',
+    alignItems: 'center',
     borderWidth: 1,
-    backgroundColor:
-      status === 'accepted'
-        ? partyTheme.colors.surfaceSelected
-        : partyTheme.colors.surface,
-    borderColor: partyTheme.colors.border,
-  }),
+    borderColor: theme.colors.border,
+    overflow: 'hidden',
+  },
+  accent: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 5,
+  },
+  content: {
+    flex: 1,
+    gap: theme.spacing.one,
+  },
+  title: {
+    fontSize: 17,
+    lineHeight: 22,
+  },
+  chevron: {
+    marginLeft: theme.spacing.one,
+  },
 }))

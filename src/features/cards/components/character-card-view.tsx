@@ -1,3 +1,4 @@
+import { LinearGradient } from 'expo-linear-gradient'
 import { StyleSheet } from 'react-native-unistyles'
 
 import { CardHistorySection } from '@/features/cards/components/card-history-section'
@@ -7,6 +8,7 @@ import { CardTraitsSection } from '@/features/cards/components/card-traits-secti
 import { ThemedView } from '@/components/themed-view'
 import { CardDisplayMode } from '@/features/cards/types'
 import { ThemeCategory } from '@/features/parties/types'
+import { withAlpha } from '@/shared/theme/alpha'
 import { getPartyTheme } from '@/shared/theme/party-theme'
 
 interface CharacterCardViewProps {
@@ -31,9 +33,16 @@ export function CharacterCardView({
   return (
     <ThemedView
       themeOverride={partyTheme}
-      type={displayMode === 'collectible' ? 'surface' : 'background'}
-      style={styles.card(partyTheme, displayMode)}
+      type="background"
+      style={styles.card(displayMode)}
     >
+      <LinearGradient
+        colors={[
+          withAlpha(partyTheme.colors.primary, 0.22),
+          withAlpha(partyTheme.colors.primary, 0),
+        ]}
+        style={StyleSheet.absoluteFill}
+      />
       <CardHistorySection
         partyThemeCategory={partyThemeCategory}
         backgroundHistory={backgroundHistory}
@@ -55,14 +64,12 @@ export function CharacterCardView({
 }
 
 const styles = StyleSheet.create((theme) => ({
-  card: (partyTheme: ReturnType<typeof getPartyTheme>, displayMode: CardDisplayMode) => ({
+  card: (displayMode: CardDisplayMode) => ({
     borderRadius: theme.radius.card,
     padding: theme.spacing.four,
     gap: theme.spacing.three,
     borderWidth: displayMode === 'collectible' ? 2 : 1,
-    borderColor:
-      displayMode === 'collectible'
-        ? partyTheme.colors.accent
-        : partyTheme.colors.border,
+    borderColor: theme.colors.border,
+    overflow: 'hidden',
   }),
 }))
