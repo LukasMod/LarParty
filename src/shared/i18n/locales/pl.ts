@@ -166,4 +166,14 @@ export const pl = {
       followingSystem: 'Język urządzenia: {{language}}',
     },
   },
+  debug: {
+    sectionTitle: 'Narzędzia debugowania',
+    seedSmall: 'Dodaj imprezy (mały zestaw)',
+    seedLarge: 'Dodaj imprezy (duży zestaw)',
+    clearAction: 'Usuń wszystkie imprezy i karty',
+    clear: {
+      title: 'Usunąć wszystkie dane lokalne?',
+      body: 'Usunąć wszystkie zapisane imprezy i karty z tego urządzenia.',
+    },
+  },
 } as const

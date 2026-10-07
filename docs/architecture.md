@@ -179,6 +179,26 @@ Fine for the PoC, not for release.
 
 Output language follows the resolved app language. See [`i18n-guide.md`](./i18n-guide.md).
 
+## Debug tools (dev only)
+
+`src/shared/debug/` seeds the persisted stores with fake data so screens, lists, and
+cascade deletes can be exercised without any Gemini call or API key.
+
+| File                   | Role                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `debug-data.ts`        | Pure fake-data builders. `generateDebugData(partyCount, cardsPerParty)` returns `{ parties, cards }`; `buildSmallDebugDataset()` and `buildLargeDebugDataset()` are the two presets (3 parties × 1 card; 10 parties × 10 cards). Party titles/classes/movements/phrases are theme-aware per `themeCategory`; names/sex/age/traits cycle shared pools deterministically (index-based, no RNG). Roughly every fifth card gets a `basedOnCardId` sibling in the same `generationGroupId` so card details shows version history. Statuses mix draft/accepted. Arrays are returned newest-first to match the prepend order the lists render. |
+| `use-debug-actions.ts` | Write side. `seed(...)` calls `usePartyStore.setState` / `useCardStore.setState` with `hasHydrated: true`, then `router.replace('/')`. `handleClear` alerts, then empties both stores.                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `debug-menu.tsx`       | The `DebugMenu` card: small-seed, large-seed, and clear buttons.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+
+- Reached from **Settings** only under `__DEV__` (`{__DEV__ ? <DebugMenu /> : null}` in
+  `src/app/settings.tsx`); the component itself has no runtime guard. Copy lives in the
+  `debug` i18n namespace.
+- Seed **overwrites** all parties and cards (it does not append). Clear removes everything
+  on the device. Both persist to MMKV, so the data survives a reload — clear it before a
+  run that needs a known empty state.
+- For agents: this is the fast way to get list/details/cascade-delete coverage without
+  spending API calls. See [`agent-device-smoke-tests.md`](./agent-device-smoke-tests.md).
+
 ## Theming
 
 Four themes in `src/shared/theme/unistyles.ts`: `default` (the app's active theme) plus one

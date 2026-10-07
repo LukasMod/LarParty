@@ -161,4 +161,14 @@ export const en = {
       followingSystem: 'Following device language: {{language}}',
     },
   },
+  debug: {
+    sectionTitle: 'Debug tools',
+    seedSmall: 'Add parties (small set)',
+    seedLarge: 'Add parties (large set)',
+    clearAction: 'Clear all parties and cards',
+    clear: {
+      title: 'Clear all local data?',
+      body: 'Remove every saved party and card from this device.',
+    },
+  },
 } as const
