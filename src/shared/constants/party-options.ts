@@ -1,5 +1,14 @@
 export const themeCategories = ['fantasy', 'sci-fi', 'horror'] as const
 
+export const partyThemeGlyphs: Record<
+  (typeof themeCategories)[number],
+  string
+> = {
+  fantasy: '⚔️',
+  'sci-fi': '🪐',
+  horror: '💀',
+}
+
 export const themeCategoryLabels: Record<
   (typeof themeCategories)[number],
   string

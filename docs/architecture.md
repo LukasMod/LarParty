@@ -51,8 +51,9 @@ Feature module convention (`parties`, `cards`):
 ## Routes
 
 `src/app/_layout.tsx` declares one stack and translates every title with `t('screens.*')`.
-Titles are set there, not in the screens — except `/`, which overrides `headerRight`
-in-screen via `<Stack.Screen>` to render the settings gear.
+Titles are set there, not in the screens — except `/`, which overrides the header
+in-screen via `<Stack.Screen>`: a serif wordmark on the left, and on the right a create-party
+`+` (only when parties exist) plus the settings gear.
 
 | Route                            | File                                          |
 | -------------------------------- | --------------------------------------------- |

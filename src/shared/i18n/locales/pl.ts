@@ -53,6 +53,10 @@ export const pl = {
       cards_few: '{{count}} karty',
       cards_many: '{{count}} kart',
       cards_other: '{{count}} karty',
+      characters_one: '{{count}} postać',
+      characters_few: '{{count}} postacie',
+      characters_many: '{{count}} postaci',
+      characters_other: '{{count}} postaci',
     },
     options: {
       themeCategory: {
@@ -94,11 +98,10 @@ export const pl = {
     },
   },
   home: {
-    subtitle:
-      'Twórz tematyczne imprezy i generuj karty postaci na swoją kolejną imprezę!',
-    emptyTitle: 'Lista imprez',
+    emptyTitle: 'Gotowy, aby stworzyć kolejną imprezę?',
     emptyBody:
-      'Nie ma jeszcze żadnych imprez. Utwórz pierwszą, aby zacząć generować karty postaci.',
+      'Utwórz tematyczną imprezę, wygeneruj karty postaci i ożyw swój wieczór LARP.',
+    createFirstParty: 'Utwórz pierwszą imprezę',
   },
   parties: {
     form: {

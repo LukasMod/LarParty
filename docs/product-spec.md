@@ -16,7 +16,7 @@ The goal of the PoC is to validate a simple but compelling flow:
 3. Save cards locally
 4. Browse saved parties and cards later, including offline
 
-The app should feel playful and immersive, with the visual style adapting to the selected party theme while staying within one light-mode-only design system.
+The app should feel playful and immersive, with the visual style adapting to the selected party theme while staying within one dark design system.
 
 ## 2. Target Users
 
@@ -166,11 +166,11 @@ Purpose: main entry screen with all parties.
 
 #### Content
 
-- list of parties, newest first
-- per-party card count
-- create new party CTA
+- serif "LarParty" wordmark in the header
+- list of parties, newest first; per-party theme glyph, theme · mood line, character count
+- create new party `+` in the header once parties exist
 - settings entry point in the header
-- empty state if no parties exist
+- empty state with a create-first-party CTA if no parties exist
 
 #### Actions
 
@@ -327,7 +327,7 @@ call needs a connection.
 
 - Party Crazy overall tone
 - Mixed style depending on selected party theme
-- Light mode only for PoC
+- Dark palette only for PoC
 - Phone-first layout
 - Web supported secondarily when practical
 
