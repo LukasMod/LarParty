@@ -27,7 +27,7 @@ This file records the currently approved product and technical decisions for the
 - Primary: iOS and Android
 - Secondary: web
 - Layout priority: phone-first
-- Color mode: light mode only
+- Color mode: dark palette only (the `default` theme is dark; no light variant ships)
 
 ## Styling direction
 

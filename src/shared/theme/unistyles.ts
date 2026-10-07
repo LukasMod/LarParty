@@ -76,15 +76,15 @@ export const partyThemeNames = ['fantasy', 'sci-fi', 'horror'] as const
 
 export const appThemes = {
   default: createTheme({
-    text: '#2F241F',
-    textSecondary: '#6E5B4B',
-    background: '#F8F3E9',
-    surface: '#E8DCC8',
-    surfaceSelected: '#CDBA9C',
-    border: '#93795D',
-    primary: '#7A4AE0',
-    primaryText: '#FFF8F1',
-    accent: '#7A4AE0',
+    text: '#F0E6E1',
+    textSecondary: '#BFAEAA',
+    background: '#0D090B',
+    surface: '#1D1418',
+    surfaceSelected: '#3B2E26',
+    border: '#8A6F4D',
+    primary: '#E8D3B0',
+    primaryText: '#2B1E12',
+    accent: '#B58CFF',
   }),
   fantasy: createTheme({
     text: '#F0E6E1',

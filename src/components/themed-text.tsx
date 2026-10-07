@@ -8,6 +8,8 @@ import { AppTheme } from '@/shared/theme/unistyles'
 export type ThemedTextProps = TextProps & {
   type?:
     | 'default'
+    | 'display'
+    | 'displaySmall'
     | 'title'
     | 'small'
     | 'smallBold'
@@ -35,6 +37,8 @@ export function ThemedText({
     <Text
       style={[
         styles.base,
+        type === 'display' && styles.display,
+        type === 'displaySmall' && styles.displaySmall,
         type === 'title' && styles.title,
         type === 'small' && styles.small,
         type === 'smallBold' && styles.smallBold,
@@ -56,6 +60,18 @@ const styles = StyleSheet.create((theme) => ({
     lineHeight: 24,
     fontWeight: '500',
     color: theme.colors.text,
+  },
+  display: {
+    fontFamily: theme.fonts.serif,
+    fontSize: 30,
+    lineHeight: 38,
+    fontWeight: '700',
+  },
+  displaySmall: {
+    fontFamily: theme.fonts.serif,
+    fontSize: 22,
+    lineHeight: 28,
+    fontWeight: '700',
   },
   small: {
     fontSize: 14,

@@ -103,8 +103,8 @@ agent-device snapshot -i --platform ios --device "iPhone 17 Pro" --session defau
 A successful Party List snapshot should show labels like:
 
 - `LarParty`
-- `Create themed parties and generate character cards for your next LARP-inspired event.`
-- `Create a new party`
+- `Ready to create your next party?`
+- `Create your first party`
 
 ## Practical LarParty runbook
 
@@ -114,7 +114,7 @@ This is the exact flow that worked during the iOS simulator check in this reposi
 
 1. Open LarParty.
 2. Snapshot the Party List.
-3. Tap `Create a new party`.
+3. Tap `Create your first party` (empty state) or the `+` in the header.
 4. On Create Party, scroll if needed until `Save party` is visible.
 5. Enter `Agent Device Tavern` into the party-name field.
 6. Keep the default selections `Fantasy` and `Fun` unless a different fixture is needed.
@@ -235,13 +235,13 @@ Verify the app boots into the main screen and the main party entry flow is still
 Look for:
 
 - `LarParty`
-- intro copy about themed parties and character cards
-- `Create a new party`
+- `Ready to create your next party?` and supporting copy
+- `Create your first party` (empty state) or a `+` button in the header
 
 Depending on data state, one of these should also appear:
 
-- empty state copy like `No parties yet...`, or
-- at least one saved party card with title and card count
+- empty state copy like `Create a themed party, generate character cards...`, or
+- at least one saved party card with title, theme · mood line, and character count
 
 ### Checks
 

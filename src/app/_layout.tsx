@@ -17,7 +17,7 @@ export default function RootLayout() {
   return (
     <React.StrictMode>
       <>
-        <StatusBar style="dark" />
+        <StatusBar style="light" />
         <Stack
           screenOptions={{
             headerShadowVisible: false,
@@ -30,7 +30,7 @@ export default function RootLayout() {
               color: Colors.default.text,
             },
             contentStyle: {
-              backgroundColor: 'transparent',
+              backgroundColor: Colors.default.background,
             },
           }}
         >

@@ -51,6 +51,8 @@ export const en = {
     counts: {
       cards_one: '{{count}} card',
       cards_other: '{{count}} cards',
+      characters_one: '{{count}} character',
+      characters_other: '{{count}} characters',
     },
     options: {
       themeCategory: {
@@ -92,11 +94,10 @@ export const en = {
     },
   },
   home: {
-    subtitle:
-      'Create themed parties and generate character cards for your next party!',
-    emptyTitle: 'Party List',
+    emptyTitle: 'Ready to create your next party?',
     emptyBody:
-      'No parties yet. Create your first party to start generating character cards.',
+      'Create a themed party, generate character cards and bring your LARP night to life.',
+    createFirstParty: 'Create your first party',
   },
   parties: {
     form: {
