@@ -13,6 +13,7 @@ import { IconButton } from '@/shared/components/icon-button'
 import { Screen } from '@/shared/components/screen'
 import { ScreenHeader } from '@/shared/components/screen-header'
 import { ScreenStateCard } from '@/shared/components/screen-state-card'
+import { TiltCard } from '@/shared/components/tilt-card'
 
 export default function CardDetailsScreen() {
   const { t } = useTranslation('common')
@@ -70,14 +71,16 @@ export default function CardDetailsScreen() {
                 · {party.title}
               </ThemedText>
             </View>
-            <CharacterCardView
-              displayMode="collectible"
-              partyThemeCategory={party.themeCategory}
-              backgroundHistory={card.generated.backgroundHistory}
-              characterTraits={card.generated.characterTraits}
-              specialMovement={card.generated.specialMovement}
-              specialPhrase={card.generated.specialPhrase}
-            />
+            <TiltCard>
+              <CharacterCardView
+                displayMode="collectible"
+                partyThemeCategory={party.themeCategory}
+                backgroundHistory={card.generated.backgroundHistory}
+                characterTraits={card.generated.characterTraits}
+                specialMovement={card.generated.specialMovement}
+                specialPhrase={card.generated.specialPhrase}
+              />
+            </TiltCard>
 
             <CardDetailsActions
               status={card.status}

@@ -34,7 +34,7 @@ src/
     generation/             gemini.ts, prompt.ts, schemas.ts, types.ts, hooks/, components/
   hooks/                    starter hooks; only use-theme.ts is live
   shared/
-    components/ constants/ i18n/ storage/ theme/ utils/
+    components/ constants/ hooks/ i18n/ storage/ theme/ utils/
 ```
 
 Feature module convention (`parties`, `cards`):
@@ -213,6 +213,47 @@ Unistyles theme. Conventions live in [`theming-guide.md`](./theming-guide.md).
 `src/constants/theme.ts` re-exports `appThemes` slices (`Colors`, `Fonts`, `Spacing`,
 `Radius`) for non-Unistyles consumers. Prefer `StyleSheet.create((theme) => ...)` in new
 code; that file exists mainly for the starter components.
+
+## Motion
+
+Reanimated v4 with `react-native-worklets`; the worklets babel plugin is injected by
+`babel-preset-expo`, so `babel.config.js` does not list it. Reference patterns: the breathing
+halo in `shared/components/card-glow.tsx` and the overlay in
+`features/generation/components/generating-overlay.tsx`. Both animate only `opacity`/`transform`,
+so the loops stay on the UI thread.
+
+Card details wraps the card in `shared/components/tilt-card.tsx`, which leans the card a few
+degrees with the phone's physical orientation. The pieces:
+
+- `shared/utils/tilt.ts` — the whole effect as pure functions and tunables. `DEFAULT_TILT_CONFIG`
+  holds `maxDegrees`, `maxShift`, `deadZoneDegrees`, `perspective`, and the `signX`/`signY` axis
+  flips. `TILT_EFFECTS_ENABLED` is the kill switch: set it false and cards render as plain views
+  with no sensor and no frame loop.
+- `shared/hooks/use-tilt-pose.ts` — reads `SensorType.ROTATION` through `useAnimatedSensor` and
+  eases a pose toward it in a `useFrameCallback` loop. All sampling and easing happens in worklets.
+- `shared/hooks/use-reduce-motion.ts` — the live reduce-motion flag, shared by tilt and
+  `CardGlow`.
+
+Three constraints that shaped this and are easy to get wrong again:
+
+- Reanimated gives no way to pause a sensor, and the `unregister` on the returned object is a
+  no-op until the next render (`useAnimatedSensor` assigns it in an effect). Stopping sampling
+  therefore means unmounting `useTiltPose`, so `TiltCard` renders a plain `View` whenever tilt
+  should not run and mounts the sampler otherwise. That swap remounts the card subtree, which is
+  off-screen on blur and instantaneous for a reduce-motion change — where snapping flat is wanted.
+- `iosReferenceFrame` is pinned to `XArbitraryZVertical`. The `Auto` default picks the
+  magnetometer-corrected frame, which needs iOS Location Services enabled and drifts toward
+  magnetic north. Yaw is unused because an arbitrary X axis makes it meaningless.
+- Writes to worklet-captured shared values come from worklets only. `react-hooks/immutability`
+  rejects `.value =` from an effect, so the on/off decision lives in which component mounts, not
+  in a shared-value flag written from JS.
+
+Tilt is native-only: web would need the DeviceMotion API, which requires HTTPS plus a
+gesture-triggered prompt. It also rests when reduce motion is on.
+
+Needs a physical device. A simulator has no motion hardware, so the pose stays fixed instead of
+following the hand — it can sit at a small constant lean, which is expected and not a bug. If the
+card leans away from the phone rather than into it, flip `signX`/`signY`.
 
 ## Dead code and hazards
 

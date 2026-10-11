@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { AccessibilityInfo, type StyleProp, type ViewStyle } from 'react-native'
+import { useEffect } from 'react'
+import type { StyleProp, ViewStyle } from 'react-native'
 import Animated, {
   Easing,
   cancelAnimation,
@@ -11,35 +11,14 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated'
 
+import { useReduceMotion } from '@/shared/hooks/use-reduce-motion'
+
 function hashCode(value: string) {
   let hash = 0
   for (let i = 0; i < value.length; i += 1) {
     hash = (hash * 31 + value.charCodeAt(i)) | 0
   }
   return Math.abs(hash)
-}
-
-function useReduceMotion() {
-  const [reduced, setReduced] = useState(false)
-
-  useEffect(() => {
-    let active = true
-    AccessibilityInfo.isReduceMotionEnabled().then((value) => {
-      if (active) {
-        setReduced(value)
-      }
-    })
-    const subscription = AccessibilityInfo.addEventListener(
-      'reduceMotionChanged',
-      setReduced,
-    )
-    return () => {
-      active = false
-      subscription.remove()
-    }
-  }, [])
-
-  return reduced
 }
 
 // Drives a 0→1→0 breathing loop on the UI thread. A seed shifts each glow
