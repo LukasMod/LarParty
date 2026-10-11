@@ -1,7 +1,7 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router'
+import { useTranslation } from 'react-i18next'
 import { View } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
-import { useTranslation } from 'react-i18next'
 
 import { ThemedText } from '@/components/themed-text'
 import { CardDetailsActions } from '@/features/cards/components/card-details-actions'
