@@ -1,13 +1,12 @@
+import { LinearGradient } from 'expo-linear-gradient'
 import { Link } from 'expo-router'
 import { SymbolView } from 'expo-symbols'
-import { LinearGradient } from 'expo-linear-gradient'
+import { useTranslation } from 'react-i18next'
 import { Pressable, View } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
-import { useTranslation } from 'react-i18next'
 
 import { ThemedText } from '@/components/themed-text'
 import { ThemedView } from '@/components/themed-view'
-import { CardGlow } from '@/shared/components/card-glow'
 import { PartyMetaLine } from '@/features/parties/components/party-meta-line'
 import { Party } from '@/features/parties/types'
 import { partyThemeGlyphs } from '@/shared/constants/party-options'
@@ -46,7 +45,6 @@ export function PartyListItem({ party, cardCount }: PartyListItemProps) {
             colors={[primary, withAlpha(primary, 0)]}
             style={styles.partyAccent}
           />
-          <CardGlow color={partyTheme.colors.accent} peakAlpha={0.26} />
           <View
             style={[
               styles.glyphTile,

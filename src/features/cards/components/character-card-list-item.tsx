@@ -1,15 +1,14 @@
+import { LinearGradient } from 'expo-linear-gradient'
 import { Link } from 'expo-router'
 import { SymbolView } from 'expo-symbols'
-import { LinearGradient } from 'expo-linear-gradient'
+import { useTranslation } from 'react-i18next'
 import { Pressable, View } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
-import { useTranslation } from 'react-i18next'
 
 import { ThemedText } from '@/components/themed-text'
 import { ThemedView } from '@/components/themed-view'
 import { CharacterCard } from '@/features/cards/types'
 import { ThemeCategory } from '@/features/parties/types'
-import { CardGlow } from '@/shared/components/card-glow'
 import { withAlpha } from '@/shared/theme/alpha'
 import { getPartyTheme } from '@/shared/theme/party-theme'
 
@@ -44,17 +43,10 @@ export function CharacterCardListItem({
           style={styles.cardItem}
         >
           {isAccepted ? (
-            <>
-              <LinearGradient
-                colors={[withAlpha(primary, 0.22), withAlpha(primary, 0)]}
-                style={StyleSheet.absoluteFill}
-              />
-              <CardGlow
-                color={partyTheme.colors.accent}
-                seed={card.id}
-                peakAlpha={0.24}
-              />
-            </>
+            <LinearGradient
+              colors={[withAlpha(primary, 0.22), withAlpha(primary, 0)]}
+              style={StyleSheet.absoluteFill}
+            />
           ) : null}
           <LinearGradient
             colors={[

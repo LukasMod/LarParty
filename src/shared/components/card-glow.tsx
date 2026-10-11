@@ -1,9 +1,5 @@
 import { useEffect, useState } from 'react'
-import {
-  AccessibilityInfo,
-  type StyleProp,
-  type ViewStyle,
-} from 'react-native'
+import { AccessibilityInfo, type StyleProp, type ViewStyle } from 'react-native'
 import Animated, {
   Easing,
   cancelAnimation,
@@ -14,8 +10,6 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated'
-
-import { withAlpha } from '@/shared/theme/alpha'
 
 function hashCode(value: string) {
   let hash = 0
@@ -48,33 +42,17 @@ function useReduceMotion() {
   return reduced
 }
 
-interface CardGlowProps {
-  color: string
-  style?: StyleProp<ViewStyle>
-  running?: boolean
-  delay?: number
-  duration?: number
-  peakAlpha?: number
-  seed?: string
-}
-
-// Soft radial halo anchored to the host card's bottom edge. The disc hangs
-// below the card and breathes upward with opacity, scale and lift, so light
-// reads as rising "from below". The host must clip (overflow: hidden).
-// Only opacity/transform animate, so the loop stays on the UI thread.
-export function CardGlow({
-  color,
-  style,
-  running = true,
-  delay = 0,
-  duration = 2600,
-  peakAlpha = 0.4,
-  seed,
-}: CardGlowProps) {
+// Drives a 0→1→0 breathing loop on the UI thread. A seed shifts each glow
+// along the cycle so list rows breathe out of sync. Cancelled when idle or
+// when the user asked for reduced motion.
+function useBreath(
+  running: boolean,
+  duration: number,
+  delay: number,
+  seed?: string,
+) {
   const reduceMotion = useReduceMotion()
   const pulse = useSharedValue(0)
-
-  // A seed shifts each glow along the cycle so list rows breathe out of sync.
   const offset = seed ? (hashCode(seed) % 1000) / 1000 : 0
 
   useEffect(() => {
@@ -96,40 +74,51 @@ export function CardGlow({
     )
   }, [running, reduceMotion, pulse, delay, duration, offset])
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: 0.45 + pulse.value * 0.55,
-    transform: [
-      { translateY: pulse.value * -8 },
-      { scaleX: 0.94 + pulse.value * 0.1 },
-      { scaleY: 0.9 + pulse.value * 0.16 },
-    ],
-  }))
+  return pulse
+}
+
+interface CardBorderGlowProps {
+  color: string
+  style?: StyleProp<ViewStyle>
+  running?: boolean
+  duration?: number
+  peakAlpha?: number
+}
+
+// Soft halo that traces the host's rounded-rect border, so the card reads as
+// emitting light from its edges rather than a wash from below. An outset
+// box-shadow breathes in alpha and blur radius; the host's opaque background
+// hides the inward bleed, leaving light spilling outward. The host must NOT
+// clip (no overflow: hidden). boxShadow animates on both platforms.
+export function CardBorderGlow({
+  color,
+  style,
+  running = true,
+  duration = 1600,
+  peakAlpha = 1,
+}: CardBorderGlowProps) {
+  const pulse = useBreath(running, duration, 0)
+
+  // Resolve the accent's rgb once on the JS thread. The worklet below may
+  // only interpolate the alpha (and blur); it cannot call withAlpha, which is
+  // a host function and would throw when run on the UI runtime.
+  const r = parseInt(color.slice(1, 3), 16)
+  const g = parseInt(color.slice(3, 5), 16)
+  const b = parseInt(color.slice(5, 7), 16)
+  const minAlpha = 0.38
+  const alphaDelta = peakAlpha - minAlpha
+
+  const animatedStyle = useAnimatedStyle(() => {
+    const alpha = minAlpha + pulse.value * alphaDelta
+    const blur = 24 + pulse.value * 26
+    return { boxShadow: `0 0 ${blur}px rgba(${r}, ${g}, ${b}, ${alpha})` }
+  })
 
   return (
     <Animated.View
+      aria-hidden
       pointerEvents="none"
-      style={[
-        styles.disc,
-        animatedStyle,
-        {
-          backgroundImage: `radial-gradient(ellipse 100% 100% at 50% 100%, ${withAlpha(
-            color,
-            peakAlpha,
-          )}, ${withAlpha(color, 0)} 70%)`,
-        },
-        style,
-      ]}
+      style={[style, animatedStyle]}
     />
   )
 }
-
-const styles = {
-  disc: {
-    position: 'absolute',
-    left: '-10%',
-    right: '-10%',
-    bottom: '-30%',
-    height: '90%',
-    transformOrigin: '50% 100%',
-  },
-} satisfies Record<string, ViewStyle>
