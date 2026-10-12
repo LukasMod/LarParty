@@ -31,18 +31,19 @@ Remaining work, ordered by value. Each item is scoped small enough for its own P
    `npm run reset-project`, which moves `src/` and `scripts/` into `example/` and removes the
    app. It also omits `EXPO_PUBLIC_GEMINI_API_KEY`, without which generation throws on first
    use. Write real setup, commands, and API-key steps; drop or guard the `reset-project` script.
-6. **Test runner.** No CI and no tests exist, so `agent-device` smoke tests are the only
-   regression net. Start with pure, UI-free seams: card selectors, generation schema parsing,
-   form validation rules, cascade-delete store logic. Add an i18n key-coverage test comparing
-   `en` and `pl`, normalizing plural suffixes first — Polish has `_few`/`_many` keys English
-   lacks (see [`i18n-guide.md`](./i18n-guide.md#plurals)), so a raw key-set diff reports false
-   failures.
+6. **CI for the test suite.** `npm run test` is local-only; nothing runs it on a PR. Wire
+   `npm run check` and `npm run test` into CI.
+7. **i18n key-coverage test.** No test compares `en` and `pl` key sets, so a missing Polish
+   key still falls back to English silently. Normalize plural suffixes before diffing —
+   Polish has `_few`/`_many` keys English lacks (see
+   [`i18n-guide.md`](./i18n-guide.md#plurals)) — so a raw key-set diff reports false failures.
 
 ## Verification gaps
 
 The full flow is code-complete and passed one iOS simulator pass
-([`agent-device-smoke-tests.md`](./agent-device-smoke-tests.md)). No automated suite or CI
-exists. Android and web have no smoke coverage.
+([`agent-device-smoke-tests.md`](./agent-device-smoke-tests.md)). Jest covers the pure
+seams listed in [`architecture.md`](./architecture.md#verification); screens and routes have
+no automated coverage, and no CI runs anything. Android and web have no smoke coverage.
 
 ## Non-goals
 
