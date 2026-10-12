@@ -11,6 +11,7 @@ import {
   validateCardForm,
 } from '@/features/cards/utils/card-form'
 import { useCharacterCardGeneration } from '@/features/generation/hooks/use-character-card-generation'
+import { getPromptSiblings } from '@/features/generation/utils/party-context'
 import { Party } from '@/features/parties/types'
 import { useAppLanguage } from '@/shared/i18n/use-app-language'
 import { resolveErrorMessage } from '@/shared/utils/error'
@@ -59,6 +60,10 @@ export function useNewCharacterCardForm({
         party,
         input,
         outputLanguage: resolvedLanguage,
+        siblings: getPromptSiblings({
+          cards: useCardStore.getState().cards,
+          partyId: party.id,
+        }),
       })
 
       if (cancelled || !generated) {

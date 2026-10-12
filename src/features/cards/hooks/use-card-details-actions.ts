@@ -6,6 +6,10 @@ import { useTranslation } from 'react-i18next'
 import { useCardStore } from '@/features/cards/store/card-store'
 import { CharacterCard } from '@/features/cards/types'
 import { useCharacterCardGeneration } from '@/features/generation/hooks/use-character-card-generation'
+import {
+  getGenerationAttempt,
+  getPromptSiblings,
+} from '@/features/generation/utils/party-context'
 import { Party } from '@/features/parties/types'
 import { useAppLanguage } from '@/shared/i18n/use-app-language'
 import { resolveErrorMessage } from '@/shared/utils/error'
@@ -75,10 +79,20 @@ export function useCardDetailsActions({
             let nextErrorMessage: string | null = null
 
             try {
+              const partyCards = useCardStore.getState().cards
               const { generated, cancelled } = await generation.start({
                 party,
                 input: card.input,
                 outputLanguage: resolvedLanguage,
+                attempt: getGenerationAttempt(
+                  partyCards,
+                  card.generationGroupId,
+                ),
+                siblings: getPromptSiblings({
+                  cards: partyCards,
+                  partyId: card.partyId,
+                  excludeGenerationGroupId: card.generationGroupId,
+                }),
               })
 
               if (cancelled || !generated) {
