@@ -1,5 +1,6 @@
 import React from 'react'
 
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { Stack } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import { useTranslation } from 'react-i18next'
@@ -16,7 +17,9 @@ export default function RootLayout() {
 
   return (
     <React.StrictMode>
-      <>
+      {/* Gestures need this context above every screen; expo-router's stack does not
+          provide it. Without it `GestureDetector` throws in dev. */}
+      <GestureHandlerRootView style={{ flex: 1 }}>
         <StatusBar style="light" />
         <Stack
           screenOptions={{
@@ -56,7 +59,7 @@ export default function RootLayout() {
             options={{ title: t('screens.characterCard') }}
           />
         </Stack>
-      </>
+      </GestureHandlerRootView>
     </React.StrictMode>
   )
 }

@@ -11,6 +11,7 @@ import { ChipOptionGroup } from '@/shared/components/chip-option-group'
 import { FormCard } from '@/shared/components/form-card'
 import { Screen } from '@/shared/components/screen'
 import { DebugMenu } from '@/shared/debug/debug-menu'
+import { LevelSliderPlayground } from '@/shared/debug/level-slider-playground'
 
 const languageOptions: readonly LanguagePreference[] = [
   'system',
@@ -60,6 +61,7 @@ export default function SettingsScreen() {
         </ThemedText>
       </FormCard>
 
+      {__DEV__ ? <LevelSliderPlayground /> : null}
       {__DEV__ ? <DebugMenu /> : null}
     </Screen>
   )
