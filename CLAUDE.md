@@ -109,11 +109,6 @@ Shared code lives in `src/shared`:
 - A new util ships with its unit test in the same change. No util lands untested.
 - Touch a util, run the tests before committing: `npm run test`, or the one file while
   iterating. Same rule for the util's own callers.
-- **`npm run typecheck` fails on a clean checkout** with 15 i18n typing errors. Lint
-  passes. Do not assume you caused them, and do not "fix" it by deleting
-  `src/shared/i18n/i18next.d.ts` or loosening `tsconfig`. Root cause and a verified
-  2-file fix are in
-  [docs/architecture.md](./docs/architecture.md#npm-run-typecheck-fails-on-a-clean-checkout).
 
 ## Documentation Resources
 

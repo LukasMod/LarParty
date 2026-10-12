@@ -18,25 +18,23 @@ Remaining work, ordered by value. Each item is scoped small enough for its own P
    connectivity, so the offline failure is a common path. Map failures to translated keys and
    keep `error.message` for logs. See
    [`architecture.md`](./architecture.md#dead-code-and-hazards).
-3. **Typecheck errors.** `npm run check` fails with 15 i18n typing errors on a clean
-   checkout. Root cause and a verified 2-file fix are in
-   [`architecture.md`](./architecture.md#npm-run-typecheck-fails-on-a-clean-checkout).
-4. **Dead starter code.** Remove `src/components/*` (keep `themed-text`/`themed-view`), unused
+3. **Dead starter code.** Remove `src/components/*` (keep `themed-text`/`themed-view`), unused
    hooks in `src/hooks/`, and the orphaned `/explore` route. `constants/theme.ts` keeps `Colors`
    (live) alongside `Fonts`/`Radius`/`MaxContentWidth` that only dead code imports. Full
    inventory, including what must _not_ be deleted, in
    [`architecture.md`](./architecture.md#dead-code-and-hazards). Also remove the `console.log`
    in `settings.tsx` and the redundant `useMemo` in `card/new.tsx`.
-5. **`README.md`.** Replace the default Expo template content. It instructs readers to run
+4. **`README.md`.** Replace the default Expo template content. It instructs readers to run
    `npm run reset-project`, which moves `src/` and `scripts/` into `example/` and removes the
    app. It also omits `EXPO_PUBLIC_GEMINI_API_KEY`, without which generation throws on first
    use. Write real setup, commands, and API-key steps; drop or guard the `reset-project` script.
-6. **CI for the test suite.** `npm run test` is local-only; nothing runs it on a PR. Wire
+5. **CI for the test suite.** `npm run test` is local-only; nothing runs it on a PR. Wire
    `npm run check` and `npm run test` into CI.
-7. **i18n key-coverage test.** No test compares `en` and `pl` key sets, so a missing Polish
+6. **i18n key-coverage test.** No test compares `en` and `pl` key sets, so a missing Polish
    key falls back to English silently. Normalize plural suffixes before diffing —
    Polish has `_few`/`_many` keys English lacks (see
    [`i18n-guide.md`](./i18n-guide.md#plurals)) — so a raw key-set diff reports false failures.
+
 
 ## Verification gaps
 

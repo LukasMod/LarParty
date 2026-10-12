@@ -124,7 +124,14 @@ cancelling another.
   - sex
   - age
   - predefined traits
+  - per-trait intensity level
 - trait selection max: 3
+- intensity level: integer -3 to +3, step 1, default 0, one per selected trait
+- the level steers generation only: `+3` reads as a defining trait, `0` as light flavour,
+  `-3` as a weakness or reluctance around that trait
+- the level is not shown on the saved card details screen; the generated `characterTraits`
+  phrases are what the card displays
+- deselecting a trait drops its level; re-selecting starts again at 0
 
 ## Card lifecycle rules
 

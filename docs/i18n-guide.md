@@ -154,10 +154,10 @@ The schema keys themselves (`generatedNameWithClass`, `backgroundHistory`,
   two or more namespaces. So `t('common:options.sex.male')` compiles inside a component
   using `useTranslation(['common', 'cards'])`, but is rejected as an unknown key when `t`
   is a single-namespace `t`. Rejected calls return `unknown`, which then fails every
-  downstream `string`. This is exactly the trap in `labels.ts`, whose helpers take a bare
-  `TFunction` (which resolves to the `defaultNS`, i.e. `common`) and prefix everything with
-  `common:` — the cause of the typecheck failure in
-  [`architecture.md`](./architecture.md#npm-run-typecheck-fails-on-a-clean-checkout).
+  downstream `string`. This is why `labels.ts` prefixes nothing: its helpers take a bare
+  `TFunction` (which resolves to the `defaultNS`, i.e. `common`). The rule and its call-site
+  consequences are in
+  [`architecture.md`](./architecture.md#enum-labels-resolve-common-keys-bare).
   Safe rule: **write `common` keys bare** — `t('options.sex.male')`, not
   `t('common:options.sex.male')`. Non-default namespaces always take their prefix:
   `t('cards:form.title')`. Prefer

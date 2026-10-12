@@ -414,6 +414,7 @@ Look for:
 - `Age`
 - `Traits`
 - helper copy `Pick up to 3 traits.`
+- a trait intensity row (trait name, level, slider) below the chips for each selected trait
 - `Generate character card`
 
 ### Checks
@@ -423,6 +424,8 @@ Look for:
 1. Confirm all sections and the primary CTA are visible.
 2. Confirm sex options are visible.
 3. Confirm trait chips are visible.
+4. Select a trait and confirm its intensity row animates open below the chips, starting on `0`.
+5. Deselect it and confirm the row collapses away with no leftover gap.
 
 #### B. Validation smoke
 

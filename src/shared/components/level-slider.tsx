@@ -17,6 +17,7 @@ import { StyleSheet } from 'react-native-unistyles'
 
 import { ThemedText } from '@/components/themed-text'
 import { useTheme } from '@/hooks/use-theme'
+import { levelLabel } from '@/shared/utils/level'
 
 const HIT_HEIGHT = 64
 const TRACK_HEIGHT = 20
@@ -43,11 +44,6 @@ function toLevels(min: number, max: number, step: number) {
   }
 
   return levels
-}
-
-// Shared with hosts that echo the chosen level, so the two readings cannot drift.
-export function levelLabel(level: number) {
-  return level > 0 ? `+${level}` : `${level}`
 }
 
 // Nearest index for a level the caller supplied, tolerating off-grid values.
@@ -88,6 +84,9 @@ interface LevelSliderProps {
   step?: number
   haptics?: boolean
   accessibilityLabel?: string
+  /** Hide the large level readout above the track. On when the host shows the
+      level itself, so the two readings do not duplicate each other. */
+  showReadout?: boolean
   style?: StyleProp<ViewStyle>
 }
 
@@ -114,6 +113,7 @@ export function LevelSlider({
   step = 1,
   haptics = Platform.OS !== 'web',
   accessibilityLabel,
+  showReadout = true,
   style,
 }: LevelSliderProps) {
   const [width, setWidth] = useState(0)
@@ -382,20 +382,22 @@ export function LevelSlider({
       style={[styles.root, style]}
       onLayout={(event) => handleLayout(event.nativeEvent.layout.width)}
     >
-      <View style={styles.readout} accessibilityElementsHidden>
-        <Animated.View style={readoutStyle}>
-          {levels.map((item) => (
-            <ThemedText
-              key={item}
-              type="displaySmall"
-              maxFontSizeMultiplier={1.2}
-              style={styles.readoutRow}
-            >
-              {levelLabel(item)}
-            </ThemedText>
-          ))}
-        </Animated.View>
-      </View>
+      {showReadout ? (
+        <View style={styles.readout} accessibilityElementsHidden>
+          <Animated.View style={readoutStyle}>
+            {levels.map((item) => (
+              <ThemedText
+                key={item}
+                type="displaySmall"
+                maxFontSizeMultiplier={1.2}
+                style={styles.readoutRow}
+              >
+                {levelLabel(item)}
+              </ThemedText>
+            ))}
+          </Animated.View>
+        </View>
+      ) : null}
 
       <GestureDetector gesture={gesture}>
         <View

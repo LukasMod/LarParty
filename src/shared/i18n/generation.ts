@@ -9,6 +9,7 @@ import {
   getThemeCategoryLabel,
 } from '@/shared/i18n/labels'
 import { SupportedLanguageCode } from '@/shared/i18n/locale'
+import { levelLabel } from '@/shared/utils/level'
 import { resources } from '@/shared/i18n/resources'
 
 const languageNames: Record<SupportedLanguageCode, string> = {
@@ -35,7 +36,14 @@ export function getGenerationPromptLabels(
     themeCategory: getThemeCategoryLabel(t, party.themeCategory),
     mood: getPartyMoodLabel(t, party.mood),
     sex: getSexOptionLabel(t, input.sex),
-    selectedTraits: input.selectedTraits.map((trait) => getCardTraitLabel(t, trait)),
+    // A 0 level is left off the label: an unannotated trait already reads as
+    // plain flavour, so only the tuned ones carry a number the model must honour.
+    selectedTraits: input.selectedTraits.map((trait) => {
+      const label = getCardTraitLabel(t, trait)
+      const level = input.traitLevels?.[trait] ?? 0
+
+      return level === 0 ? label : `${label} (${levelLabel(level)})`
+    }),
   }
 }
 

@@ -5,10 +5,8 @@ import { useTranslation } from 'react-i18next'
 
 import { ThemedText } from '@/components/themed-text'
 import { FormCard } from '@/shared/components/form-card'
-import {
-  LevelSlider,
-  levelLabel,
-} from '@/shared/components/level-slider'
+import { LevelSlider } from '@/shared/components/level-slider'
+import { levelLabel } from '@/shared/utils/level'
 
 // Dev-only host for `LevelSlider`: keeps a live instance on screen so the snap,
 // the velocity handoff and the haptics can be feel-checked without wiring the

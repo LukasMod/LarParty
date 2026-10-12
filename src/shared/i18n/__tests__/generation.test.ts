@@ -95,4 +95,30 @@ describe('getGenerationPromptLabels', () => {
       selectedTraits: ['Mściwy', 'Spokojny'],
     })
   })
+
+  it('annotates a tuned trait with its signed level', () => {
+    const labels = getGenerationPromptLabels(
+      getGenerationTranslator('en'),
+      makeParty(),
+      makeCardInput({
+        selectedTraits: ['vengeful', 'calm'],
+        traitLevels: { vengeful: 2, calm: -1 },
+      }),
+    )
+
+    expect(labels.selectedTraits).toEqual(['Vengeful (+2)', 'Calm (-1)'])
+  })
+
+  it('leaves a level-0 trait unannotated', () => {
+    const labels = getGenerationPromptLabels(
+      getGenerationTranslator('en'),
+      makeParty(),
+      makeCardInput({
+        selectedTraits: ['vengeful', 'calm'],
+        traitLevels: { vengeful: 0 },
+      }),
+    )
+
+    expect(labels.selectedTraits).toEqual(['Vengeful', 'Calm'])
+  })
 })

@@ -25,7 +25,7 @@ describe.each([
 
     for (const value of values) {
       expect(getThemeCategoryLabel(t, value)).not.toBe(
-        `common:options.themeCategory.${value}`,
+        `options.themeCategory.${value}`,
       )
     }
   })
@@ -37,7 +37,7 @@ describe.each(['en', 'pl'])('enum labels (%s)', (language) => {
   it('resolves every party mood', () => {
     for (const value of partyMoods) {
       expect(getPartyMoodLabel(t, value)).not.toBe(
-        `common:options.partyMood.${value}`,
+        `options.partyMood.${value}`,
       )
     }
   })
@@ -45,7 +45,7 @@ describe.each(['en', 'pl'])('enum labels (%s)', (language) => {
   it('resolves every card trait', () => {
     for (const value of cardTraits) {
       expect(getCardTraitLabel(t, value)).not.toBe(
-        `common:options.cardTrait.${value}`,
+        `options.cardTrait.${value}`,
       )
     }
   })
@@ -53,7 +53,7 @@ describe.each(['en', 'pl'])('enum labels (%s)', (language) => {
   it('resolves every sex option', () => {
     for (const value of sexOptions) {
       expect(getSexOptionLabel(t, value)).not.toBe(
-        `common:options.sex.${value}`,
+        `options.sex.${value}`,
       )
     }
   })
@@ -61,7 +61,7 @@ describe.each(['en', 'pl'])('enum labels (%s)', (language) => {
   it('resolves every card display mode', () => {
     for (const value of cardDisplayModes) {
       expect(getCardDisplayModeLabel(t, value)).not.toBe(
-        `common:options.cardDisplayMode.${value}`,
+        `options.cardDisplayMode.${value}`,
       )
     }
   })

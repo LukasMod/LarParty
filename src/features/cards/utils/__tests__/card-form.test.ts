@@ -1,6 +1,10 @@
 import {
   MAX_CARD_TRAITS,
+  MAX_TRAIT_LEVEL,
+  MIN_TRAIT_LEVEL,
+  normalizeTraitLevels,
   parseCardAge,
+  setTraitLevel,
   toggleCardTrait,
   validateCardForm,
 } from '@/features/cards/utils/card-form'
@@ -110,6 +114,7 @@ describe('validateCardForm', () => {
     name: 'Aldric',
     age: '25',
     selectedTraits: makeCardInput().selectedTraits,
+    traitLevels: {},
   }
 
   it('accepts a valid draft and returns the card input', () => {
@@ -120,6 +125,7 @@ describe('validateCardForm', () => {
         sex: 'male',
         age: 25,
         selectedTraits: validDraft.selectedTraits,
+        traitLevels: { loyal: 0, funny: 0, calm: 0 },
       },
     })
   })
@@ -205,7 +211,7 @@ describe('validateCardForm', () => {
 
   it('reports name before age and traits', () => {
     const result = validateCardForm(
-      { name: '', age: 'x', selectedTraits: [] },
+      { name: '', age: 'x', selectedTraits: [], traitLevels: {} },
       'other',
     )
 
@@ -227,5 +233,107 @@ describe('validateCardForm', () => {
     }
 
     expect(result.errorKey).toBe('form.errors.invalidAge')
+  })
+
+  it('defaults a selected trait with no stored level to 0', () => {
+    const result = validateCardForm(
+      { ...validDraft, selectedTraits: [first], traitLevels: {} },
+      'other',
+    )
+
+    if (!result.ok) {
+      throw new Error('expected the draft to validate')
+    }
+
+    expect(result.input.traitLevels).toEqual({ [first]: 0 })
+  })
+
+  it('carries a tuned level through to the input', () => {
+    const result = validateCardForm(
+      {
+        ...validDraft,
+        selectedTraits: [first, second],
+        traitLevels: { [first]: 2, [second]: -1 },
+      },
+      'other',
+    )
+
+    if (!result.ok) {
+      throw new Error('expected the draft to validate')
+    }
+
+    expect(result.input.traitLevels).toEqual({ [first]: 2, [second]: -1 })
+  })
+
+  it('drops a level for a trait that is no longer selected', () => {
+    const result = validateCardForm(
+      {
+        ...validDraft,
+        selectedTraits: [first],
+        traitLevels: { [first]: 1, [second]: 3 },
+      },
+      'other',
+    )
+
+    if (!result.ok) {
+      throw new Error('expected the draft to validate')
+    }
+
+    expect(result.input.traitLevels).toEqual({ [first]: 1 })
+  })
+})
+
+describe('normalizeTraitLevels', () => {
+  it('adds a 0 entry for every selected trait missing a level', () => {
+    expect(normalizeTraitLevels([first, second], {})).toEqual({
+      [first]: 0,
+      [second]: 0,
+    })
+  })
+
+  it('drops entries for unselected traits', () => {
+    expect(normalizeTraitLevels([first], { [first]: 1, [second]: 2 })).toEqual({
+      [first]: 1,
+    })
+  })
+
+  it('clamps a stored level into range', () => {
+    expect(normalizeTraitLevels([first], { [first]: 99 })).toEqual({
+      [first]: MAX_TRAIT_LEVEL,
+    })
+    expect(normalizeTraitLevels([first], { [first]: -99 })).toEqual({
+      [first]: MIN_TRAIT_LEVEL,
+    })
+  })
+
+  it('returns an empty record when nothing is selected', () => {
+    expect(normalizeTraitLevels([], { [first]: 2 })).toEqual({})
+  })
+
+  it('honors custom bounds', () => {
+    expect(normalizeTraitLevels([first], { [first]: 5 }, -1, 1)).toEqual({
+      [first]: 1,
+    })
+  })
+})
+
+describe('setTraitLevel', () => {
+  it('sets one trait level without touching the rest', () => {
+    expect(setTraitLevel({ [first]: 1 }, second, -2)).toEqual({
+      [first]: 1,
+      [second]: -2,
+    })
+  })
+
+  it('overwrites an existing level', () => {
+    expect(setTraitLevel({ [first]: 1 }, first, 3)).toEqual({ [first]: 3 })
+  })
+
+  it('does not mutate the input record', () => {
+    const before = { [first]: 1 }
+
+    setTraitLevel(before, second, 2)
+
+    expect(before).toEqual({ [first]: 1 })
   })
 })

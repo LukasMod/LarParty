@@ -32,6 +32,7 @@ export function buildCharacterCardPrompt({
     `- Selected traits: ${labels.selectedTraits.join(', ')}`,
     '',
     'Generation rules:',
+    '- Traits may carry a signed intensity in parentheses, from -3 to +3. A positive level makes that trait defining and visible in play, 0 leaves it as light flavour, and a negative level reads as a weakness or reluctance around it. Traits with no number are at 0.',
     '- generatedNameWithClass should feel flavorful and party-ready.',
     '- backgroundHistory must be exactly 2 short sentences.',
     '- characterTraits must contain exactly 3 short trait phrases.',
