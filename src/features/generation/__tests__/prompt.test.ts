@@ -72,7 +72,7 @@ describe('buildCharacterCardPrompt', () => {
     const prompt = build()
 
     expect(prompt).toContain(
-      '- backgroundHistory must be exactly 2 short sentences.',
+      '- backgroundHistory must be exactly 3 short sentences.',
     )
     expect(prompt).toContain(
       '- characterTraits must contain exactly 3 short trait phrases.',
@@ -200,6 +200,25 @@ describe('buildCharacterCardPrompt', () => {
     )
     expect(prompt).toContain('phrase: "I already packed."')
     expect(prompt).toContain('movement: "A long sigh and a wave"')
+  })
+
+  it('drops the value from a sibling trait at the default', () => {
+    const prompt = build({
+      siblings: [
+        {
+          nameWithClass: 'Bram the Unbothered',
+          traits: [
+            { trait: 'loyal', traitValue: 0 },
+            { trait: 'funny', traitValue: -1 },
+          ],
+          specialPhrase: 'I already packed.',
+          specialMovement: 'A long sigh and a wave',
+        },
+      ],
+    })
+
+    expect(prompt).toContain('- Bram the Unbothered | traits: Loyal, Funny -1')
+    expect(prompt).not.toContain('Loyal 0')
   })
 
   it('caps the sibling list', () => {

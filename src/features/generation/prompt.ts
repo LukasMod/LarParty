@@ -10,6 +10,8 @@ import {
   traitSeedLinesOf,
 } from '@/features/generation/utils/seed-traits'
 import {
+  clampTraitValue,
+  DEFAULT_TRAIT_VALUE,
   formatTraitValue,
   getLoudestTraitIndex,
   traitValueScaleLines,
@@ -83,7 +85,7 @@ export function buildCharacterCardPrompt({
     `- generatedNameWithClass is a given name plus one concrete role, title, or epithet tied to ${
       loudestLabel ? `the loudest trait (${loudestLabel})` : 'the character'
     }. Avoid the "the [adjective] [noun]" pattern.`,
-    '- backgroundHistory must be exactly 2 short sentences.',
+    '- backgroundHistory must be exactly 3 short sentences.',
     `- characterTraits must contain exactly 3 short trait phrases${
       printValues && seeds.length > 0
         ? ', one per selected trait in the seed order, each carrying its own intensity value.'
@@ -115,10 +117,14 @@ function siblingLines(t: TFunction, siblings: readonly PromptSiblingCard[]) {
     'Other characters already at this party. Do not repeat them:',
     ...siblings.slice(0, MAX_PARTY_SIBLING_SUMMARIES).map((sibling) => {
       const traits = sibling.traits
-        .map(
-          ({ trait, traitValue }) =>
-            `${getCardTraitLabel(t, trait)} ${formatTraitValue(traitValue)}`,
-        )
+        .map(({ trait, traitValue }) => {
+          const label = getCardTraitLabel(t, trait)
+          const value = clampTraitValue(traitValue)
+
+          return value === DEFAULT_TRAIT_VALUE
+            ? label
+            : `${label} ${formatTraitValue(value)}`
+        })
         .join(', ')
 
       return [

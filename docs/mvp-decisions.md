@@ -118,7 +118,7 @@ reach the prompt only when at least one value leaves 0.
 - AI output must be strict structured JSON
 - Generated card output must contain:
   - full name with class/archetype
-  - 2-sentence background history
+  - 3-sentence background history
   - 3 character traits
   - 1 special movement
   - 1 special word/phrase/sentence

@@ -26,7 +26,7 @@ export const generatedCharacterCardJsonSchema = {
     backgroundHistory: {
       type: 'string',
       description:
-        'Exactly 2 short sentences describing the character background.',
+        'Exactly 3 short sentences describing the character background.',
     },
     characterTraits: {
       type: 'array',

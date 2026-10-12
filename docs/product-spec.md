@@ -98,7 +98,7 @@ A character card is an AI-generated role profile associated with one party.
 #### Character card generated fields
 
 - `generatedNameWithClass`
-- `backgroundHistory` (2 sentences)
+- `backgroundHistory` (3 sentences)
 - `characterTraits` (3 items)
 - `specialMovement`
 - `specialPhrase`
@@ -208,7 +208,7 @@ Purpose: show generated character card in detail.
 #### Content
 
 - generated name with class/archetype
-- 2-sentence background
+- 3-sentence background
 - 3 traits
 - special movement
 - special phrase
