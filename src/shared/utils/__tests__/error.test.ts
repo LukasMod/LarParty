@@ -19,16 +19,14 @@ describe('resolveErrorMessage', () => {
     expect(resolveErrorMessage(undefined, 'fallback')).toBe('fallback')
   })
 
-  it('falls back for null', () => {
-    expect(resolveErrorMessage(null, 'fallback')).toBe('fallback')
-  })
-
-  it('falls back for a plain object', () => {
+  // Guards against "simplifying" the check to a duck-typed `error.message` read.
+  it('falls back for a plain object carrying a message', () => {
     expect(resolveErrorMessage({ message: 'boom' }, 'fallback')).toBe(
       'fallback',
     )
   })
 
+  // The Gemini SDK throws ApiError, so subclasses must keep their message.
   it('keeps a message from an Error subclass', () => {
     class GenerationError extends Error {}
 

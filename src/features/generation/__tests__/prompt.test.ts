@@ -13,32 +13,29 @@ function build(outputLanguage: 'en' | 'pl' = 'en') {
   return buildCharacterCardPrompt({ party, input, outputLanguage })
 }
 
+// The instruction sentences themselves are prose the model reads, not a
+// contract the code depends on, so only the parts with behavior are asserted:
+// the seed values reach the prompt, and the language switch works.
 describe('buildCharacterCardPrompt', () => {
-  it('includes the character seed values', () => {
+  it('includes the seed values the model works from', () => {
     const prompt = build()
 
     expect(prompt).toContain('- Name: Vesper Nightbloom')
     expect(prompt).toContain('- Age: 34')
-  })
-
-  it('lists the selected traits comma separated', () => {
-    expect(build()).toContain('- Selected traits: Vengeful, Calm, Mysterious')
-  })
-
-  it('includes the localized theme and mood', () => {
-    const prompt = build()
-
+    expect(prompt).toContain('- Selected traits: Vengeful, Calm, Mysterious')
     expect(prompt).toContain('- Theme category: Horror')
     expect(prompt).toContain('- Mood: Dramatic')
   })
 
-  it('instructs the model in the requested output language', () => {
+  it('tells the model which language to write in', () => {
     expect(build('en')).toContain(
       'Write all generated field values in English.',
     )
     expect(build('pl')).toContain('Write all generated field values in Polish.')
   })
 
+  // Enum labels must localize with the output language, otherwise a Polish card
+  // is seeded from English trait names.
   it('localizes the seed labels for Polish', () => {
     const prompt = build('pl')
 
@@ -47,43 +44,8 @@ describe('buildCharacterCardPrompt', () => {
     expect(prompt).toContain('- Selected traits: Mściwy, Spokojny, Tajemniczy')
   })
 
-  it('keeps the schema-stability instruction', () => {
-    expect(build()).toContain(
-      'Keep the JSON schema keys exactly as requested and localize only the string values.',
-    )
-  })
-
-  it('requires JSON-only output', () => {
-    expect(build()).toContain(
-      'Return only valid JSON matching the requested schema.',
-    )
-  })
-
-  it('states the exact field rules the schema enforces', () => {
-    const prompt = build()
-
-    expect(prompt).toContain(
-      '- backgroundHistory must be exactly 2 short sentences.',
-    )
-    expect(prompt).toContain(
-      '- characterTraits must contain exactly 3 short trait phrases.',
-    )
-  })
-
-  it('asks for safe-for-work content', () => {
-    expect(build()).toContain(
-      '- Avoid explicit, hateful, or inappropriate content.',
-    )
-  })
-
-  it('joins every line with newlines and no trailing newline', () => {
-    const prompt = build()
-
-    expect(prompt).not.toContain('\r')
-    expect(prompt.endsWith('\n')).toBe(false)
-    expect(prompt.split('\n').length).toBeGreaterThan(10)
-  })
-
+  // The form allows an empty trait list to reach here; an unguarded join would
+  // send the literal "undefined" to the model.
   it('renders an empty trait list as an empty string, not undefined', () => {
     const prompt = buildCharacterCardPrompt({
       party,

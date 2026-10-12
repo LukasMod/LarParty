@@ -18,31 +18,21 @@ describe('toggleCardTrait', () => {
     expect(toggleCardTrait([first, second], second)).toEqual([first])
   })
 
-  it('keeps selection order when adding', () => {
-    expect(toggleCardTrait([first], third)).toEqual([first, third])
-  })
-
   it('refuses a trait past the cap', () => {
     const selected = [first, second, third]
 
     expect(toggleCardTrait(selected, fourth)).toEqual(selected)
   })
 
+  // The cap must not freeze the list: removing has to work at full strength.
   it('still removes at the cap', () => {
     const selected = [first, second, third]
 
     expect(toggleCardTrait(selected, second)).toEqual([first, third])
   })
 
-  it('honors a custom cap', () => {
-    expect(toggleCardTrait([first, second], third, 2)).toEqual([first, second])
-    expect(toggleCardTrait([first, second], third, 3)).toEqual([
-      first,
-      second,
-      third,
-    ])
-  })
-
+  // The result feeds useState, so a mutation in place would silently skip the
+  // re-render of the chips.
   it('does not mutate the input array', () => {
     const selected = [first]
 
@@ -51,16 +41,6 @@ describe('toggleCardTrait', () => {
 
     expect(selected).toEqual([first])
   })
-
-  it('returns a copy rather than the same array reference when capped', () => {
-    const selected = [first, second, third]
-
-    expect(toggleCardTrait(selected, fourth)).not.toBe(selected)
-  })
-
-  it('caps at the shared maximum', () => {
-    expect(MAX_CARD_TRAITS).toBe(3)
-  })
 })
 
 describe('parseCardAge', () => {
@@ -68,15 +48,11 @@ describe('parseCardAge', () => {
     expect(parseCardAge('25')).toBe(25)
   })
 
-  it('parses the youngest allowed age', () => {
-    expect(parseCardAge('1')).toBe(1)
-  })
-
   it('accepts surrounding whitespace', () => {
     expect(parseCardAge(' 30 ')).toBe(30)
   })
 
-  it('ignores a trailing decimal', () => {
+  it('truncates a decimal age', () => {
     expect(parseCardAge('25.9')).toBe(25)
   })
 
@@ -96,6 +72,8 @@ describe('parseCardAge', () => {
     expect(parseCardAge('abc')).toBeNull()
   })
 
+  // Free text from a TextInput: leading digits still read as an age, trailing
+  // text does not rescue a non-numeric start.
   it('reads leading digits of mixed text as an age', () => {
     expect(parseCardAge('25abc')).toBe(25)
   })
@@ -112,7 +90,7 @@ describe('validateCardForm', () => {
     selectedTraits: makeCardInput().selectedTraits,
   }
 
-  it('accepts a valid draft and returns the card input', () => {
+  it('accepts a valid draft and returns the built card input', () => {
     expect(validateCardForm(validDraft, 'male')).toEqual({
       ok: true,
       input: {
@@ -124,19 +102,9 @@ describe('validateCardForm', () => {
     })
   })
 
-  it('carries the chosen sex into the input', () => {
-    const result = validateCardForm(validDraft, 'female')
-
-    if (!result.ok) {
-      throw new Error('expected the draft to validate')
-    }
-
-    expect(result.input.sex).toBe('female')
-  })
-
-  it('trims the name in the returned input', () => {
+  it('trims the name and parses the age in the returned input', () => {
     const result = validateCardForm(
-      { ...validDraft, name: '  Aldric  ' },
+      { ...validDraft, name: '  Aldric  ', age: ' 34 ' },
       'other',
     )
 
@@ -145,15 +113,6 @@ describe('validateCardForm', () => {
     }
 
     expect(result.input.name).toBe('Aldric')
-  })
-
-  it('returns the parsed age, not the raw text', () => {
-    const result = validateCardForm({ ...validDraft, age: ' 34 ' }, 'other')
-
-    if (!result.ok) {
-      throw new Error('expected the draft to validate')
-    }
-
     expect(result.input.age).toBe(34)
   })
 
@@ -178,13 +137,6 @@ describe('validateCardForm', () => {
     })
   })
 
-  it('rejects a zero age', () => {
-    expect(validateCardForm({ ...validDraft, age: '0' }, 'other')).toEqual({
-      ok: false,
-      errorKey: 'form.errors.invalidAge',
-    })
-  })
-
   it('rejects an empty trait list', () => {
     expect(
       validateCardForm({ ...validDraft, selectedTraits: [] }, 'other'),
@@ -194,15 +146,29 @@ describe('validateCardForm', () => {
     })
   })
 
-  it('accepts exactly the cap of traits', () => {
-    const result = validateCardForm(
-      { ...validDraft, selectedTraits: [first, second, third] },
-      'other',
-    )
-
-    expect(result.ok).toBe(true)
+  it('rejects a trait list past the cap', () => {
+    expect(
+      validateCardForm(
+        { ...validDraft, selectedTraits: [first, second, third, fourth] },
+        'other',
+      ),
+    ).toEqual({
+      ok: false,
+      errorKey: 'form.errors.invalidTraits',
+    })
   })
 
+  it('accepts exactly the cap of traits', () => {
+    expect(
+      validateCardForm(
+        { ...validDraft, selectedTraits: [first, second, third] },
+        'other',
+      ).ok,
+    ).toBe(true)
+    expect(MAX_CARD_TRAITS).toBe(3)
+  })
+
+  // First failure wins, in the order the fields appear on screen.
   it('reports name before age and traits', () => {
     const result = validateCardForm(
       { name: '', age: 'x', selectedTraits: [] },

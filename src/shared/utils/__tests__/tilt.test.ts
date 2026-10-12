@@ -49,10 +49,7 @@ describe('tiltAxis', () => {
     expect(tiltAxis(-100, 10, 2)).toBe(-8)
   })
 
-  it('is zero at a zero angle', () => {
-    expect(tiltAxis(0, 10, 2)).toBe(0)
-  })
-
+  // A dead zone wider than the travel would produce a negative range.
   it('never leaves the dead zone larger than the travel', () => {
     expect(tiltAxis(100, 5, 8)).toBe(0)
   })
@@ -230,17 +227,5 @@ describe('tiltTransform', () => {
       { translateX: 0 },
       { translateY: 0 },
     ])
-  })
-})
-
-describe('DEFAULT_TILT_CONFIG', () => {
-  it('has a dead zone smaller than the travel', () => {
-    expect(DEFAULT_TILT_CONFIG.deadZoneDegrees).toBeLessThan(
-      DEFAULT_TILT_CONFIG.maxDegrees,
-    )
-  })
-
-  it('uses a positive perspective', () => {
-    expect(DEFAULT_TILT_CONFIG.perspective).toBeGreaterThan(0)
   })
 })

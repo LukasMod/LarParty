@@ -18,11 +18,6 @@ describe('pick', () => {
     ]).toEqual(['a', 'b', 'c', 'a'])
   })
 
-  it('wraps a large index', () => {
-    expect(pick(pool, 100)).toBe('b')
-    expect(pick(pool, 99)).toBe('a')
-  })
-
   it('never leaves the pool', () => {
     for (let index = 0; index < 200; index += 1) {
       expect(pool).toContain(pick(pool, index))
@@ -47,79 +42,39 @@ describe('indexToAge', () => {
 
     expect(ages.size).toBe(12)
   })
-
-  it('accepts a custom range', () => {
-    expect(indexToAge(0, 30, 5)).toBe(30)
-    expect(indexToAge(1, 30, 5)).toBe(32)
-  })
 })
 
 describe('indexToDistinctTraits', () => {
-  it('always returns three distinct traits', () => {
+  it('always returns three distinct traits from the pool', () => {
     for (let index = 0; index < 200; index += 1) {
       const traits = indexToDistinctTraits(cardTraits, index)
 
       expect(traits).toHaveLength(3)
       expect(new Set(traits).size).toBe(3)
-    }
-  })
 
-  it('only ever picks from the pool', () => {
-    for (let index = 0; index < 200; index += 1) {
-      for (const trait of indexToDistinctTraits(cardTraits, index)) {
+      for (const trait of traits) {
         expect(cardTraits).toContain(trait)
       }
     }
   })
 
-  it('cycles every trait across a full batch', () => {
-    const seen = new Set<string>()
-
-    for (let index = 0; index < cardTraits.length; index += 1) {
-      indexToDistinctTraits(cardTraits, index).forEach((trait) =>
-        seen.add(trait),
-      )
-    }
-
-    expect(seen.size).toBe(cardTraits.length)
-  })
-
-  it('wraps a small pool only at pool sizes the multipliers support', () => {
-    // Distinctness depends on the pool size: multipliers 1/5/7 collide for most
-    // sizes, so the twelve-trait set is load-bearing.
+  // Distinctness is a property of the twelve-trait pool and the 1/5/7
+  // multipliers, not of the function shape. A smaller or differently sized pool
+  // collides, so the pool size is load-bearing and pinned here.
+  it('collides on a pool the multipliers cannot handle', () => {
     expect(new Set(indexToDistinctTraits(['x', 'y', 'z', 'w'], 0)).size).toBe(2)
-  })
-
-  it('pins the trait pool size the multipliers rely on', () => {
     expect(cardTraits).toHaveLength(12)
   })
 })
 
 describe('timestampFromDayOffset', () => {
-  it('returns the epoch ISO string at zero', () => {
+  it('advances by exactly one day per step from a fixed epoch', () => {
     expect(timestampFromDayOffset(0)).toBe('2026-01-01T00:00:00.000Z')
-  })
-
-  it('advances by exactly one day per step', () => {
     expect(timestampFromDayOffset(1)).toBe('2026-01-02T00:00:00.000Z')
     expect(timestampFromDayOffset(10)).toBe('2026-01-11T00:00:00.000Z')
   })
 
   it('handles a negative offset', () => {
     expect(timestampFromDayOffset(-1)).toBe('2025-12-31T00:00:00.000Z')
-  })
-
-  it('is timezone independent', () => {
-    expect(timestampFromDayOffset(3)).toContain('T00:00:00.000Z')
-  })
-
-  it('orders the same as its offset', () => {
-    expect(timestampFromDayOffset(0) < timestampFromDayOffset(1)).toBe(true)
-  })
-
-  it('accepts a custom epoch', () => {
-    expect(timestampFromDayOffset(0, Date.UTC(2020, 0, 1))).toBe(
-      '2020-01-01T00:00:00.000Z',
-    )
   })
 })

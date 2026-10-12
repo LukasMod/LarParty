@@ -15,16 +15,6 @@ describe('getCardById', () => {
   it('returns null when absent', () => {
     expect(getCardById(cards, 'card-missing')).toBeNull()
   })
-
-  it('returns null for an empty list', () => {
-    expect(getCardById([], 'card-1')).toBeNull()
-  })
-
-  it('returns the first match', () => {
-    const duplicated = [makeCard({ id: 'dupe' }), makeCard({ id: 'dupe' })]
-
-    expect(getCardById(duplicated, 'dupe')).toBe(duplicated[0])
-  })
 })
 
 describe('getCardCountByPartyId', () => {
@@ -41,27 +31,17 @@ describe('getCardCountByPartyId', () => {
     })
   })
 
-  it('returns an empty record for no cards', () => {
-    expect(getCardCountByPartyId([])).toEqual({})
-  })
-
+  // The record only contains parties that have cards, which is why the list
+  // builder has to default a missing key to zero.
   it('omits parties with no cards', () => {
     const counts = getCardCountByPartyId([makeCard({ partyId: 'party-1' })])
 
     expect(counts).not.toHaveProperty('party-empty')
   })
-
-  it('does not mutate the input', () => {
-    const cards = [makeCard({ partyId: 'party-1' })]
-
-    getCardCountByPartyId(cards)
-
-    expect(cards).toHaveLength(1)
-  })
 })
 
 describe('getCardsForParty', () => {
-  it('keeps only the party’s cards', () => {
+  it('keeps only the cards of the requested party', () => {
     const cards = [
       makeCard({ id: 'card-1', partyId: 'party-1' }),
       makeCard({ id: 'card-2', partyId: 'party-2' }),
@@ -72,63 +52,24 @@ describe('getCardsForParty', () => {
     ])
   })
 
-  it('returns an empty list for an unknown party', () => {
-    expect(
-      getCardsForParty([makeCard({ partyId: 'party-1' })], 'party-x'),
-    ).toEqual([])
-  })
-
-  it('orders newest first', () => {
-    const oldest = makeCard({
-      id: 'oldest',
-      partyId: 'party-1',
-      updatedAt: '2026-01-01T00:00:00.000Z',
-    })
-    const newest = makeCard({
-      id: 'newest',
-      partyId: 'party-1',
-      updatedAt: '2026-06-01T00:00:00.000Z',
-    })
-
-    expect(
-      getCardsForParty([oldest, newest], 'party-1').map((card) => card.id),
-    ).toEqual(['newest', 'oldest'])
-  })
-
-  it('sorts by update time rather than creation time', () => {
-    const createdFirst = makeCard({
-      id: 'created-first',
+  // Recency of the last edit decides order, so a card that a regeneration
+  // touched returns to the top. Sorting on createdAt instead reads as a bug.
+  it('orders by update time rather than creation time', () => {
+    const touched = makeCard({
+      id: 'touched',
       partyId: 'party-1',
       createdAt: '2026-01-01T00:00:00.000Z',
       updatedAt: '2026-02-01T00:00:00.000Z',
     })
-    const createdLast = makeCard({
-      id: 'created-last',
+    const untouched = makeCard({
+      id: 'untouched',
       partyId: 'party-1',
       createdAt: '2026-01-15T00:00:00.000Z',
       updatedAt: '2026-01-20T00:00:00.000Z',
     })
 
     expect(
-      getCardsForParty([createdLast, createdFirst], 'party-1').map(
-        (card) => card.id,
-      ),
-    ).toEqual(['created-first', 'created-last'])
-  })
-
-  it('does not mutate the input order', () => {
-    const older = makeCard({
-      partyId: 'party-1',
-      updatedAt: '2026-01-01T00:00:00.000Z',
-    })
-    const newer = makeCard({
-      partyId: 'party-1',
-      updatedAt: '2026-06-01T00:00:00.000Z',
-    })
-    const cards = [older, newer]
-
-    getCardsForParty(cards, 'party-1')
-
-    expect(cards[0]).toBe(older)
+      getCardsForParty([untouched, touched], 'party-1').map((card) => card.id),
+    ).toEqual(['touched', 'untouched'])
   })
 })

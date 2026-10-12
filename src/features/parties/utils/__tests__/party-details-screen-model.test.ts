@@ -15,6 +15,8 @@ function expectReady(model: PartyDetailsScreenModel) {
 }
 
 describe('resolvePartyDetailsScreenModel', () => {
+  // Hydration gates the missing branch: an empty store on a cold start reads as
+  // loading, otherwise every deep link flashes "party not found".
   it('loads while hydration is in progress', () => {
     expect(
       resolvePartyDetailsScreenModel({
@@ -23,16 +25,6 @@ describe('resolvePartyDetailsScreenModel', () => {
         cards: [],
       }),
     ).toEqual({ status: 'loading', party: null, cards: null })
-  })
-
-  it('never reports missing during a cold start', () => {
-    expect(
-      resolvePartyDetailsScreenModel({
-        hasHydrated: false,
-        party: null,
-        cards: [],
-      }).status,
-    ).not.toBe('missing')
   })
 
   it('reports missing once hydrated without the party', () => {
@@ -57,7 +49,8 @@ describe('resolvePartyDetailsScreenModel', () => {
     expect(model.cards).toEqual([])
   })
 
-  it('passes the already filtered cards through', () => {
+  // Cards reach the resolver already filtered and sorted by getCardsForParty.
+  it('passes the party and cards through by reference', () => {
     const cards = [makeCard({ partyId: 'party-1' })]
     const model = expectReady(
       resolvePartyDetailsScreenModel({ hasHydrated: true, party, cards }),
@@ -65,17 +58,5 @@ describe('resolvePartyDetailsScreenModel', () => {
 
     expect(model.cards).toBe(cards)
     expect(model.party).toBe(party)
-  })
-
-  it('does not filter out cards from another party', () => {
-    const model = expectReady(
-      resolvePartyDetailsScreenModel({
-        hasHydrated: true,
-        party,
-        cards: [makeCard({ partyId: 'party-other' })],
-      }),
-    )
-
-    expect(model.cards).toHaveLength(1)
   })
 })

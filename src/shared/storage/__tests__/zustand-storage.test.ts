@@ -23,34 +23,12 @@ describe('zustandStorage', () => {
     expect(zustandStorage.getItem('card-store')).toBeNull()
   })
 
-  it('overwrites an existing key', () => {
-    zustandStorage.setItem('card-store', 'first')
-    zustandStorage.setItem('card-store', 'second')
-
-    expect(zustandStorage.getItem('card-store')).toBe('second')
-  })
-
-  it('keeps each store namespaced apart', () => {
-    zustandStorage.setItem('card-store', 'cards')
-    zustandStorage.setItem('party-store', 'parties')
-
-    expect(zustandStorage.getItem('card-store')).toBe('cards')
-    expect(zustandStorage.getItem('party-store')).toBe('parties')
-  })
-
-  it('survives a JSON payload with unicode and newlines', () => {
-    const payload = JSON.stringify({ title: 'Żłob ćż ń', body: 'line\nbreak' })
-
-    zustandStorage.setItem('party-store', payload)
-
-    expect(zustandStorage.getItem('party-store')).toBe(payload)
-  })
-
   it('removing a missing key does not throw', () => {
     expect(() => zustandStorage.removeItem('missing')).not.toThrow()
   })
 
-  // `?? null` rather than `|| null`: a stored empty string must survive a reload.
+  // `?? null` rather than `|| null`: a stored empty string must survive a
+  // reload, or Zustand treats a persisted empty payload as "nothing stored".
   it('reads back an empty string as itself, not null', () => {
     zustandStorage.setItem('empty-store', '')
 

@@ -2,49 +2,14 @@ import { themeCategories } from '@/shared/constants/party-options'
 import { getPartyTheme } from '@/shared/theme/party-theme'
 import { appThemes, partyThemeNames } from '@/shared/theme/unistyles'
 
+// The palette itself is checked by `npm run contrast`. What is unique here is
+// the category-to-theme wiring, which TypeScript cannot catch: a Record can
+// point a category at the wrong existing theme.
+
 describe('getPartyTheme', () => {
-  it('returns a theme for every party category', () => {
-    for (const category of themeCategories) {
-      expect(getPartyTheme(category)).toBeDefined()
-    }
-  })
-
-  it('maps each category to its own theme object', () => {
-    const themes = themeCategories.map((category) => getPartyTheme(category))
-
-    expect(new Set(themes).size).toBe(themeCategories.length)
-  })
-
-  it('resolves to the named app theme', () => {
+  it('resolves each category to the theme of the same name', () => {
     for (const category of themeCategories) {
       expect(getPartyTheme(category)).toBe(appThemes[category])
-    }
-  })
-
-  it('never hands back the default theme', () => {
-    for (const category of themeCategories) {
-      expect(getPartyTheme(category)).not.toBe(appThemes.default)
-    }
-  })
-
-  it('covers every party theme name so the record cannot go stale', () => {
-    expect(themeCategories).toEqual(partyThemeNames)
-  })
-
-  it('keeps the shared neutral base across party themes', () => {
-    const bases = themeCategories.map((category) => {
-      const { colors } = getPartyTheme(category)
-
-      return {
-        text: colors.text,
-        textSecondary: colors.textSecondary,
-        background: colors.background,
-      }
-    })
-    const [first] = bases
-
-    for (const base of bases) {
-      expect(base).toEqual(first)
     }
   })
 
@@ -54,5 +19,11 @@ describe('getPartyTheme', () => {
     )
 
     expect(new Set(primaries).size).toBe(primaries.length)
+  })
+
+  // themeCategories and partyThemeNames are two independent literal lists in
+  // separate files, so nothing at compile time keeps them aligned.
+  it('covers every party theme name so the record cannot go stale', () => {
+    expect(themeCategories).toEqual(partyThemeNames)
   })
 })

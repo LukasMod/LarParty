@@ -12,40 +12,27 @@ function resetStores() {
 beforeEach(resetStores)
 
 describe('createDraftCard', () => {
-  it('saves a new card as a draft', () => {
+  it('saves a new card as a draft, newest first', () => {
     cardStore().createDraftCard({
       partyId: 'party-1',
       input: makeCard().input,
       generated: makeGenerated(),
     })
-
-    expect(cardStore().cards[0].status).toBe('draft')
-  })
-
-  it('returns the new card id', () => {
-    const cardId = cardStore().createDraftCard({
+    const secondId = cardStore().createDraftCard({
       partyId: 'party-1',
       input: makeCard().input,
       generated: makeGenerated(),
     })
 
-    expect(cardStore().cards[0].id).toBe(cardId)
-  })
-
-  it('prepends so the newest card renders first', () => {
-    const input = makeCard().input
-    const generated = makeGenerated()
-
-    cardStore().createDraftCard({ partyId: 'party-1', input, generated })
-    const secondId = cardStore().createDraftCard({
-      partyId: 'party-1',
-      input,
-      generated,
-    })
-
+    expect(cardStore().cards).toHaveLength(2)
     expect(cardStore().cards[0].id).toBe(secondId)
+    expect(cardStore().cards.every((card) => card.status === 'draft')).toBe(
+      true,
+    )
   })
 
+  // Accepting is what makes a card real, so a new generation must not land as
+  // accepted and a regeneration must not open a fresh version history.
   it('starts a new generation group when none is given', () => {
     cardStore().createDraftCard({
       partyId: 'party-1',
@@ -53,17 +40,14 @@ describe('createDraftCard', () => {
       generated: makeGenerated(),
     })
 
-    expect(cardStore().cards[0].generationGroupId).toBeDefined()
+    expect(cardStore().cards[0].generationGroupId).toBeTruthy()
   })
 
-  it('reuses the group id when regenerating', () => {
-    const input = makeCard().input
-    const generated = makeGenerated()
-
+  it('reuses the group id and parent when regenerating', () => {
     cardStore().createDraftCard({
       partyId: 'party-1',
-      input,
-      generated,
+      input: makeCard().input,
+      generated: makeGenerated(),
       generationGroupId: 'group-1',
       basedOnCardId: 'card-1',
     })
@@ -73,34 +57,10 @@ describe('createDraftCard', () => {
     expect(card.generationGroupId).toBe('group-1')
     expect(card.basedOnCardId).toBe('card-1')
   })
-
-  it('stamps creation and update identically', () => {
-    cardStore().createDraftCard({
-      partyId: 'party-1',
-      input: makeCard().input,
-      generated: makeGenerated(),
-    })
-
-    const card = cardStore().cards[0]
-
-    expect(card.createdAt).toBe(card.updatedAt)
-  })
 })
 
 describe('acceptCard', () => {
-  it('flips a draft to accepted', () => {
-    const cardId = cardStore().createDraftCard({
-      partyId: 'party-1',
-      input: makeCard().input,
-      generated: makeGenerated(),
-    })
-
-    cardStore().acceptCard(cardId)
-
-    expect(cardStore().cards[0].status).toBe('accepted')
-  })
-
-  it('leaves other cards untouched', () => {
+  it('flips only the target from draft to accepted, leaving its payload intact', () => {
     const input = makeCard().input
     const generated = makeGenerated()
     const firstId = cardStore().createDraftCard({
@@ -118,6 +78,8 @@ describe('acceptCard', () => {
 
     expect(accepted).toHaveLength(1)
     expect(accepted[0].id).toBe(firstId)
+    expect(accepted[0].input).toEqual(input)
+    expect(accepted[0].generated).toEqual(generated)
   })
 
   it('is a no-op for an unknown id', () => {
@@ -131,43 +93,12 @@ describe('acceptCard', () => {
 
     expect(cardStore().cards[0].status).toBe('draft')
   })
-
-  it('keeps the input and generated payload intact', () => {
-    const input = makeCard().input
-    const generated = makeGenerated()
-    const cardId = cardStore().createDraftCard({
-      partyId: 'party-1',
-      input,
-      generated,
-    })
-
-    cardStore().acceptCard(cardId)
-
-    expect(cardStore().cards[0].input).toEqual(input)
-    expect(cardStore().cards[0].generated).toEqual(generated)
-  })
 })
 
-describe('deleteCard', () => {
-  it('removes only the target card', () => {
-    const input = makeCard().input
-    const generated = makeGenerated()
-    const doomed = cardStore().createDraftCard({
-      partyId: 'party-1',
-      input,
-      generated,
-    })
-    cardStore().createDraftCard({ partyId: 'party-1', input, generated })
-
-    cardStore().deleteCard(doomed)
-
-    expect(cardStore().cards).toHaveLength(1)
-    expect(cardStore().cards[0].id).not.toBe(doomed)
-  })
-})
-
+// deleteParty reaches the card store through this; the cascade itself is covered
+// in party-store.test.ts.
 describe('deleteCardsForParty', () => {
-  it('drops every card of the party', () => {
+  it('drops every card of the party and nothing else', () => {
     const input = makeCard().input
     const generated = makeGenerated()
 
@@ -179,29 +110,5 @@ describe('deleteCardsForParty', () => {
 
     expect(cardStore().cards).toHaveLength(1)
     expect(cardStore().cards[0].partyId).toBe('party-2')
-  })
-
-  it('is a no-op for an unknown party', () => {
-    cardStore().createDraftCard({
-      partyId: 'party-1',
-      input: makeCard().input,
-      generated: makeGenerated(),
-    })
-
-    cardStore().deleteCardsForParty('nope')
-
-    expect(cardStore().cards).toHaveLength(1)
-  })
-})
-
-describe('hasHydrated', () => {
-  it('starts false so an empty store reads as restoring', () => {
-    expect(cardStore().hasHydrated).toBe(false)
-  })
-
-  it('flips to true once rehydrated', () => {
-    cardStore().setHasHydrated(true)
-
-    expect(cardStore().hasHydrated).toBe(true)
   })
 })

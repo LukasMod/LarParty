@@ -3,18 +3,17 @@ import { makeGenerated } from '@test/factories'
 
 const valid = makeGenerated()
 
+// Saving an off-schema card is unrecoverable: it renders as blank fields and no
+// regeneration fixes the stored record. These assert the parse rejects it.
 describe('parseGeneratedCardResponse', () => {
-  it('returns the parsed card', () => {
+  it('returns the parsed card, trimming whitespace', () => {
     expect(parseGeneratedCardResponse(JSON.stringify(valid))).toEqual(valid)
-  })
-
-  it('trims surrounding whitespace before parsing', () => {
     expect(parseGeneratedCardResponse(`  ${JSON.stringify(valid)}\n`)).toEqual(
       valid,
     )
   })
 
-  it('trims each string field', () => {
+  it('trims each string field so stored text has no padding', () => {
     const parsed = parseGeneratedCardResponse(
       JSON.stringify({ ...valid, specialPhrase: '  Hello.  ' }),
     )
@@ -22,31 +21,24 @@ describe('parseGeneratedCardResponse', () => {
     expect(parsed.specialPhrase).toBe('Hello.')
   })
 
-  it('rejects an undefined response', () => {
+  // Distinct messages, because "empty" means the provider answered nothing and
+  // "invalid JSON" means it answered off-contract.
+  it('rejects an empty or whitespace-only response', () => {
     expect(() => parseGeneratedCardResponse(undefined)).toThrow(
       'Gemini returned an empty response.',
     )
-  })
-
-  it('rejects an empty string', () => {
     expect(() => parseGeneratedCardResponse('')).toThrow(
       'Gemini returned an empty response.',
     )
-  })
-
-  it('rejects a whitespace-only response', () => {
     expect(() => parseGeneratedCardResponse('   \n ')).toThrow(
       'Gemini returned an empty response.',
     )
   })
 
-  it('rejects non-JSON text with a distinct message', () => {
+  it('rejects non-JSON and truncated JSON as invalid', () => {
     expect(() => parseGeneratedCardResponse('not json')).toThrow(
       'Gemini returned invalid JSON.',
     )
-  })
-
-  it('rejects truncated JSON as invalid rather than crashing', () => {
     expect(() =>
       parseGeneratedCardResponse('{"generatedNameWithClass":'),
     ).toThrow('Gemini returned invalid JSON.')
@@ -58,7 +50,8 @@ describe('parseGeneratedCardResponse', () => {
     expect(() => parseGeneratedCardResponse(JSON.stringify(rest))).toThrow()
   })
 
-  it('rejects an empty required string', () => {
+  // A whitespace-only field parses as JSON and would render as an empty block.
+  it('rejects a required string that is only whitespace', () => {
     expect(() =>
       parseGeneratedCardResponse(
         JSON.stringify({ ...valid, backgroundHistory: '   ' }),
@@ -66,21 +59,16 @@ describe('parseGeneratedCardResponse', () => {
     ).toThrow()
   })
 
-  it('rejects fewer than three traits', () => {
+  // The schema fixes traits at exactly three, matching the card layout.
+  it('rejects a trait count other than three', () => {
     expect(() =>
       parseGeneratedCardResponse(
         JSON.stringify({ ...valid, characterTraits: ['Loyal', 'Funny'] }),
       ),
     ).toThrow()
-  })
-
-  it('rejects more than three traits', () => {
     expect(() =>
       parseGeneratedCardResponse(
-        JSON.stringify({
-          ...valid,
-          characterTraits: ['a', 'b', 'c', 'd'],
-        }),
+        JSON.stringify({ ...valid, characterTraits: ['a', 'b', 'c', 'd'] }),
       ),
     ).toThrow()
   })
@@ -89,7 +77,9 @@ describe('parseGeneratedCardResponse', () => {
     expect(() => parseGeneratedCardResponse('[]')).toThrow()
   })
 
-  it('accepts extra fields the model was not asked for', () => {
+  // The model is asked for specific keys and sometimes adds more. Stripping them
+  // keeps the persisted shape equal to the domain type.
+  it('drops extra fields the model was not asked for', () => {
     const parsed = parseGeneratedCardResponse(
       JSON.stringify({ ...valid, extra: 'ignored' }),
     )

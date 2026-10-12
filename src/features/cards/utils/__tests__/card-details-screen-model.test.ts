@@ -5,29 +5,20 @@ const party = makeParty({ id: 'party-1' })
 const card = makeCard({ id: 'card-1', partyId: 'party-1' })
 
 describe('resolveCardDetailsScreenModel', () => {
+  // An absent card during hydration is the normal cold start, not a deletion.
+  // Getting this backwards flashes "not found" on every deep link.
   it('loads while either store is still hydrating', () => {
-    const model = resolveCardDetailsScreenModel({
-      hasHydrated: false,
-      partyId: 'party-1',
-      party: null,
-      card: null,
-    })
-
-    expect(model).toEqual({ status: 'loading', party: null, card: null })
-  })
-
-  it('treats a cold start as loading, not missing', () => {
     expect(
       resolveCardDetailsScreenModel({
         hasHydrated: false,
         partyId: 'party-1',
         party: null,
         card: null,
-      }).status,
-    ).toBe('loading')
+      }),
+    ).toEqual({ status: 'loading', party: null, card: null })
   })
 
-  it('reports missing when the party is gone', () => {
+  it('reports missing once hydrated with the party or card gone', () => {
     expect(
       resolveCardDetailsScreenModel({
         hasHydrated: true,
@@ -36,9 +27,7 @@ describe('resolveCardDetailsScreenModel', () => {
         card,
       }),
     ).toEqual({ status: 'missing', party: null, card: null })
-  })
 
-  it('reports missing when the card is gone', () => {
     expect(
       resolveCardDetailsScreenModel({
         hasHydrated: true,
@@ -49,15 +38,17 @@ describe('resolveCardDetailsScreenModel', () => {
     ).toEqual({ status: 'missing', party: null, card: null })
   })
 
+  // A card whose partyId disagrees with the route is a stale deep link. Without
+  // this the app renders one party's card under another party's theme.
   it('reports missing when the card belongs to another party', () => {
-    const model = resolveCardDetailsScreenModel({
-      hasHydrated: true,
-      partyId: 'party-1',
-      party,
-      card: makeCard({ partyId: 'party-2' }),
-    })
-
-    expect(model).toEqual({ status: 'missing', party: null, card: null })
+    expect(
+      resolveCardDetailsScreenModel({
+        hasHydrated: true,
+        partyId: 'party-1',
+        party,
+        card: makeCard({ partyId: 'party-2' }),
+      }),
+    ).toEqual({ status: 'missing', party: null, card: null })
   })
 
   it('passes the party and card through when both exist', () => {

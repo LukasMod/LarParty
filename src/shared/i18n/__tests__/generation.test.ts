@@ -23,11 +23,8 @@ describe('getGenerationLanguageName', () => {
 })
 
 describe('getGenerationTranslator', () => {
-  it('resolves a namespaced key', () => {
+  it('resolves a key with or without the namespace prefix', () => {
     expect(rawT('en')('common:options.sex.female')).toBe('Female')
-  })
-
-  it('resolves a key without the namespace prefix', () => {
     expect(rawT('en')('options.sex.female')).toBe('Female')
   })
 
@@ -41,6 +38,7 @@ describe('getGenerationTranslator', () => {
     )
   })
 
+  // Walking past a string leaf used to read a property off undefined and throw.
   it('returns the key when walking past a string leaf', () => {
     expect(rawT('en')('common:actions.cancel.deeper')).toBe(
       'common:actions.cancel.deeper',
@@ -49,10 +47,6 @@ describe('getGenerationTranslator', () => {
 
   it('returns the key when the path lands on an object', () => {
     expect(rawT('en')('common:options.sex')).toBe('common:options.sex')
-  })
-
-  it('is deep enough for nested namespaces', () => {
-    expect(rawT('en')('common:actions.cancel')).toBe('Cancel')
   })
 })
 

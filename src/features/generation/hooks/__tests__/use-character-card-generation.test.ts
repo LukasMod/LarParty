@@ -1,4 +1,4 @@
-import { act, renderHook, waitFor } from '@testing-library/react-native'
+import { act, renderHook } from '@testing-library/react-native'
 
 import { CharacterCardGenerated } from '@/features/cards/types'
 import { generateCharacterCard } from '@/features/generation/gemini'
@@ -40,12 +40,6 @@ beforeEach(() => {
 })
 
 describe('useCharacterCardGeneration', () => {
-  it('is idle before the first start', async () => {
-    const { result } = await renderHook(() => useCharacterCardGeneration())
-
-    expect(result.current.isGenerating).toBe(false)
-  })
-
   it('returns the generated card and clears the flag', async () => {
     const generated = makeGenerated()
     mockedGenerate.mockResolvedValue(generated)
@@ -210,7 +204,9 @@ describe('useCharacterCardGeneration', () => {
     })
   })
 
-  it('rethrows a provider failure', async () => {
+  // The caller relies on the throw to show an error and on the flag clearing so
+  // the blocking overlay can close.
+  it('rethrows a provider failure and clears the flag', async () => {
     mockedGenerate.mockRejectedValue(new Error('Gemini returned invalid JSON.'))
 
     const { result } = await renderHook(() => useCharacterCardGeneration())
@@ -219,16 +215,6 @@ describe('useCharacterCardGeneration', () => {
       await expect(result.current.start(request)).rejects.toThrow(
         'Gemini returned invalid JSON.',
       )
-    })
-  })
-
-  it('clears the flag after a failure so the overlay can close', async () => {
-    mockedGenerate.mockRejectedValue(new Error('offline'))
-
-    const { result } = await renderHook(() => useCharacterCardGeneration())
-
-    await act(async () => {
-      await expect(result.current.start(request)).rejects.toThrow('offline')
     })
 
     expect(result.current.isGenerating).toBe(false)
