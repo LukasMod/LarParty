@@ -1,10 +1,11 @@
 import {
   cardDisplayModes,
-  cardTraits,
+  CardTrait,
   sexOptions,
+  StoredCardTrait,
 } from '@/shared/constants/party-options'
 
-export type InputTrait = (typeof cardTraits)[number]
+export type InputTrait = CardTrait
 export type SexOption = (typeof sexOptions)[number]
 export type CardStatus = 'draft' | 'accepted'
 export type CardDisplayMode = (typeof cardDisplayModes)[number]
@@ -13,7 +14,7 @@ export interface CharacterCardInput {
   name: string
   sex: SexOption
   age: number
-  selectedTraits: InputTrait[]
+  selectedTraits: StoredCardTrait[]
 }
 
 export interface CharacterCardGenerated {

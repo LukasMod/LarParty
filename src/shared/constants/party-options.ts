@@ -44,27 +44,48 @@ export const partyMoodLabels: Record<(typeof partyMoods)[number], string> = {
   cozy: 'Cozy',
 }
 
+// Six light and six dark traits. Each names its own axis, so any three combine
+// without one cancelling another. Ordered in loose clusters: drive, warmth,
+// mind, composure.
 export const cardTraits = [
-  'calm',
-  'aggressive',
-  'funny',
-  'mysterious',
-  'loyal',
-  'shy',
-  'arrogant',
+  'vengeful',
+  'ambitious',
   'chaotic',
+  'empathetic',
+  'loyal',
+  'funny',
+  'intelligent',
+  'manipulative',
+  'charismatic',
+  'calm',
+  'mysterious',
+  'arrogant',
 ] as const
 
-export const cardTraitLabels: Record<(typeof cardTraits)[number], string> = {
-  calm: 'Calm',
-  aggressive: 'Aggressive',
-  funny: 'Funny',
-  mysterious: 'Mysterious',
-  loyal: 'Loyal',
-  shy: 'Shy',
-  arrogant: 'Arrogant',
+export type CardTrait = (typeof cardTraits)[number]
+
+export const cardTraitLabels: Record<CardTrait, string> = {
+  vengeful: 'Vengeful',
+  ambitious: 'Ambitious',
   chaotic: 'Chaotic',
+  empathetic: 'Empathetic',
+  loyal: 'Loyal',
+  funny: 'Funny',
+  intelligent: 'Intelligent',
+  manipulative: 'Manipulative',
+  charismatic: 'Charismatic',
+  calm: 'Calm',
+  mysterious: 'Mysterious',
+  arrogant: 'Arrogant',
 }
+
+// Trait values on cards saved before the current set existed. They are never
+// selectable, only readable, so a stored card still gets a localized label when
+// it is viewed or regenerated.
+export const legacyCardTraits = ['aggressive', 'shy'] as const
+
+export type LegacyCardTrait = (typeof legacyCardTraits)[number]
+export type StoredCardTrait = CardTrait | LegacyCardTrait
 
 export const sexOptions = ['male', 'female', 'other'] as const
 

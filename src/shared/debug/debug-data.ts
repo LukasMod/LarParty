@@ -210,14 +210,16 @@ const pick = <T>(pool: readonly T[], index: number): T =>
 
 const indexToAge = (index: number): number => 19 + ((index * 7) % 47)
 
+// Picks are distinct at every index: the pairwise gaps are 4i+1, 2i+3 and 6i+4,
+// none of which is ever a multiple of 12. Multipliers 1/5/7 cycle all 12 traits
+// across a batch.
 const indexToTraits = (index: number): [InputTrait, InputTrait, InputTrait] => {
   const count = cardTraits.length
-  const offset = index * 3
 
   return [
-    cardTraits[offset % count],
-    cardTraits[(offset + 3) % count],
-    cardTraits[(offset + 5) % count],
+    cardTraits[index % count],
+    cardTraits[(index * 5 + 1) % count],
+    cardTraits[(index * 7 + 4) % count],
   ]
 }
 
