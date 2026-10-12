@@ -31,9 +31,7 @@ export const partyMoods = [
   'awkward',
 ] as const
 
-export type PartyMoodKey = (typeof partyMoods)[number]
-
-export const partyMoodLabels: Record<PartyMoodKey, string> = {
+export const partyMoodLabels: Record<(typeof partyMoods)[number], string> = {
   fun: 'Fun',
   dramatic: 'Dramatic',
   adventurous: 'Adventurous',
@@ -42,22 +40,6 @@ export const partyMoodLabels: Record<PartyMoodKey, string> = {
   cheesy: 'Cheesy',
   awkward: 'Awkward',
 }
-
-// Mood values on parties saved before the current set existed. Never
-// selectable, only readable, so a stored party still shows a localized mood
-// when it is listed, opened, or sent to the model.
-export const legacyPartyMoods = [
-  'serious',
-  'mysterious',
-  'epic',
-  'dark',
-  'romantic',
-  'chaotic',
-  'cozy',
-] as const
-
-export type LegacyPartyMoodKey = (typeof legacyPartyMoods)[number]
-export type StoredPartyMoodKey = PartyMoodKey | LegacyPartyMoodKey
 
 // Six light and six dark traits. Each names its own axis, so any three combine
 // without one cancelling another. Ordered in loose clusters: drive, warmth,
@@ -77,9 +59,7 @@ export const cardTraits = [
   'arrogant',
 ] as const
 
-export type CardTrait = (typeof cardTraits)[number]
-
-export const cardTraitLabels: Record<CardTrait, string> = {
+export const cardTraitLabels: Record<(typeof cardTraits)[number], string> = {
   vengeful: 'Vengeful',
   ambitious: 'Ambitious',
   chaotic: 'Chaotic',
@@ -93,14 +73,6 @@ export const cardTraitLabels: Record<CardTrait, string> = {
   mysterious: 'Mysterious',
   arrogant: 'Arrogant',
 }
-
-// Trait values on cards saved before the current set existed. They are never
-// selectable, only readable, so a stored card still gets a localized label when
-// it is viewed or regenerated.
-export const legacyCardTraits = ['aggressive', 'shy'] as const
-
-export type LegacyCardTrait = (typeof legacyCardTraits)[number]
-export type StoredCardTrait = CardTrait | LegacyCardTrait
 
 export const sexOptions = ['male', 'female', 'other'] as const
 

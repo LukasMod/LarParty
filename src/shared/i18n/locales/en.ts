@@ -71,13 +71,6 @@ export const en = {
         wild: 'Wild',
         cheesy: 'Cheesy',
         awkward: 'Awkward',
-        serious: 'Serious',
-        mysterious: 'Mysterious',
-        epic: 'Epic',
-        dark: 'Dark',
-        romantic: 'Romantic',
-        chaotic: 'Chaotic',
-        cozy: 'Cozy',
       },
       cardTrait: {
         vengeful: 'Vengeful',
@@ -92,8 +85,6 @@ export const en = {
         calm: 'Calm',
         mysterious: 'Mysterious',
         arrogant: 'Arrogant',
-        aggressive: 'Aggressive',
-        shy: 'Shy',
       },
       sex: {
         male: 'Male',

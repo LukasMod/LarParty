@@ -2,9 +2,9 @@ import { TFunction } from 'i18next'
 
 import {
   cardDisplayModes,
+  cardTraits,
+  partyMoods,
   sexOptions,
-  StoredCardTrait,
-  StoredPartyMoodKey,
   themeCategories,
 } from '@/shared/constants/party-options'
 
@@ -15,11 +15,17 @@ export function getThemeCategoryLabel(
   return t(`common:options.themeCategory.${value}`)
 }
 
-export function getPartyMoodLabel(t: TFunction, value: StoredPartyMoodKey) {
+export function getPartyMoodLabel(
+  t: TFunction,
+  value: (typeof partyMoods)[number],
+) {
   return t(`common:options.partyMood.${value}`)
 }
 
-export function getCardTraitLabel(t: TFunction, value: StoredCardTrait) {
+export function getCardTraitLabel(
+  t: TFunction,
+  value: (typeof cardTraits)[number],
+) {
   return t(`common:options.cardTrait.${value}`)
 }
 

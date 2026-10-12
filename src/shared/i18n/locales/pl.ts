@@ -75,13 +75,6 @@ export const pl = {
         wild: 'Szalony',
         cheesy: 'Przerysowany',
         awkward: 'Niezręczny',
-        serious: 'Poważny',
-        mysterious: 'Tajemniczy',
-        epic: 'Epicki',
-        dark: 'Mroczny',
-        romantic: 'Romantyczny',
-        chaotic: 'Chaotyczny',
-        cozy: 'Przytulny',
       },
       cardTrait: {
         vengeful: 'Mściwy',
@@ -96,8 +89,6 @@ export const pl = {
         calm: 'Spokojny',
         mysterious: 'Tajemniczy',
         arrogant: 'Arogancki',
-        aggressive: 'Agresywny',
-        shy: 'Nieśmiały',
       },
       sex: {
         male: 'Mężczyzna',

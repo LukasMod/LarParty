@@ -52,13 +52,12 @@ No date, description, or location in MVP.
 > [`i18n-guide.md`](./i18n-guide.md).
 >
 > **Removing a value affects existing local data.** Parties and cards are persisted to MMKV
-> with no type checking at the storage boundary. Dropped trait and mood values stay in the
-> `legacy*` lists in the code file and keep their locale keys, so a saved card or party still
-> renders a readable label instead of a raw i18next key. Theme categories have no such
-> fallback: `getPartyTheme` is a total map, so a saved party holding a removed category
-> returns `undefined` and crashes party and card details. There is no migration layer (the
-> MVP has no users), so trimming theme categories means clearing local storage or
-> reinstalling. See [`architecture.md`](./architecture.md#stores).
+> with no type checking at the storage boundary, and there is no migration layer (the MVP has
+> no users). A saved party holding a removed theme category crashes party and card details,
+> because `getPartyTheme` is a total map and the lookup returns `undefined`. A saved entity
+> holding a removed mood or trait renders the raw i18next key in place of a label. Either way,
+> trimming an enum means clearing local storage or reinstalling. See
+> [`architecture.md`](./architecture.md#stores).
 
 ### Theme categories
 
@@ -79,10 +78,6 @@ theme sets the genre, mood sets how the night is played.
 - cheesy
 - awkward
 
-Parties saved before this set existed can hold `serious`, `mysterious`, `epic`, `dark`,
-`romantic`, `chaotic` or `cozy`. Those stay readable (labeled, and sent to the model on
-generation) and are not selectable.
-
 ### Character traits
 
 Six light and six dark. Each names its own axis, so any three combine without one
@@ -100,9 +95,6 @@ cancelling another.
 - calm
 - mysterious
 - arrogant
-
-Cards stored before this set existed can hold `aggressive` or `shy`. Those two stay
-readable (labeled, and sent to the model on regenerate) and are not selectable.
 
 ### Sex options
 
