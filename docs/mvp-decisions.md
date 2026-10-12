@@ -51,11 +51,13 @@ No date, description, or location in MVP.
 > `options.*` labels (in the `common` namespace) in both locale files — see
 > [`i18n-guide.md`](./i18n-guide.md).
 >
-> **Removing a value affects existing local data.** Parties are persisted to MMKV with no type
-> checking at the storage boundary, and `getPartyTheme` is a total map — a saved party
-> holding a value absent from the enum crashes party and card details. There is no migration
-> layer (the MVP has no users), so after trimming the enums clear local storage or reinstall.
-> See [`architecture.md`](./architecture.md#stores).
+> **Removing a value affects existing local data.** Parties and cards are persisted to MMKV
+> with no type checking at the storage boundary, and there is no migration layer (the MVP has
+> no users). A saved party holding a removed theme category crashes party and card details,
+> because `getPartyTheme` is a total map and the lookup returns `undefined`. A saved entity
+> holding a removed mood or trait renders the raw i18next key in place of a label. Either way,
+> trimming an enum means clearing local storage or reinstalling. See
+> [`architecture.md`](./architecture.md#stores).
 
 ### Theme categories
 
@@ -65,20 +67,16 @@ No date, description, or location in MVP.
 
 ### Mood options
 
-- fun
-- serious
-- dramatic
-- mysterious
-- adventurous
-- epic
-- dark
-- romantic
-- chaotic
-- cozy
+One tone per party. Each names its own feeling axis, and none duplicates a theme category:
+theme sets the genre, mood sets how the night is played.
 
-Moods are separated so each names a distinct tone. Overlapping candidates (e.g. `silly` vs
-`playful`, `scary` vs `dark`, `tense` vs `dramatic`) collapse into the one that reads most
-generally.
+- fun
+- dramatic
+- adventurous
+- intrigue
+- wild
+- cheesy
+- awkward
 
 ### Character traits
 
@@ -97,9 +95,6 @@ cancelling another.
 - calm
 - mysterious
 - arrogant
-
-Cards stored before this set existed can hold `aggressive` or `shy`. Those two stay
-readable (labeled, and sent to the model on regenerate) and are not selectable.
 
 ### Sex options
 

@@ -18,30 +18,27 @@ export const themeCategoryLabels: Record<
   horror: 'Horror',
 }
 
+// One tone per party, chosen at creation. Each names its own feeling axis and
+// none duplicates a theme category: theme sets the genre, mood sets how the
+// night is played.
 export const partyMoods = [
   'fun',
-  'serious',
   'dramatic',
-  'mysterious',
   'adventurous',
-  'epic',
-  'dark',
-  'romantic',
-  'chaotic',
-  'cozy',
+  'intrigue',
+  'wild',
+  'cheesy',
+  'awkward',
 ] as const
 
 export const partyMoodLabels: Record<(typeof partyMoods)[number], string> = {
   fun: 'Fun',
-  serious: 'Serious',
   dramatic: 'Dramatic',
-  mysterious: 'Mysterious',
   adventurous: 'Adventurous',
-  epic: 'Epic',
-  dark: 'Dark',
-  romantic: 'Romantic',
-  chaotic: 'Chaotic',
-  cozy: 'Cozy',
+  intrigue: 'Intrigue',
+  wild: 'Wild',
+  cheesy: 'Cheesy',
+  awkward: 'Awkward',
 }
 
 // Six light and six dark traits. Each names its own axis, so any three combine
@@ -62,9 +59,7 @@ export const cardTraits = [
   'arrogant',
 ] as const
 
-export type CardTrait = (typeof cardTraits)[number]
-
-export const cardTraitLabels: Record<CardTrait, string> = {
+export const cardTraitLabels: Record<(typeof cardTraits)[number], string> = {
   vengeful: 'Vengeful',
   ambitious: 'Ambitious',
   chaotic: 'Chaotic',
@@ -78,14 +73,6 @@ export const cardTraitLabels: Record<CardTrait, string> = {
   mysterious: 'Mysterious',
   arrogant: 'Arrogant',
 }
-
-// Trait values on cards saved before the current set existed. They are never
-// selectable, only readable, so a stored card still gets a localized label when
-// it is viewed or regenerated.
-export const legacyCardTraits = ['aggressive', 'shy'] as const
-
-export type LegacyCardTrait = (typeof legacyCardTraits)[number]
-export type StoredCardTrait = CardTrait | LegacyCardTrait
 
 export const sexOptions = ['male', 'female', 'other'] as const
 

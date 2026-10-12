@@ -69,15 +69,12 @@ export const pl = {
       },
       partyMood: {
         fun: 'Wesoły',
-        serious: 'Poważny',
         dramatic: 'Dramatyczny',
-        mysterious: 'Tajemniczy',
         adventurous: 'Przygodowy',
-        epic: 'Epicki',
-        dark: 'Mroczny',
-        romantic: 'Romantyczny',
-        chaotic: 'Chaotyczny',
-        cozy: 'Przytulny',
+        intrigue: 'Intrygujący',
+        wild: 'Szalony',
+        cheesy: 'Przerysowany',
+        awkward: 'Niezręczny',
       },
       cardTrait: {
         vengeful: 'Mściwy',
@@ -92,8 +89,6 @@ export const pl = {
         calm: 'Spokojny',
         mysterious: 'Tajemniczy',
         arrogant: 'Arogancki',
-        aggressive: 'Agresywny',
-        shy: 'Nieśmiały',
       },
       sex: {
         male: 'Mężczyzna',
