@@ -46,6 +46,10 @@ function createResourceTranslator(resource: TranslationResource) {
     let value: unknown = resource
 
     for (const part of parts) {
+      if (typeof value !== 'object' || value === null) {
+        return key
+      }
+
       value = (value as Record<string, unknown>)[part]
     }
 
