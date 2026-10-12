@@ -82,14 +82,24 @@ generally.
 
 ### Character traits
 
-- calm
-- aggressive
-- funny
-- mysterious
-- loyal
-- shy
-- arrogant
+Six light and six dark. Each names its own axis, so any three combine without one
+cancelling another.
+
+- vengeful
+- ambitious
 - chaotic
+- empathetic
+- loyal
+- funny
+- intelligent
+- manipulative
+- charismatic
+- calm
+- mysterious
+- arrogant
+
+Cards stored before this set existed can hold `aggressive` or `shy`. Those two stay
+readable (labeled, and sent to the model on regenerate) and are not selectable.
 
 ### Sex options
 
