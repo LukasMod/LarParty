@@ -41,10 +41,14 @@
     "zustand": "^5.0.14"
   },
   "devDependencies": {
+    "@testing-library/react-native": "^14.1.0",
+    "@types/jest": "^30.0.0",
     "@types/react": "~19.3.0",
     "eslint": "^9.0.0",
     "eslint-config-expo": "~58.0.4",
     "eslint-config-prettier": "^10.1.8",
+    "jest": "^30.5.2",
+    "jest-expo": "~58.0.9",
     "prettier": "^3.8.4",
     "typescript": "~6.0.3"
   },
@@ -56,6 +60,9 @@
     "build:ios:device": "expo run:ios --device --configuration Release --no-bundler",
     "web": "expo start --web",
     "lint": "expo lint",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "typecheck": "tsc --noEmit",
     "contrast": "node scripts/contrast-check.mjs",
     "healthcheck:react-compiler": "npx react-compiler-healthcheck@latest",

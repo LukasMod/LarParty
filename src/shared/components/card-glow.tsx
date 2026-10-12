@@ -12,14 +12,8 @@ import Animated, {
 } from 'react-native-reanimated'
 
 import { useReduceMotion } from '@/shared/hooks/use-reduce-motion'
-
-function hashCode(value: string) {
-  let hash = 0
-  for (let i = 0; i < value.length; i += 1) {
-    hash = (hash * 31 + value.charCodeAt(i)) | 0
-  }
-  return Math.abs(hash)
-}
+import { hexToRgb } from '@/shared/theme/alpha'
+import { seedOffset } from '@/shared/utils/hash'
 
 // Drives a 0→1→0 breathing loop on the UI thread. A seed shifts each glow
 // along the cycle so list rows breathe out of sync. Cancelled when idle or
@@ -32,7 +26,7 @@ function useBreath(
 ) {
   const reduceMotion = useReduceMotion()
   const pulse = useSharedValue(0)
-  const offset = seed ? (hashCode(seed) % 1000) / 1000 : 0
+  const offset = seed ? seedOffset(seed) : 0
 
   useEffect(() => {
     if (!running || reduceMotion) {
@@ -81,9 +75,7 @@ export function CardBorderGlow({
   // Resolve the accent's rgb once on the JS thread. The worklet below may
   // only interpolate the alpha (and blur); it cannot call withAlpha, which is
   // a host function and would throw when run on the UI runtime.
-  const r = parseInt(color.slice(1, 3), 16)
-  const g = parseInt(color.slice(3, 5), 16)
-  const b = parseInt(color.slice(5, 7), 16)
+  const { r, g, b } = hexToRgb(color)
   const minAlpha = 0.38
   const alphaDelta = peakAlpha - minAlpha
 

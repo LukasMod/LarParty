@@ -18,52 +18,60 @@ export const themeCategoryLabels: Record<
   horror: 'Horror',
 }
 
+// One tone per party, chosen at creation. Each names its own feeling axis and
+// none duplicates a theme category: theme sets the genre, mood sets how the
+// night is played.
 export const partyMoods = [
   'fun',
-  'serious',
   'dramatic',
-  'mysterious',
   'adventurous',
-  'epic',
-  'dark',
-  'romantic',
-  'chaotic',
-  'cozy',
+  'intrigue',
+  'wild',
+  'cheesy',
+  'awkward',
 ] as const
 
 export const partyMoodLabels: Record<(typeof partyMoods)[number], string> = {
   fun: 'Fun',
-  serious: 'Serious',
   dramatic: 'Dramatic',
-  mysterious: 'Mysterious',
   adventurous: 'Adventurous',
-  epic: 'Epic',
-  dark: 'Dark',
-  romantic: 'Romantic',
-  chaotic: 'Chaotic',
-  cozy: 'Cozy',
+  intrigue: 'Intrigue',
+  wild: 'Wild',
+  cheesy: 'Cheesy',
+  awkward: 'Awkward',
 }
 
+// Six light and six dark traits. Each names its own axis, so any three combine
+// without one cancelling another. Ordered in loose clusters: drive, warmth,
+// mind, composure.
 export const cardTraits = [
-  'calm',
-  'aggressive',
-  'funny',
-  'mysterious',
-  'loyal',
-  'shy',
-  'arrogant',
+  'vengeful',
+  'ambitious',
   'chaotic',
+  'empathetic',
+  'loyal',
+  'funny',
+  'intelligent',
+  'manipulative',
+  'charismatic',
+  'calm',
+  'mysterious',
+  'arrogant',
 ] as const
 
 export const cardTraitLabels: Record<(typeof cardTraits)[number], string> = {
-  calm: 'Calm',
-  aggressive: 'Aggressive',
-  funny: 'Funny',
-  mysterious: 'Mysterious',
-  loyal: 'Loyal',
-  shy: 'Shy',
-  arrogant: 'Arrogant',
+  vengeful: 'Vengeful',
+  ambitious: 'Ambitious',
   chaotic: 'Chaotic',
+  empathetic: 'Empathetic',
+  loyal: 'Loyal',
+  funny: 'Funny',
+  intelligent: 'Intelligent',
+  manipulative: 'Manipulative',
+  charismatic: 'Charismatic',
+  calm: 'Calm',
+  mysterious: 'Mysterious',
+  arrogant: 'Arrogant',
 }
 
 export const sexOptions = ['male', 'female', 'other'] as const

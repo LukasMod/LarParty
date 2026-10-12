@@ -14,6 +14,12 @@ import {
   themeCategories,
 } from '@/shared/constants/party-options'
 import { createId } from '@/shared/utils/create-id'
+import {
+  indexToAge,
+  indexToDistinctTraits,
+  pick,
+  timestampFromDayOffset,
+} from '@/shared/utils/fixtures'
 
 export interface DebugDataset {
   parties: Party[]
@@ -202,28 +208,11 @@ const histories = [
   'There is a version of their past that they tell strangers. They almost believe it themselves.',
 ]
 
-// Deterministic index-based picks: cycling the pools rather than using
-// randomness gives varied but stable-looking data and guarantees trait/sex
-// spread across a batch.
-const pick = <T>(pool: readonly T[], index: number): T =>
-  pool[index % pool.length]
+const indexToTraits = (index: number) =>
+  indexToDistinctTraits(cardTraits, index)
 
-const indexToAge = (index: number): number => 19 + ((index * 7) % 47)
-
-const indexToTraits = (index: number): [InputTrait, InputTrait, InputTrait] => {
-  const count = cardTraits.length
-  const offset = index * 3
-
-  return [
-    cardTraits[offset % count],
-    cardTraits[(offset + 3) % count],
-    cardTraits[(offset + 5) % count],
-  ]
-}
-
-// Fixed epoch so repeated seeding produces recognizable, comparable data.
 const makeTimestamp = (dayOffset: number): string =>
-  new Date(Date.UTC(2026, 0, 1) + dayOffset * 86_400_000).toISOString()
+  timestampFromDayOffset(dayOffset)
 
 function buildParty(index: number): Party {
   const themeCategory = themeCategories[index % themeCategories.length]
