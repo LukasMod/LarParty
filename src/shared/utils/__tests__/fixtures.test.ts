@@ -1,5 +1,4 @@
 import {
-  indexToAge,
   indexToDistinctTraits,
   pick,
   timestampFromDayOffset,
@@ -27,30 +26,6 @@ describe('pick', () => {
     for (let index = 0; index < 200; index += 1) {
       expect(pool).toContain(pick(pool, index))
     }
-  })
-})
-
-describe('indexToAge', () => {
-  it('stays within the declared range', () => {
-    for (let index = 0; index < 300; index += 1) {
-      const age = indexToAge(index)
-
-      expect(age).toBeGreaterThanOrEqual(19)
-      expect(age).toBeLessThan(19 + 47)
-    }
-  })
-
-  it('varies across a batch instead of repeating', () => {
-    const ages = new Set(
-      Array.from({ length: 12 }, (_, index) => indexToAge(index)),
-    )
-
-    expect(ages.size).toBe(12)
-  })
-
-  it('accepts a custom range', () => {
-    expect(indexToAge(0, 30, 5)).toBe(30)
-    expect(indexToAge(1, 30, 5)).toBe(32)
   })
 })
 

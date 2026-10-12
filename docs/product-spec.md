@@ -92,7 +92,6 @@ A character card is an AI-generated role profile associated with one party.
 - `partyId`
 - `name`
 - `sex`
-- `age`
 - `selectedTraits`
 
 #### Character card generated fields
@@ -131,7 +130,6 @@ A character card is an AI-generated role profile associated with one party.
 3. User fills card input form:
    - name
    - sex
-   - age
    - predefined traits
 4. App builds a structured AI prompt using:
    - party theme category
@@ -248,7 +246,6 @@ Purpose: create a new character seed for AI generation.
 
 - name
 - sex
-- age
 - predefined traits (multi-select or bounded selection)
 
 ## 8. AI Generation Requirements
@@ -289,7 +286,6 @@ The prompt should use:
 - selected mood
 - user name
 - user sex
-- user age
 - selected user traits, each with its intensity value when any value is away from the default
 
 The prompt should aim for:

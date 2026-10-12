@@ -30,7 +30,6 @@ export function useNewCharacterCardForm({
 
   const [name, setName] = useState('')
   const [sex, setSex] = useState<SexOption>('other')
-  const [age, setAge] = useState('25')
   const [selectedTraits, setSelectedTraits] = useState<InputTrait[]>([])
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
@@ -44,7 +43,7 @@ export function useNewCharacterCardForm({
       return
     }
 
-    const validation = validateCardForm({ name, age, selectedTraits }, sex)
+    const validation = validateCardForm({ name, selectedTraits }, sex)
 
     if (!validation.ok) {
       setErrorMessage(t(validation.errorKey))
@@ -90,14 +89,12 @@ export function useNewCharacterCardForm({
   return {
     name,
     sex,
-    age,
     selectedTraits,
     errorMessage,
     isGenerating: generation.isGenerating,
     maxTraits: MAX_CARD_TRAITS,
     setName,
     setSex,
-    setAge,
     toggleTrait,
     handleGenerateCard,
     cancelGeneration: generation.cancel,
