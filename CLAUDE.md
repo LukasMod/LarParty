@@ -106,6 +106,9 @@ Shared code lives in `src/shared`:
   so styles resolve but real theme values are not asserted.
 - Logic worth testing belongs in a pure function under a feature's `utils/` or
   `src/shared/utils/`, with the hook or component just wiring it up.
+- A new util ships with its unit test in the same change. No util lands untested.
+- Touch a util, run the tests before committing: `npm run test`, or the one file while
+  iterating. Same rule for the util's own callers.
 - **`npm run typecheck` fails on a clean checkout** with 15 i18n typing errors. Lint
   passes. Do not assume you caused them, and do not "fix" it by deleting
   `src/shared/i18n/i18next.d.ts` or loosening `tsconfig`. Root cause and a verified

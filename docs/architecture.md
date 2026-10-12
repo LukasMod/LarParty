@@ -385,5 +385,5 @@ the list above rather than assuming a clean build.
 
 `npm run test` covers the pure seams — selectors, screen-model resolvers, form validation,
 schema parsing, cascade-delete store logic, the theme map, and the tilt math. The screens
-themselves have no automated coverage, so changes to a route or a component still deserve a
+themselves have no automated coverage, so a change to a route or a component deserves a
 simulator pass against the smoke-test runbook.

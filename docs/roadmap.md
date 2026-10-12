@@ -34,7 +34,7 @@ Remaining work, ordered by value. Each item is scoped small enough for its own P
 6. **CI for the test suite.** `npm run test` is local-only; nothing runs it on a PR. Wire
    `npm run check` and `npm run test` into CI.
 7. **i18n key-coverage test.** No test compares `en` and `pl` key sets, so a missing Polish
-   key still falls back to English silently. Normalize plural suffixes before diffing —
+   key falls back to English silently. Normalize plural suffixes before diffing —
    Polish has `_few`/`_many` keys English lacks (see
    [`i18n-guide.md`](./i18n-guide.md#plurals)) — so a raw key-set diff reports false failures.
 
