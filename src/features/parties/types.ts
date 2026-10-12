@@ -1,13 +1,18 @@
-import { partyMoods, themeCategories } from '@/shared/constants/party-options'
+import {
+  PartyMoodKey,
+  StoredPartyMoodKey,
+  themeCategories,
+} from '@/shared/constants/party-options'
 
 export type ThemeCategory = (typeof themeCategories)[number]
-export type PartyMood = (typeof partyMoods)[number]
+export type PartyMood = PartyMoodKey
+export type StoredPartyMood = StoredPartyMoodKey
 
 export interface Party {
   id: string
   title: string
   themeCategory: ThemeCategory
-  mood: PartyMood
+  mood: StoredPartyMood
   createdAt: string
   updatedAt: string
 }

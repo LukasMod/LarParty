@@ -19,17 +19,15 @@ preference.
 - Should collectible mode prioritize visuals over density?
 - Should info-sheet mode prioritize readability and sharing/printing potential?
 
-## Theme categories and moods
+## Theme categories
 
-The set is 3 categories (Fantasy, Sci-Fi, Horror) and 10 moods.
+The set is 3 categories: Fantasy, Sci-Fi, Horror.
 
 - Are 3 categories enough variety for repeat players, or does the app feel samey?
-- Do the remaining moods read as distinct — particularly `dramatic` vs `epic`, and
-  `mysterious` vs `dark`?
 
-Changing this set affects already-saved local data: a saved party holding a dropped value
-crashes party and card details. There is no migration layer, so after trimming the enums
-clear local storage (or reinstall). See
+Removing a category affects already-saved local data with no fallback: `getPartyTheme` is a
+total map, so a saved party holding a dropped value crashes party and card details. There is
+no migration layer, so after trimming it clear local storage (or reinstall). See
 [`architecture.md`](./architecture.md#stores).
 
 ## Offline generation UX

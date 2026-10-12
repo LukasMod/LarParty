@@ -124,13 +124,17 @@ Load-bearing details:
   `preferences-store` set a `version` or `migrate`. MMKV survives app rebuilds and persisted
   JSON bypasses the TypeScript types entirely — the compiler will not warn you when a stored
   shape drifts from the type.
-- **Removing an enum value breaks existing local data.** `getPartyTheme` is a total map
-  (`Record<ThemeCategory, AppTheme>`), so a saved party holding a value absent from the enum
-  makes the lookup return `undefined` and `partyTheme.colors.accent` throws — a
-  white screen on party and card details, not a graceful fallback. There is no migration layer.
-  The MVP has no users, so the accepted handling is to clear local storage (or reinstall) after
-  trimming an enum; a fresh install never holds a dropped value. If real installs ever hold
-  data, add a `persist` `version` + `migrate` first.
+- **Removing an enum value affects existing local data.** Traits and moods keep dropped
+  values readable: `legacyCardTraits` / `legacyPartyMoods` in `party-options.ts` plus their
+  locale keys let a stored card or party still show a label and still send the value to the
+  model, while the pickers offer only current values. Theme categories have no such fallback.
+  `getPartyTheme` is a total map (`Record<ThemeCategory, AppTheme>`), so a saved party holding
+  a value absent from the enum makes the lookup return `undefined` and
+  `partyTheme.colors.accent` throws — a white screen on party and card details, not a graceful
+  fallback. There is no migration layer. The MVP has no users, so the accepted handling is to
+  clear local storage (or reinstall) after trimming theme categories; a fresh install never
+  holds a dropped value. If real installs ever hold data, add a `persist` `version` + `migrate`
+  first.
 
 ## Domain rules worth knowing before editing
 

@@ -18,12 +18,37 @@ export const themeCategoryLabels: Record<
   horror: 'Horror',
 }
 
+// One tone per party, chosen at creation. Each names its own feeling axis and
+// none duplicates a theme category: theme sets the genre, mood sets how the
+// night is played.
 export const partyMoods = [
   'fun',
-  'serious',
   'dramatic',
-  'mysterious',
   'adventurous',
+  'intrigue',
+  'wild',
+  'cheesy',
+  'awkward',
+] as const
+
+export type PartyMoodKey = (typeof partyMoods)[number]
+
+export const partyMoodLabels: Record<PartyMoodKey, string> = {
+  fun: 'Fun',
+  dramatic: 'Dramatic',
+  adventurous: 'Adventurous',
+  intrigue: 'Intrigue',
+  wild: 'Wild',
+  cheesy: 'Cheesy',
+  awkward: 'Awkward',
+}
+
+// Mood values on parties saved before the current set existed. Never
+// selectable, only readable, so a stored party still shows a localized mood
+// when it is listed, opened, or sent to the model.
+export const legacyPartyMoods = [
+  'serious',
+  'mysterious',
   'epic',
   'dark',
   'romantic',
@@ -31,18 +56,8 @@ export const partyMoods = [
   'cozy',
 ] as const
 
-export const partyMoodLabels: Record<(typeof partyMoods)[number], string> = {
-  fun: 'Fun',
-  serious: 'Serious',
-  dramatic: 'Dramatic',
-  mysterious: 'Mysterious',
-  adventurous: 'Adventurous',
-  epic: 'Epic',
-  dark: 'Dark',
-  romantic: 'Romantic',
-  chaotic: 'Chaotic',
-  cozy: 'Cozy',
-}
+export type LegacyPartyMoodKey = (typeof legacyPartyMoods)[number]
+export type StoredPartyMoodKey = PartyMoodKey | LegacyPartyMoodKey
 
 // Six light and six dark traits. Each names its own axis, so any three combine
 // without one cancelling another. Ordered in loose clusters: drive, warmth,
