@@ -37,7 +37,6 @@ export function makeCardInput(
   return {
     name: 'Test Name',
     sex: 'other',
-    age: 25,
     selectedTraits: ['loyal', 'funny', 'calm'],
     ...overrides,
   }

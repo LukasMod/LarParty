@@ -15,7 +15,6 @@ import {
 } from '@/shared/constants/party-options'
 import { createId } from '@/shared/utils/create-id'
 import {
-  indexToAge,
   indexToDistinctTraits,
   pick,
   timestampFromDayOffset,
@@ -33,7 +32,7 @@ export const DEBUG_LARGE_CARDS_PER_PARTY = 10
 
 // Theme-aware title/class/phrase pools so a fake card under a `fantasy` party
 // reads like fantasy and one under `horror` like horror. Theme-independent
-// fields (sex, age, traits, body copy) come from the shared pools below.
+// fields (sex, traits, body copy) come from the shared pools below.
 const partyTitlesByTheme: Record<ThemeCategory, string[]> = {
   fantasy: [
     'Emberkeep',
@@ -266,7 +265,6 @@ function buildCardsForParty(
     const input: CharacterCardInput = {
       name,
       sex,
-      age: indexToAge(seed),
       selectedTraits: [traits[0], traits[1], traits[2]],
     }
     const generated = buildGenerated(party.themeCategory, name, traits, seed)

@@ -133,14 +133,12 @@ This is the exact flow that worked during the iOS simulator check in this reposi
    - `Create Character Card`
    - `Character name`
    - `Sex`
-   - `Age`
    - `Traits`
    - `Generate character card`
 3. Submit once with an empty name to verify `Character name is required.`
 4. Fill the form with:
    - name: `Mira Nightbloom`
    - sex: `Other`
-   - age: `25`
    - traits: `Calm`, `Funny`, `Loyal`
 5. Dismiss the keyboard if needed.
 6. Tap `Generate character card`.
@@ -230,7 +228,6 @@ Typical use:
 
 - Character name: `Mira Nightbloom`
 - Sex: `Other`
-- Age: `25`
 - Traits: `Calm`, `Funny`, `Loyal`
 
 If a unique name is needed to avoid collisions, append a short suffix, for example:
@@ -411,7 +408,6 @@ Look for:
 - current party title and theme subtitle
 - `Character name`
 - `Sex`
-- `Age`
 - `Traits`
 - helper copy `Pick up to 3 traits.`
 - `Generate character card`
@@ -428,10 +424,8 @@ Look for:
 
 1. Tap `Generate character card` with the form empty.
 2. Confirm `Character name is required.` appears.
-3. Enter a name but set an invalid age if needed.
-4. Confirm `Enter a valid age.` appears when appropriate.
-5. Attempt submission with zero traits selected.
-6. Confirm `Choose between 1 and 3 traits.` appears.
+3. Attempt submission with zero traits selected.
+4. Confirm `Choose between 1 and 3 traits.` appears.
 
 #### C. Trait-limit smoke
 

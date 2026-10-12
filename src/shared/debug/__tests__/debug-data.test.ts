@@ -124,13 +124,6 @@ describe('generateDebugData', () => {
     ).toBe(true)
   })
 
-  it('keeps ages in an adult range', () => {
-    for (const card of generateDebugData(6, 6).cards) {
-      expect(card.input.age).toBeGreaterThanOrEqual(19)
-      expect(card.input.age).toBeLessThan(66)
-    }
-  })
-
   it('is deterministic apart from generated ids', () => {
     const strip = (data: ReturnType<typeof generateDebugData>) => ({
       parties: data.parties.map(({ id: _id, ...rest }) => rest),

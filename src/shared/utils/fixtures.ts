@@ -6,10 +6,6 @@ export function pick<T>(pool: readonly T[], index: number): T {
   return pool[index % pool.length]
 }
 
-export function indexToAge(index: number, minAge = 19, spread = 47): number {
-  return minAge + ((index * 7) % spread)
-}
-
 // Picks are distinct at every index: the pairwise gaps are 4i+1, 2i+3 and 6i+4,
 // none of which is ever a multiple of 12. Multipliers 1/5/7 cycle all 12 traits
 // across a batch.

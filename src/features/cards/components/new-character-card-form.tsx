@@ -15,26 +15,22 @@ import { getCardTraitLabel, getSexOptionLabel } from '@/shared/i18n/labels'
 interface NewCharacterCardFormProps {
   name: string
   sex: SexOption
-  age: string
   selectedTraits: InputTrait[]
   maxTraits: number
   errorMessage: string | null
   onNameChange: (value: string) => void
   onSexChange: (value: SexOption) => void
-  onAgeChange: (value: string) => void
   onToggleTrait: (trait: InputTrait) => void
 }
 
 export function NewCharacterCardForm({
   name,
   sex,
-  age,
   selectedTraits,
   maxTraits,
   errorMessage,
   onNameChange,
   onSexChange,
-  onAgeChange,
   onToggleTrait,
 }: NewCharacterCardFormProps) {
   const { t } = useTranslation(['cards'])
@@ -55,15 +51,6 @@ export function NewCharacterCardForm({
           selectedOptions={[sex]}
           getLabel={(option) => getSexOptionLabel(t, option)}
           onPress={onSexChange}
-        />
-      </FormField>
-
-      <FormField label={t('cards:form.ageLabel')}>
-        <FormTextInput
-          value={age}
-          onChangeText={onAgeChange}
-          placeholder={t('cards:form.agePlaceholder')}
-          keyboardType="number-pad"
         />
       </FormField>
 

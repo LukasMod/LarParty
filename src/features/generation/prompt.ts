@@ -59,7 +59,6 @@ export function buildCharacterCardPrompt({
     'Character seed:',
     `- Name: ${input.name}`,
     `- Sex: ${labels.sex}`,
-    `- Age: ${input.age}`,
     printValues
       ? '- Selected traits, each with an intensity value:'
       : `- Selected traits: ${traitListOf(seeds, seedLabels)}`,
