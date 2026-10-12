@@ -9,7 +9,7 @@ real file is often faster than reading prose.
 
 | Concern             | Choice                                                                         |
 | ------------------- | ------------------------------------------------------------------------------ |
-| Runtime             | Expo SDK 58 beta, React Native 0.88.0-rc.3, React 19.3.0, New Architecture on   |
+| Runtime             | Expo SDK 58 beta, React Native 0.88.0-rc.3, React 19.3.0, New Architecture on  |
 | Routing             | Expo Router, typed routes on                                                   |
 | Styling             | react-native-unistyles v3 (babel plugin scoped to `src`)                       |
 | State + persistence | Zustand v5 + `persist` → MMKV (`react-native-mmkv` v4, Nitro)                  |
@@ -29,13 +29,18 @@ src/
   components/               EXPO STARTER LEFTOVERS — see "Dead code"
   constants/theme.ts        compatibility re-export of appThemes
   features/
-    parties/  cards/        types.ts, selectors.ts, store/, hooks/, components/
+    parties/  cards/        types.ts, selectors.ts, utils/, store/, hooks/, components/
     preferences/store/      display mode + language preference
     generation/             gemini.ts, prompt.ts, schemas.ts, types.ts, hooks/, components/
   hooks/                    starter hooks; only use-theme.ts is live
   shared/
     components/ constants/ hooks/ i18n/ storage/ theme/ utils/
+jest/                       setup stubs + test factories (`@test/factories`)
 ```
+
+`shared/utils/` is where testable logic goes when it is not feature-specific:
+`tilt.ts` (pose math), `hash.ts` (glow seed offset), `fixtures.ts` (deterministic debug
+index math), `error.ts` (thrown-value → message), `create-id.ts`.
 
 Feature module convention (`parties`, `cards`):
 
@@ -43,9 +48,10 @@ Feature module convention (`parties`, `cards`):
 | ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `types.ts`                                     | Domain interfaces + types derived from `shared/constants` enums                                                                                           |
 | `selectors.ts`                                 | Pure functions over arrays. No store access                                                                                                               |
+| `utils/`                                       | Pure functions: form validation, screen-model resolution, list building. Every branch worth breaking lives here, with tests in `utils/__tests__/`         |
 | `store/<name>-store.ts`                        | Zustand + persist. Owns all writes                                                                                                                        |
-| `hooks/use-*-screen-model.ts`                  | Read side. Returns a discriminated `status` union                                                                                                         |
-| `hooks/use-*-actions.ts` / `use-new-*-form.ts` | Write side. Validation, alerts, navigation                                                                                                                |
+| `hooks/use-*-screen-model.ts`                  | Read side. Selects store state, hands it to a `utils/` resolver, returns a discriminated `status` union                                                   |
+| `hooks/use-*-actions.ts` / `use-new-*-form.ts` | Write side. Alerts, navigation, and calling `utils/` validators. No inline branching logic                                                                |
 | `components/`                                  | Presentational. Props in, no store reads. The single exception is the orphaned `card-display-mode-switch.tsx`, which reads the preferences store directly |
 
 ## Routes
@@ -74,7 +80,9 @@ Params come from `useLocalSearchParams<{ partyId: string }>()`. Navigation uses
 ## Screen model pattern
 
 Screens do not read stores directly and do not branch on hydration inline. They call a
-screen-model hook returning a union:
+screen-model hook, which selects store state and hands it to a pure resolver in the
+feature's `utils/` — `resolveCardDetailsScreenModel` and
+`resolvePartyDetailsScreenModel` — returning a discriminated union:
 
 ```ts
 type CardDetailsScreenModel =
@@ -143,9 +151,9 @@ Load-bearing details:
   Grouping by `generationGroupId` is what keeps version history queryable without a separate
   versioning engine.
 - `generated.characterTraits` is a 3-tuple in both the TS type and the Zod schema.
-- Trait selection is capped at 3 (`MAX_TRAITS` in `use-new-character-card-form.ts`).
-- Validation is hand-rolled in the form hooks. Zod guards **only** AI output. There is no
-  `shared/validation/` directory.
+- Trait selection is capped at 3 (`MAX_CARD_TRAITS` in `features/cards/utils/card-form.ts`).
+- Form validation is hand-rolled pure functions in `features/*/utils/*-form.ts` — no schema
+  library. Zod guards **only** AI output. There is no `shared/validation/` directory.
 
 ## Generation flow
 
@@ -154,9 +162,10 @@ calls Gemini over the network, so creating/regenerating a card requires internet
 only the read/browse flows work (see [`mvp-decisions.md`](./mvp-decisions.md)).
 
 `prompt.ts` builds a text prompt; `gemini.ts` calls `generateContent` with
-`responseMimeType: 'application/json'` and `generatedCharacterCardJsonSchema`, then
-`generatedCharacterCardSchema.parse(...)` — so malformed or off-schema AI output throws
-rather than saving bad data. Errors bubble to the form hook, which sets `errorMessage`
+`responseMimeType: 'application/json'` and `generatedCharacterCardJsonSchema`, then hands the
+response text to `parseGeneratedCardResponse` — which rejects empty text, rejects non-JSON, and
+finally runs `generatedCharacterCardSchema.parse(...)`, so malformed or off-schema AI output
+throws rather than saving bad data. Errors bubble to the form hook, which sets `errorMessage`
 and saves nothing.
 
 Two schemas must stay in lockstep with the domain type: the hand-written Gemini JSON
@@ -185,11 +194,11 @@ Output language follows the resolved app language. See [`i18n-guide.md`](./i18n-
 `src/shared/debug/` seeds the persisted stores with fake data so screens, lists, and
 cascade deletes can be exercised without any Gemini call or API key.
 
-| File                   | Role                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `debug-data.ts`        | Pure fake-data builders. `generateDebugData(partyCount, cardsPerParty)` returns `{ parties, cards }`; `buildSmallDebugDataset()` and `buildLargeDebugDataset()` are the two presets (3 parties × 1 card; 10 parties × 10 cards). Party titles/classes/movements/phrases are theme-aware per `themeCategory`; names/sex/age/traits cycle shared pools deterministically (index-based, no RNG). Roughly every fifth card gets a `basedOnCardId` sibling in the same `generationGroupId` so card details shows version history. Statuses mix draft/accepted. Arrays are returned newest-first to match the prepend order the lists render. |
-| `use-debug-actions.ts` | Write side. `seed(...)` calls `usePartyStore.setState` / `useCardStore.setState` with `hasHydrated: true`, then `router.replace('/')`. `handleClear` alerts, then empties both stores.                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| `debug-menu.tsx`       | The `DebugMenu` card: small-seed, large-seed, and clear buttons.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| File                   | Role                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `debug-data.ts`        | Pure fake-data builders. `generateDebugData(partyCount, cardsPerParty)` returns `{ parties, cards }`; `buildSmallDebugDataset()` and `buildLargeDebugDataset()` are the two presets (3 parties × 1 card; 10 parties × 10 cards). Party titles/classes/movements/phrases are theme-aware per `themeCategory`; names/sex/age/traits cycle shared pools deterministically (index-based, no RNG — the index math itself is `shared/utils/fixtures.ts`). Roughly every fifth card gets a `basedOnCardId` sibling in the same `generationGroupId` so card details shows version history. Statuses mix draft/accepted. Arrays are returned newest-first to match the prepend order the lists render. |
+| `use-debug-actions.ts` | Write side. `seed(...)` calls `usePartyStore.setState` / `useCardStore.setState` with `hasHydrated: true`, then `router.replace('/')`. `handleClear` alerts, then empties both stores.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| `debug-menu.tsx`       | The `DebugMenu` card: small-seed, large-seed, and clear buttons.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 
 - Reached from **Settings** only under `__DEV__` (`{__DEV__ ? <DebugMenu /> : null}` in
   `src/app/settings.tsx`); the component itself has no runtime guard. Copy lives in the
@@ -277,19 +286,25 @@ Known and verified. Do not "discover" these again; do not imitate them either.
 - **`*Labels` records** in `shared/constants/party-options.ts` — unused by the UI (labels
   come from i18n), but TypeScript forces you to update them when adding enum values. Keep
   them, they are the compile-time guard.
-- **`getCardsForParty`** in `features/cards/selectors.ts` — unused; the party-details
-  screen model duplicates its filter+sort inline. Either reuse it there or drop it.
 - **`src/constants/theme.ts`** — `Colors` is live (`_layout.tsx` reads it for header
   colors). `Fonts`, `Radius`, and `MaxContentWidth` are referenced only by dead starter
   files; live components read `theme.radius` / `theme.spacing` through Unistyles.
 - **`console.log` in `settings.tsx`** — leftover debug output on a shipped screen.
-- **Generation errors bypass i18n.** Both catch blocks do
-  `error instanceof Error ? error.message : t('...')`
-  (`use-new-character-card-form.ts:102`, `use-card-details-actions.ts:98`). The Gemini SDK
-  (`ApiError extends Error`) and the network layer throw real `Error` instances — including
-  offline (`TypeError: Network request failed`), 4xx auth failures, and invalid-JSON
-  responses — so `error.message` almost always wins and the translated `generationFailed` /
-  `regenerationFailed` strings are near-dead code. Net effect: users see raw English
+- **A superseded generation is not reported as cancelled.** `start()` aborts the previous
+  request's controller but never sets its `cancelled` flag — only `cancel()` does. A caller
+  awaiting the superseded `start()` therefore gets `{ generated, cancelled: false }` and would
+  save a draft and navigate, even though a newer generation is in flight. Today two screens
+  cannot generate simultaneously: the `GeneratingOverlay` covers the form and blocks a second
+  tap, and each hook instance owns its own `activeRef`. It becomes reachable if a second
+  generation can start while one is in flight. Set `cancelled` on the aborted entry inside
+  `start()` rather than only in `cancel()` if that changes.
+- **Generation errors bypass i18n.** Both catch blocks call
+  `resolveErrorMessage(error, t('...'))` (`shared/utils/error.ts`), which prefers
+  `error.message` over the translated fallback. The Gemini SDK (`ApiError extends Error`) and
+  the network layer throw real `Error` instances — including offline (`TypeError: Network
+request failed`), 4xx auth failures, and invalid-JSON responses — so `error.message` almost
+  always wins and the translated `generationFailed` / `regenerationFailed` strings are
+  near-dead code. Net effect: users see raw English
   SDK/debug text, untranslated, including in Polish. Generation requires connectivity, so the
   offline failure is a common path rather than an edge case — map failures to translated keys
   and keep `error.message` for logs only.
@@ -300,8 +315,21 @@ Known and verified. Do not "discover" these again; do not imitate them either.
 
 ## Verification
 
-No test runner is configured. Nothing here is automated:
-
+- `npm run test` — Jest with the `jest-expo` preset. `jest.config.js` maps `@/` to `src/`
+  and `@test/` to `jest/`; `jest/setup.ts` stubs MMKV, `expo-localization`, and the
+  Unistyles native registration, and `jest/setup-after-env.ts` registers the
+  `@testing-library/react-native` matchers. Domain/test builders live in
+  `jest/factories.ts` (`makeParty`, `makeCard`, `makeCardInput`, `makeGenerated`).
+- Pure logic is the test target. Anything with a branch worth breaking sits in a
+  `utils/` folder (feature) or `src/shared/utils/`, so the hook or component around it
+  is just wiring. `src/shared/utils`, `src/shared/theme`, `src/shared/storage`,
+  `src/features/*/utils`, `src/features/*/selectors.ts`, and the three stores are at full
+  line and branch coverage; components and route files are not unit-tested.
+- Work that needs a device stays manual: the gyroscope tilt loop, Reanimated glow, and
+  gesture handling. `poseFromRotation`, `lerpPose`, and `smoothingFactor` in
+  `src/shared/utils/tilt.ts` are tested as plain math because they are `'worklet'`
+  functions that also run on the JS thread.
+- Run one file: `npx jest src/features/cards/utils/__tests__/card-form.test.ts`.
 - `npm run check` — lint (`expo lint`), then `tsc --noEmit`, then `npm run contrast`. Requires `npm install` first.
 - `npm run contrast` — `scripts/contrast-check.mjs` parses the palettes out of
   `src/shared/theme/unistyles.ts` and applies one WCAG rule set to every theme. Plain Node, no test runner.
@@ -310,6 +338,7 @@ No test runner is configured. Nothing here is automated:
 - Runtime QA is manual or agent-driven. See
   [`agent-device-smoke-tests.md`](./agent-device-smoke-tests.md).
 - `npm run healthcheck:react-compiler` exists but is not wired into `check`.
+- `watchman` is disabled in `jest.config.js`, so Jest falls back to its own file walker.
 
 ### `npm run typecheck` fails on a clean checkout
 
@@ -354,5 +383,7 @@ opt-out is removed after RN 0.88, so the strict-API migration is owed before RN 
 **Expect 15 errors from `npm run check`** while this stands. Count them and compare against
 the list above rather than assuming a clean build.
 
-Because there are no tests, the smoke-test runbook is the only regression net. Changes to
-persistence, card lifecycle, or cascade deletes deserve a simulator pass.
+`npm run test` covers the pure seams — selectors, screen-model resolvers, form validation,
+schema parsing, cascade-delete store logic, the theme map, and the tilt math. The screens
+themselves have no automated coverage, so a change to a route or a component deserves a
+simulator pass against the smoke-test runbook.

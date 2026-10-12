@@ -85,13 +85,30 @@ Shared code lives in `src/shared`:
 - `npm run web`
 - `npm run lint`
 - `npm run typecheck`
+- `npm run test` — Jest via `jest-expo`
+- `npm run test:watch`
 - `npm run check` — run lint + typecheck + contrast
 - `npm run format` — Prettier (no semicolons, single quotes)
 - `npx expo start --clear` — clear Metro cache
 
 ### Testing
 
-- No test runner is configured. No single-test command exists.
+- Jest + `jest-expo` preset. Config in `jest.config.js`, globals in `jest/setup.ts`
+  (MMKV, `expo-localization`, and Unistyles registration are stubbed there).
+- Run one file: `npx jest src/shared/utils/__tests__/tilt.test.ts`.
+- Tests live in `__tests__` folders mirroring the source path. Shared domain/test
+  factories are at `@test/factories` (`jest/factories.ts`).
+- Query priority for component tests: `getByRole` first; RNTL matchers are
+  registered globally.
+- RNTL is v14: `render`, `renderHook` and every query interaction are **async**.
+  `await render(<Screen />)` or the `screen` object throws "render has not been called".
+- Component tests run against a stubbed `react-native-unistyles` (see `jest/setup.ts`),
+  so styles resolve but real theme values are not asserted.
+- Logic worth testing belongs in a pure function under a feature's `utils/` or
+  `src/shared/utils/`, with the hook or component just wiring it up.
+- A new util ships with its unit test in the same change. No util lands untested.
+- Touch a util, run the tests before committing: `npm run test`, or the one file while
+  iterating. Same rule for the util's own callers.
 - **`npm run typecheck` fails on a clean checkout** with 15 i18n typing errors. Lint
   passes. Do not assume you caused them, and do not "fix" it by deleting
   `src/shared/i18n/i18next.d.ts` or loosening `tsconfig`. Root cause and a verified

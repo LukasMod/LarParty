@@ -8,6 +8,7 @@ import { CharacterCard } from '@/features/cards/types'
 import { useCharacterCardGeneration } from '@/features/generation/hooks/use-character-card-generation'
 import { Party } from '@/features/parties/types'
 import { useAppLanguage } from '@/shared/i18n/use-app-language'
+import { resolveErrorMessage } from '@/shared/utils/error'
 
 interface UseCardDetailsActionsParams {
   party: Party | null
@@ -97,10 +98,10 @@ export function useCardDetailsActions({
                 params: { partyId: card.partyId, cardId: nextCardId },
               })
             } catch (error) {
-              nextErrorMessage =
-                error instanceof Error
-                  ? error.message
-                  : t('cards:details.regenerationFailed')
+              nextErrorMessage = resolveErrorMessage(
+                error,
+                t('cards:details.regenerationFailed'),
+              )
             }
 
             if (nextErrorMessage) {

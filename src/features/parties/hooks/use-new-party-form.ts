@@ -3,6 +3,11 @@ import { useState } from 'react'
 
 import { PartyMood, ThemeCategory } from '@/features/parties/types'
 import { usePartyStore } from '@/features/parties/store/party-store'
+import {
+  isPartyTitleValid,
+  normalizePartyTitle,
+  shouldClearPartyTitleError,
+} from '@/features/parties/utils/party-form'
 
 export function useNewPartyForm() {
   const createParty = usePartyStore((state) => state.createParty)
@@ -14,21 +19,19 @@ export function useNewPartyForm() {
   function handleTitleChange(value: string) {
     setTitle(value)
 
-    if (showValidationError && value.trim()) {
+    if (shouldClearPartyTitleError(showValidationError, value)) {
       setShowValidationError(false)
     }
   }
 
   function handleCreateParty() {
-    const trimmedTitle = title.trim()
-
-    if (!trimmedTitle) {
+    if (!isPartyTitleValid(title)) {
       setShowValidationError(true)
       return
     }
 
     const partyId = createParty({
-      title: trimmedTitle,
+      title: normalizePartyTitle(title),
       themeCategory,
       mood,
     })

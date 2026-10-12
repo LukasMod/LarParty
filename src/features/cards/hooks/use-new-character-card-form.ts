@@ -2,17 +2,18 @@ import { router } from 'expo-router'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  CharacterCardInput,
-  InputTrait,
-  SexOption,
-} from '@/features/cards/types'
+import { InputTrait, SexOption } from '@/features/cards/types'
 import { useCardStore } from '@/features/cards/store/card-store'
+import {
+  CARD_FORM_ERROR_KEYS,
+  MAX_CARD_TRAITS,
+  toggleCardTrait,
+  validateCardForm,
+} from '@/features/cards/utils/card-form'
 import { useCharacterCardGeneration } from '@/features/generation/hooks/use-character-card-generation'
 import { Party } from '@/features/parties/types'
 import { useAppLanguage } from '@/shared/i18n/use-app-language'
-
-const MAX_TRAITS = 3
+import { resolveErrorMessage } from '@/shared/utils/error'
 
 interface UseNewCharacterCardFormParams {
   party: Party | null
@@ -33,49 +34,23 @@ export function useNewCharacterCardForm({
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   function toggleTrait(trait: InputTrait) {
-    setSelectedTraits((currentTraits) => {
-      if (currentTraits.includes(trait)) {
-        return currentTraits.filter((currentTrait) => currentTrait !== trait)
-      }
-
-      if (currentTraits.length >= MAX_TRAITS) {
-        return currentTraits
-      }
-
-      return [...currentTraits, trait]
-    })
+    setSelectedTraits((currentTraits) => toggleCardTrait(currentTraits, trait))
   }
 
   async function handleGenerateCard() {
     if (!party) {
-      setErrorMessage(t('form.errors.partyNotFound'))
+      setErrorMessage(t(CARD_FORM_ERROR_KEYS.partyNotFound))
       return
     }
 
-    const trimmedName = name.trim()
-    const parsedAge = Number.parseInt(age, 10)
+    const validation = validateCardForm({ name, age, selectedTraits }, sex)
 
-    if (!trimmedName) {
-      setErrorMessage(t('form.errors.nameRequired'))
+    if (!validation.ok) {
+      setErrorMessage(t(validation.errorKey))
       return
     }
 
-    if (!Number.isFinite(parsedAge) || parsedAge <= 0) {
-      setErrorMessage(t('form.errors.invalidAge'))
-      return
-    }
-
-    if (selectedTraits.length === 0 || selectedTraits.length > MAX_TRAITS) {
-      setErrorMessage(t('form.errors.invalidTraits'))
-      return
-    }
-
-    const input: CharacterCardInput = {
-      name: trimmedName,
-      sex,
-      age: parsedAge,
-      selectedTraits,
-    }
+    const input = validation.input
 
     setErrorMessage(null)
 
@@ -102,9 +77,7 @@ export function useNewCharacterCardForm({
       })
     } catch (error) {
       setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : t('form.errors.generationFailed'),
+        resolveErrorMessage(error, t('form.errors.generationFailed')),
       )
     }
   }
@@ -116,7 +89,7 @@ export function useNewCharacterCardForm({
     selectedTraits,
     errorMessage,
     isGenerating: generation.isGenerating,
-    maxTraits: MAX_TRAITS,
+    maxTraits: MAX_CARD_TRAITS,
     setName,
     setSex,
     setAge,
