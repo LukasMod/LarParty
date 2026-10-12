@@ -13,6 +13,27 @@ import {
 const GEMINI_MODEL = 'gemini-3.5-flash-lite'
 const GEMINI_API_KEY = process.env.EXPO_PUBLIC_GEMINI_API_KEY
 
+// The API can answer with whitespace, an error string as plain text, or JSON
+// that does not match the requested schema. Each case gets its own message so
+// a failure in the log says which stage broke.
+export function parseGeneratedCardResponse(rawText: string | undefined) {
+  const trimmed = rawText?.trim()
+
+  if (!trimmed) {
+    throw new Error('Gemini returned an empty response.')
+  }
+
+  let parsedResponse: unknown
+
+  try {
+    parsedResponse = JSON.parse(trimmed)
+  } catch {
+    throw new Error('Gemini returned invalid JSON.')
+  }
+
+  return generatedCharacterCardSchema.parse(parsedResponse)
+}
+
 class GeminiCharacterCardGenerator implements CharacterCardGenerator {
   private client: GoogleGenAI
 
@@ -31,21 +52,7 @@ class GeminiCharacterCardGenerator implements CharacterCardGenerator {
       },
     })
 
-    const rawText = response.text?.trim()
-
-    if (!rawText) {
-      throw new Error('Gemini returned an empty response.')
-    }
-
-    let parsedResponse: unknown
-
-    try {
-      parsedResponse = JSON.parse(rawText)
-    } catch {
-      throw new Error('Gemini returned invalid JSON.')
-    }
-
-    return generatedCharacterCardSchema.parse(parsedResponse)
+    return parseGeneratedCardResponse(response.text)
   }
 }
 
