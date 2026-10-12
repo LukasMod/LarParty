@@ -169,6 +169,10 @@ export const pl = {
   },
   debug: {
     sectionTitle: 'Narzędzia debugowania',
+    sliderTitle: 'Suwak poziomów',
+    sliderHelper:
+      'Przeciągnij uchwyt. Przykleja się do najbliższego poziomu i startuje na 0.',
+    sliderValue: 'Wybrany poziom',
     seedSmall: 'Dodaj imprezy (mały zestaw)',
     seedLarge: 'Dodaj imprezy (duży zestaw)',
     clearAction: 'Usuń wszystkie imprezy i karty',

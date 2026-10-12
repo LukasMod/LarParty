@@ -164,6 +164,10 @@ export const en = {
   },
   debug: {
     sectionTitle: 'Debug tools',
+    sliderTitle: 'Level slider',
+    sliderHelper:
+      'Drag the knob. It snaps to the nearest level and starts on 0.',
+    sliderValue: 'Selected level',
     seedSmall: 'Add parties (small set)',
     seedLarge: 'Add parties (large set)',
     clearAction: 'Clear all parties and cards',
