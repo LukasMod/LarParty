@@ -77,7 +77,8 @@ function indexAt(x: number, spacing: number, lastIndex: number) {
 interface LevelSliderProps {
   /** Controlled level. Omit to let the slider hold its own level. */
   value?: number
-  /** Called with the level the knob settled on, once per gesture. */
+  /** Called with the level as the drag crosses each notch, so a host echoing the
+      value follows the knob rather than the release. Never per frame. */
   onChange?: (value: number) => void
   minValue?: number
   maxValue?: number
@@ -97,10 +98,11 @@ interface LevelSliderProps {
  * stops before the next tick still lands on it.
  *
  * The drag lives on the UI runtime — pan gesture, shared values, `useAnimatedStyle`
- * — so React does not render while a finger is down. The readout is a column of level
+ * — so no render happens per frame while a finger is down. The readout is a column of level
  * labels translated by the same shared value, which is why it tracks the finger without
- * a render either; it swaps rows on the same midpoints the tick haptic fires on. The one
- * render per gesture happens on release, when the level is reported.
+ * a render either; it swaps rows on the same midpoints the tick haptic fires on. The level
+ * is reported through `onChange` on each notch crossing, so a host echoing the number follows
+ * the knob. That reports back once per notch, not per frame.
  *
  * Pass `value` to control it; leave it out and the slider keeps its own level and
  * only reports through `onChange`.
@@ -201,12 +203,16 @@ export function LevelSlider({
   const commit = (index: number) => {
     const settled = levels[index]
 
-    parkedLevel.set(settled)
-    parkedSpacing.set(spacing)
-
-    if (settled === level) {
+    // Deduped on the shared value rather than the `value` prop: `commit` runs on
+    // the React runtime from a worklet, so the closure's `value` can be a render
+    // behind. `parkedLevel` is always current, and it is what the parking effect
+    // reads, so reporting and parking cannot drift.
+    if (parkedLevel.get() === settled) {
       return
     }
+
+    parkedLevel.set(settled)
+    parkedSpacing.set(spacing)
 
     if (value === undefined) {
       setRestLevel(settled)
@@ -278,6 +284,11 @@ export function LevelSlider({
           if (haptics) {
             scheduleOnRN(tick)
           }
+
+          // Reported on the crossing, so a host showing the level tracks the
+          // knob instead of waiting for the release. One call per notch, never
+          // per frame, and `commit` ignores the repeat from `onFinalize`.
+          scheduleOnRN(commit, next)
         }
       })
       // `onFinalize` rather than `onEnd`, so a drag the system takes over — a scroll

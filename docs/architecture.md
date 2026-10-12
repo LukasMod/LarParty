@@ -242,9 +242,13 @@ is down. The snap on release is a spring (`duration: 380`, `dampingRatio: 0.7`) 
 finger's velocity, so a short push that stops before a tick still lands on it. Two constraints
 that shaped it:
 
-- The committed level is reported from `onFinalize`, not `onEnd`, so a drag the system takes over
-  still snaps the knob home. Everything crossing back to the React runtime goes through
-  `scheduleOnRN` from `react-native-worklets`, and only once per gesture — never per frame.
+- The level is reported back to the React runtime as the drag **crosses a notch**, so a host
+  that shows the number tracks the knob instead of waiting for the release. `onFinalize` (not
+  `onEnd`) reports again, so a drag the system takes over — a scroll that wins the gesture —
+  still lands the value and snaps the knob home. `commit` dedupes on the `parkedLevel` shared
+  value, which is current, rather than the `value` prop, which can be a render behind, so the
+  release report after an identical crossing is a no-op. Calls cross through `scheduleOnRN`
+  from `react-native-worklets`: once per notch, never per frame.
 - The "is the parent's `value` the one we just committed" bookkeeping lives in shared values
   (`parkedLevel` / `parkedSpacing`), not a ref. `commit` is reachable from a worklet, and
   `react-hooks/refs` rejects a ref read in a closure a worklet can call.
