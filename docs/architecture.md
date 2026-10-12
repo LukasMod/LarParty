@@ -15,7 +15,7 @@ real file is often faster than reading prose.
 | State + persistence | Zustand v5 + `persist` → MMKV (`react-native-mmkv` v4, Nitro)                  |
 | Validation          | Zod v4 (AI response only)                                                      |
 | i18n                | i18next + react-i18next, en + pl                                               |
-| AI                  | `@google/genai`, `gemini-3.5-flash-lite`                                       |
+| AI                  | `@google/genai`, `gemini-3.6-flash-lite`                                       |
 | Compiler            | React Compiler enabled; forms still use `useState`, and some `useMemo` remains |
 
 Path alias `@/*` → `src/*`, plus `@/assets/*`. Precedent for `@/assets` is in
@@ -31,7 +31,7 @@ src/
   features/
     parties/  cards/        types.ts, selectors.ts, utils/, store/, hooks/, components/
     preferences/store/      display mode + language preference
-    generation/             gemini.ts, prompt.ts, schemas.ts, types.ts, hooks/, components/
+    generation/             gemini.ts, prompt.ts, schemas.ts, types.ts, utils/, hooks/, components/
   hooks/                    starter hooks; only use-theme.ts is live
   shared/
     components/ constants/ hooks/ i18n/ storage/ theme/ utils/
@@ -162,11 +162,35 @@ calls Gemini over the network, so creating/regenerating a card requires internet
 only the read/browse flows work (see [`mvp-decisions.md`](./mvp-decisions.md)).
 
 `prompt.ts` builds a text prompt; `gemini.ts` calls `generateContent` with
-`responseMimeType: 'application/json'` and `generatedCharacterCardJsonSchema`, then hands the
-response text to `parseGeneratedCardResponse` — which rejects empty text, rejects non-JSON, and
-finally runs `generatedCharacterCardSchema.parse(...)`, so malformed or off-schema AI output
-throws rather than saving bad data. Errors bubble to the form hook, which sets `errorMessage`
-and saves nothing.
+`responseMimeType: 'application/json'`, `generatedCharacterCardJsonSchema`, and creative
+sampling (`temperature: 1.15`, `topP: 0.95`) so the same seed does not keep returning the same
+card. `gemini.ts` hands the response text to `parseGeneratedCardResponse` — which rejects empty
+text, rejects non-JSON, and finally runs `generatedCharacterCardSchema.parse(...)`, so malformed
+or off-schema AI output throws rather than saving bad data. Errors bubble to the form hook, which
+sets `errorMessage` and saves nothing.
+
+The prompt has five parts: the party setup, the character seed, a uniqueness section, an optional
+divergence section, and the field rules. Uniqueness tells the model to skip the archetype the
+trait set implies, include one detail too specific to fit another guest, and avoid a named list of
+stock setups. `getPromptSiblings()` (`generation/utils/party-context.ts`) reads the party's other
+cards from the store inside the generate handler and renders them as one-line summaries (name,
+traits, phrase, movement; newest first, capped by `MAX_PARTY_SIBLING_SUMMARIES`), which the prompt
+forbids repeating. Variants of the card being regenerated are excluded — they share its seed.
+`getGenerationAttempt()` counts cards in the same `generationGroupId`, so regeneration adds a
+divergence block ("variant 3 for this exact seed") that holds the traits fixed and changes
+everything else. The first generation gets neither block.
+
+Trait intensity rides on the optional `seedTraits` of the request (`{ trait, traitValue }`,
+`-3..3`, clamped in `generation/utils/trait-value.ts`). When every value is `0` the prompt prints
+a plain comma-separated trait list; once any value leaves `0` it prints one labelled line per
+trait with its signed value and wording (`describeTraitValue`), then the `traitValueScaleLines`
+contract: `0` is the trait plain, `3` is excess rather than a superpower, `-3` is the exact
+opposite held as a principle, a value never shifts the mood or another trait, a negative value is
+a comedy hook and never tragedy, and no number appears in generated text. The loudest value also
+pins the `generatedNameWithClass` and `specialMovement` rules. `generation/utils/seed-traits.ts`
+owns that rendering. Callers without values keep getting the default prompt unchanged.
+`getPromptSiblings()` takes an optional `traitValueOf(card, trait)` reader, so once stored
+`traitValue`s exist the caller passes how to read them and sibling summaries pick them up.
 
 Two schemas must stay in lockstep with the domain type: the hand-written Gemini JSON
 schema and the Zod schema, both in `schemas.ts`, plus `CharacterCardGenerated` in

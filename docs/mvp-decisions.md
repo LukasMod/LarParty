@@ -96,6 +96,11 @@ cancelling another.
 - mysterious
 - arrogant
 
+Each trait can carry an intensity value from -3 to 3, where 0 is the trait exactly as its name
+reads. `3` is the trait pushed to a too-much extreme, `-3` is its exact opposite held as a
+principle. The scale and its wording live in `src/features/generation/utils/trait-value.ts` and
+reach the prompt only when at least one value leaves 0.
+
 ### Sex options
 
 - Male
@@ -105,7 +110,8 @@ cancelling another.
 ## Card generation rules
 
 - AI generation is a must-have feature
-- Provider: Google Gemini (`gemini-3.5-flash-lite`), called directly from the client
+- Provider: Google Gemini (`gemini-3.6-flash-lite`), called directly from the client
+- Sampling is creative by design: `temperature: 1.15`, `topP: 0.95`
 - API key comes from `EXPO_PUBLIC_GEMINI_API_KEY`
 - Generated field values are written in the resolved app language; JSON schema keys stay
   English — see [`i18n-guide.md`](./i18n-guide.md)
@@ -116,6 +122,11 @@ cancelling another.
   - 3 character traits
   - 1 special movement
   - 1 special word/phrase/sentence
+- The prompt avoids the archetype the traits imply, bans stock setups (chosen one, fallen noble,
+  dark past, cursed object), and forbids repeating the name, phrase, or mannerism of any other
+  card in the same party
+- Regenerating the same seed adds a divergence instruction that holds the traits fixed and
+  changes the trade, place, epithet, mannerism, and phrase
 
 ## Card form rules
 

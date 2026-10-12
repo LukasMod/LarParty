@@ -256,7 +256,7 @@ Purpose: create a new character seed for AI generation.
 ## 8.1 AI integration approach
 
 Real API integration with a direct client-side call and no backend. Provider is Google Gemini
-(`gemini-3.5-flash-lite`), isolated behind the `CharacterCardGenerator` interface in
+(`gemini-3.6-flash-lite`), isolated behind the `CharacterCardGenerator` interface in
 `src/features/generation/` so a later backend swap stays contained. Key is
 `EXPO_PUBLIC_GEMINI_API_KEY`. See [`architecture.md`](./architecture.md).
 
@@ -290,7 +290,7 @@ The prompt should use:
 - user name
 - user sex
 - user age
-- selected user traits
+- selected user traits, each with its intensity value when any value is away from the default
 
 The prompt should aim for:
 
@@ -299,6 +299,18 @@ The prompt should aim for:
 - no explicit/inappropriate content
 - clear output consistency
 - theme-aware flavor
+- one character per generation that reads as an individual, not the archetype its traits imply
+
+Intensity values are signed and run from -3 to 3. `0` is the trait exactly as its name reads, with
+no exaggeration. `3` is the trait taken too far — the character is dominated by it and the effect
+is comic excess, not power. A negative value is the trait missing or inverted, played as an
+endearing flaw, never as tragedy. The loudest value shapes the name epithet and the movement cue.
+The generated text never shows a number.
+
+Distinctness is part of the contract. The prompt bans stock setups and requires one detail too
+specific to fit another guest, lists the party's other characters as material not to reuse, and —
+on regenerate — asks for a different trade, place, epithet, mannerism, and phrase while holding the
+traits fixed. See [`architecture.md`](./architecture.md#generation-flow).
 
 Theme categories are original labels rather than franchise names. The prompt instructs the
 model to draw on the theme for inspiration while avoiding exact canon characters, factions,
