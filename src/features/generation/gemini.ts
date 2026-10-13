@@ -13,7 +13,7 @@ import {
 } from '@/features/generation/types'
 import { hasPartyWorld } from '@/features/generation/utils/party-world'
 
-const GEMINI_MODEL = 'gemini-3.6-flash-lite'
+const GEMINI_MODEL = 'gemini-3.6-flash'
 
 // Character cards are creative text, so sampling stays off the predictable peak of the
 // distribution. Low temperature returns near-identical cards for the same seed.
