@@ -180,17 +180,20 @@ forbids repeating. Variants of the card being regenerated are excluded — they 
 divergence block ("variant 3 for this exact seed") that holds the traits fixed and changes
 everything else. The first generation gets neither block.
 
-Trait intensity rides on the optional `seedTraits` of the request (`{ trait, traitValue }`,
-`-3..3`, clamped in `generation/utils/trait-value.ts`). When every value is `0` the prompt prints
+The form writes a signed intensity per selected trait into `input.traitLevels` (`-3..3`, default
+`0`, absent entry reads as `0`). `generation/utils/seed-traits.ts` turns those into
+`{ trait, traitValue }` seeds, clamped in `generation/utils/trait-value.ts`; a request can override
+them with explicit `seedTraits`. A saved card keeps `input.traitLevels`, so regeneration reads the
+same values with no extra plumbing. When every value is `0` the prompt prints
 a plain comma-separated trait list; once any value leaves `0` it prints one labelled line per
 trait with its signed value and wording (`describeTraitValue`), then the `traitValueScaleLines`
 contract: `0` is the trait plain, `3` is excess rather than a superpower, `-3` is the exact
 opposite held as a principle, a value never shifts the mood or another trait, a negative value is
 a comedy hook and never tragedy, and no number appears in generated text. The loudest value also
 pins the `generatedNameWithClass` and `specialMovement` rules. `generation/utils/seed-traits.ts`
-owns that rendering. Callers without values keep getting the default prompt unchanged.
-`getPromptSiblings()` takes an optional `traitValueOf(card, trait)` reader, so once stored
-`traitValue`s exist the caller passes how to read them and sibling summaries pick them up.
+owns that rendering. An input with no levels keeps getting the default prompt unchanged.
+`getPromptSiblings()` reads each sibling's own `input.traitLevels`, so tuned values show up in
+anti-similarity context without extra plumbing.
 
 Two schemas must stay in lockstep with the domain type: the hand-written Gemini JSON
 schema and the Zod schema, both in `schemas.ts`, plus `CharacterCardGenerated` in
@@ -223,7 +226,7 @@ cascade deletes can be exercised without any Gemini call or API key.
 | `debug-data.ts`               | Pure fake-data builders. `generateDebugData(partyCount, cardsPerParty)` returns `{ parties, cards }`; `buildSmallDebugDataset()` and `buildLargeDebugDataset()` are the two presets (3 parties × 1 card; 10 parties × 10 cards). Party titles/classes/movements/phrases are theme-aware per `themeCategory`; names/sex/traits cycle shared pools deterministically (index-based, no RNG — the index math itself is `shared/utils/fixtures.ts`). Roughly every fifth card gets a `basedOnCardId` sibling in the same `generationGroupId` so card details shows version history. Statuses mix draft/accepted. Arrays are returned newest-first to match the prepend order the lists render. |
 | `use-debug-actions.ts`        | Write side. `seed(...)` calls `usePartyStore.setState` / `useCardStore.setState` with `hasHydrated: true`, then `router.replace('/')`. `handleClear` alerts, then empties both stores.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | `debug-menu.tsx`              | The `DebugMenu` card: small-seed, large-seed, and clear buttons.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| `level-slider-playground.tsx` | `LevelSliderPlayground` card: one live `LevelSlider` held in local state, so the snap, the velocity handoff, and the haptics can be feel-checked before the control is wired into a form.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `level-slider-playground.tsx` | `LevelSliderPlayground` card: one live `LevelSlider` held in local state, so the snap, the velocity handoff, and the haptics can be feel-checked in isolation from the trait form.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 
 - Reached from **Settings** only under `__DEV__` (`{__DEV__ ? <DebugMenu /> : null}` and
   `{__DEV__ ? <LevelSliderPlayground /> : null}` in `src/app/settings.tsx`); neither component
@@ -266,12 +269,38 @@ is down. The snap on release is a spring (`duration: 380`, `dampingRatio: 0.7`) 
 finger's velocity, so a short push that stops before a tick still lands on it. Two constraints
 that shaped it:
 
-- The committed level is reported from `onFinalize`, not `onEnd`, so a drag the system takes over
-  still snaps the knob home. Everything crossing back to the React runtime goes through
-  `scheduleOnRN` from `react-native-worklets`, and only once per gesture — never per frame.
+- The level is reported back to the React runtime as the drag **crosses a notch**, so a host
+  that shows the number tracks the knob instead of waiting for the release. `onFinalize` (not
+  `onEnd`) reports again, so a drag the system takes over — a scroll that wins the gesture —
+  still lands the value and snaps the knob home. `commit` dedupes on the `parkedLevel` shared
+  value, which is current, rather than the `value` prop, which can be a render behind, so the
+  release report after an identical crossing is a no-op. Calls cross through `scheduleOnRN`
+  from `react-native-worklets`: once per notch, never per frame.
 - The "is the parent's `value` the one we just committed" bookkeeping lives in shared values
   (`parkedLevel` / `parkedSpacing`), not a ref. `commit` is reachable from a worklet, and
   `react-hooks/refs` rejects a ref read in a closure a worklet can call.
+
+The new-card form puts one `LevelSlider` per selected trait under the trait chips
+(`features/cards/components/trait-level-row.tsx`, listed by `trait-level-list.tsx`). Each row is
+wrapped in `shared/components/collapse.tsx`, which grows and shrinks its own height on the UI
+runtime using the accordion shape from Reanimated's docs: the content is measured once into a
+shared value and the visible height is that measurement times an animated 0→1 value. So the form
+card gets taller when a trait is picked and shorter when it is dropped, with no `LayoutAnimation`
+and no timer deciding when to unmount.
+
+Three things this depends on:
+
+- The measured content is `position: absolute`. In flow, a child collapses with its zero-height
+  parent and reports height 0 to `onLayout` forever, which pins the row shut.
+- Deselected rows stay mounted at zero height — an exit animation needs its content still there.
+  That is why the list renders a row per *offered* trait, not per selected one, and why a collapsed
+  row is marked `accessibilityElementsHidden` / `importantForAccessibility="no-hide-descendants"`:
+  otherwise a hidden slider stays reachable in the screen-reader tree.
+- Spacing is each row's own top padding, and the list is a single wrapper child. A `gap` on the
+  host would put space around every zero-height row and leave holes under the chips.
+
+`Collapse` hides its subtree from screen readers while closed, and snaps open/closed instantly when
+reduce motion is on.
 
 Card details wraps the card in `shared/components/tilt-card.tsx`, which leans the card a few
 degrees with the phone's physical orientation. The pieces:
@@ -381,48 +410,40 @@ request failed`), 4xx auth failures, and invalid-JSON responses — so `error.me
 - `npm run healthcheck:react-compiler` exists but is not wired into `check`.
 - `watchman` is disabled in `jest.config.js`, so Jest falls back to its own file walker.
 
-### `npm run typecheck` fails on a clean checkout
+### Enum labels resolve `common` keys bare
 
-`tsc --noEmit` reports 15 errors on a clean tree. Lint passes. All are i18n typing, none in
-app logic:
+`tsc --noEmit` passes on a clean tree. The `labels.ts` helpers build their keys without the
+`common:` prefix — `t('options.sex.male')`, not `t('common:options.sex.male')`. `common` is
+`defaultNS`, so bare keys resolve at runtime.
 
-`src/shared/i18n/labels.ts` (5), `party/new.tsx` (2), `party/[partyId]/card/new.tsx` (1),
-`new-character-card-form.tsx` (4), `party-meta-line.tsx` (2), `card-display-mode-switch.tsx` (1).
+This matters because of how i18next 26 custom types behave: an `ns:` prefix is accepted only
+when the `t` knows two or more namespaces. `labels.ts` helpers take a bare `TFunction`, which
+resolves to the `defaultNS`, so a `common:`-prefixed key there is rejected as unknown and the
+call returns `unknown` instead of `string`. That `unknown` cascades into every
+`getLabel={(o) => getXxxLabel(t, o)}` call site and anywhere the result is interpolated.
 
-Reproduce before assuming a change of yours caused them: if the count and files match the
-list above, they are these.
+Two rules keep it green:
 
-**Root cause.** i18next 26 custom types accept an `ns:` key prefix only when `t` knows two
-or more namespaces. `labels.ts` helpers take a bare `TFunction` and prefix every key with
-`common:` — the default namespace — so those `t()` calls are rejected and return `unknown`
-instead of `string`. That `unknown` cascades into every `getLabel={(o) => getXxxLabel(t, o)}`
-call site and any place interpolating the result. Keys are valid at runtime; only the types
-are wrong.
+1. `src/shared/i18n/labels.ts` prefixes nothing — `common` is the default namespace.
+2. A component whose `t` is handed to those helpers must know `common`. In
+   `new-character-card-form.tsx` that is `useTranslation(['common', 'cards'])`. A `t` typed
+   to `readonly ["cards"]` is not assignable to the `TFunction<'common'>` the helpers take.
 
-**Fix (2 files, clears all 15).** Both edits are required:
+`createResourceTranslator` in `generation.ts` strips a leading `common:` when present and
+leaves bare keys untouched, so the prompt path accepts either form.
 
-1. In `src/shared/i18n/labels.ts`, drop the `common:` prefix from all five keys —
-   `common` is `defaultNS`, so bare keys resolve.
-2. In `src/features/cards/components/new-character-card-form.tsx:40`, widen
-   `useTranslation(['cards'])` to `useTranslation(['common', 'cards'])`. Without this, the
-   component's `t` is `TFunction<readonly ["cards"]>`, which is not assignable to the
-   `TFunction<'common'>` the helpers require.
-
-This is runtime-safe: the default namespace for a `t` from `useTranslation(['common', 'cards'])`
-is the first entry, and `createResourceTranslator` in `generation.ts` strips a leading
-`common:` when present and leaves bare keys untouched, so both forms resolve there.
-
-**Do not "fix" this by loosening `tsconfig` or deleting `i18next.d.ts`.** The custom types
+**Do not weaken this by loosening `tsconfig` or deleting `i18next.d.ts`.** The custom types
 are what catch missing keys in `en`.
 
 Separately, `tsconfig.json` sets `"customConditions": ["react-native", "react-native-legacy-deep-imports"]`.
 That is React Native's opt-out from the Strict TypeScript API that became the default in 0.87
 (deep imports from `react-native/Libraries/*` would otherwise be type errors, refs use
-instance types). It suppresses unrelated SDK 58 type noise, not these 15 i18n errors. The
-opt-out is removed after RN 0.88, so the strict-API migration is owed before RN 0.89.
+instance types). Removing it surfaces about a dozen `StyleProp<ViewStyle>` and ref-assignability
+errors across `src/shared/components/*` — `screen.tsx`, `form-card.tsx`, `tilt-card.tsx`,
+`card-glow.tsx`, `collapse.tsx` and peers — none of them i18n. The opt-out is removed after RN
+0.88, so the strict-API migration is owed before RN 0.89.
 
-**Expect 15 errors from `npm run check`** while this stands. Count them and compare against
-the list above rather than assuming a clean build.
+`npm run check` is clean on this tree: lint, typecheck and contrast all pass.
 
 `npm run test` covers the pure seams — selectors, screen-model resolvers, form validation,
 schema parsing, cascade-delete store logic, the theme map, and the tilt math. The screens

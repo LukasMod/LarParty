@@ -14,6 +14,40 @@ describe('resolveSeedTraits', () => {
     ])
   })
 
+  it('reads levels from the input when no seed traits arrive', () => {
+    expect(
+      resolveSeedTraits({
+        selectedTraits: ['vengeful', 'calm', 'loyal'],
+        traitLevels: { vengeful: 2, calm: -1, loyal: 0 },
+      }),
+    ).toEqual([
+      { trait: 'vengeful', traitValue: 2 },
+      { trait: 'calm', traitValue: -1 },
+      { trait: 'loyal', traitValue: 0 },
+    ])
+  })
+
+  it('defaults a selected trait with no stored level to 0', () => {
+    expect(
+      resolveSeedTraits({
+        selectedTraits: ['vengeful', 'calm'],
+        traitLevels: { vengeful: 3 },
+      }),
+    ).toEqual([
+      { trait: 'vengeful', traitValue: 3 },
+      { trait: 'calm', traitValue: 0 },
+    ])
+  })
+
+  it('clamps an out-of-range stored level into the scale', () => {
+    expect(
+      resolveSeedTraits({
+        selectedTraits: ['vengeful'],
+        traitLevels: { vengeful: 9 },
+      }),
+    ).toEqual([{ trait: 'vengeful', traitValue: 3 }])
+  })
+
   it('passes through explicit seed traits', () => {
     const seeds = [{ trait: 'loyal' as const, traitValue: -3 }]
 

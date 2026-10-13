@@ -27,12 +27,14 @@ export default function NewCharacterCardScreen() {
     name,
     sex,
     selectedTraits,
+    traitLevels,
     errorMessage,
     isGenerating,
     maxTraits,
     setName,
     setSex,
     toggleTrait,
+    changeTraitLevel,
     handleGenerateCard,
     cancelGeneration,
   } = useNewCharacterCardForm({ party })
@@ -63,11 +65,13 @@ export default function NewCharacterCardScreen() {
               name={name}
               sex={sex}
               selectedTraits={selectedTraits}
+              traitLevels={traitLevels}
               maxTraits={maxTraits}
               errorMessage={errorMessage}
               onNameChange={setName}
               onSexChange={setSex}
               onToggleTrait={toggleTrait}
+              onTraitLevelChange={changeTraitLevel}
             />
 
             <Button

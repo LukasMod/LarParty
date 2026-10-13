@@ -4,7 +4,9 @@ import { ThemedText } from '@/components/themed-text'
 import {
   InputTrait,
   SexOption,
+  TraitLevels,
 } from '@/features/cards/types'
+import { TraitLevelList } from '@/features/cards/components/trait-level-list'
 import { FormCard } from '@/shared/components/form-card'
 import { FormField } from '@/shared/components/form-field'
 import { FormTextInput } from '@/shared/components/form-text-input'
@@ -16,24 +18,28 @@ interface NewCharacterCardFormProps {
   name: string
   sex: SexOption
   selectedTraits: InputTrait[]
+  traitLevels: TraitLevels
   maxTraits: number
   errorMessage: string | null
   onNameChange: (value: string) => void
   onSexChange: (value: SexOption) => void
   onToggleTrait: (trait: InputTrait) => void
+  onTraitLevelChange: (trait: InputTrait, level: number) => void
 }
 
 export function NewCharacterCardForm({
   name,
   sex,
   selectedTraits,
+  traitLevels,
   maxTraits,
   errorMessage,
   onNameChange,
   onSexChange,
   onToggleTrait,
+  onTraitLevelChange,
 }: NewCharacterCardFormProps) {
-  const { t } = useTranslation(['cards'])
+  const { t } = useTranslation(['common', 'cards'])
 
   return (
     <FormCard>
@@ -66,6 +72,14 @@ export function NewCharacterCardForm({
             !selectedTraits.includes(trait) && selectedTraits.length >= maxTraits
           }
           onPress={onToggleTrait}
+        />
+
+        <TraitLevelList
+          traits={cardTraits}
+          selectedTraits={selectedTraits}
+          traitLevels={traitLevels}
+          getLabel={(trait) => getCardTraitLabel(t, trait)}
+          onLevelChange={onTraitLevelChange}
         />
       </FormField>
 

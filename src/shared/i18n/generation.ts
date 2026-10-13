@@ -16,9 +16,12 @@ const languageNames: Record<SupportedLanguageCode, string> = {
   pl: 'Polish',
 }
 
-type TranslationResource = typeof resources.en.common | typeof resources.pl.common
+type TranslationResource =
+  typeof resources.en.common | typeof resources.pl.common
 
-export function getGenerationLanguageName(outputLanguage: SupportedLanguageCode) {
+export function getGenerationLanguageName(
+  outputLanguage: SupportedLanguageCode,
+) {
   return languageNames[outputLanguage]
 }
 
@@ -35,7 +38,9 @@ export function getGenerationPromptLabels(
     themeCategory: getThemeCategoryLabel(t, party.themeCategory),
     mood: getPartyMoodLabel(t, party.mood),
     sex: getSexOptionLabel(t, input.sex),
-    selectedTraits: input.selectedTraits.map((trait) => getCardTraitLabel(t, trait)),
+    selectedTraits: input.selectedTraits.map((trait) =>
+      getCardTraitLabel(t, trait),
+    ),
   }
 }
 

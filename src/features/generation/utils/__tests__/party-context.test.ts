@@ -2,7 +2,7 @@ import {
   getGenerationAttempt,
   getPromptSiblings,
 } from '@/features/generation/utils/party-context'
-import { fixedTimestamp, makeCard } from '@test/factories'
+import { fixedTimestamp, makeCard, makeCardInput } from '@test/factories'
 
 const groupOfFirst = 'generation-group-first'
 const groupOfSecond = 'generation-group-second'
@@ -78,18 +78,60 @@ describe('getPromptSiblings', () => {
     })
   })
 
-  it('reads trait values through the supplied reader', () => {
-    const [sibling] = getPromptSiblings({
-      cards: [first],
+  it('reads trait values from each card input', () => {
+    const tuned = makeCard({
       partyId: 'party-a',
-      traitValueOf: (_card, trait) => (trait === 'loyal' ? -3 : 2),
+      generationGroupId: 'generation-group-tuned',
+      updatedAt: fixedTimestamp(4),
+      input: makeCardInput({ traitLevels: { loyal: -3, funny: 2, calm: 0 } }),
+    })
+
+    const [sibling] = getPromptSiblings({
+      cards: [tuned],
+      partyId: 'party-a',
     })
 
     expect(sibling?.traits).toEqual([
       { trait: 'loyal', traitValue: -3 },
       { trait: 'funny', traitValue: 2 },
-      { trait: 'calm', traitValue: 2 },
+      { trait: 'calm', traitValue: 0 },
     ])
+  })
+
+  it('defaults a trait with no stored level to 0', () => {
+    const partial = makeCard({
+      partyId: 'party-a',
+      generationGroupId: 'generation-group-partial',
+      updatedAt: fixedTimestamp(4),
+      input: makeCardInput({ traitLevels: { loyal: 1 } }),
+    })
+
+    const [sibling] = getPromptSiblings({
+      cards: [partial],
+      partyId: 'party-a',
+    })
+
+    expect(sibling?.traits).toEqual([
+      { trait: 'loyal', traitValue: 1 },
+      { trait: 'funny', traitValue: 0 },
+      { trait: 'calm', traitValue: 0 },
+    ])
+  })
+
+  it('clamps a stored level into the scale', () => {
+    const over = makeCard({
+      partyId: 'party-a',
+      generationGroupId: 'generation-group-over',
+      updatedAt: fixedTimestamp(4),
+      input: makeCardInput({ traitLevels: { loyal: 9 } }),
+    })
+
+    const [sibling] = getPromptSiblings({
+      cards: [over],
+      partyId: 'party-a',
+    })
+
+    expect(sibling?.traits[0]).toEqual({ trait: 'loyal', traitValue: 3 })
   })
 
   it('orders the newest card first', () => {

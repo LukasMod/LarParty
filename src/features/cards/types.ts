@@ -9,10 +9,16 @@ export type SexOption = (typeof sexOptions)[number]
 export type CardStatus = 'draft' | 'accepted'
 export type CardDisplayMode = (typeof cardDisplayModes)[number]
 
+// A signed -3…+3 intensity per selected trait, stored sparsely: a trait the
+// user never tuned is absent and reads as the 0 default. Optional on the input
+// so cards saved before the intensity control parse unchanged.
+export type TraitLevels = Partial<Record<InputTrait, number>>
+
 export interface CharacterCardInput {
   name: string
   sex: SexOption
   selectedTraits: InputTrait[]
+  traitLevels?: TraitLevels
 }
 
 export interface CharacterCardGenerated {

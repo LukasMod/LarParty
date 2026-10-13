@@ -2,11 +2,12 @@ import { router } from 'expo-router'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { InputTrait, SexOption } from '@/features/cards/types'
+import { InputTrait, SexOption, TraitLevels } from '@/features/cards/types'
 import { useCardStore } from '@/features/cards/store/card-store'
 import {
   CARD_FORM_ERROR_KEYS,
   MAX_CARD_TRAITS,
+  setTraitLevel,
   toggleCardTrait,
   validateCardForm,
 } from '@/features/cards/utils/card-form'
@@ -31,10 +32,24 @@ export function useNewCharacterCardForm({
   const [name, setName] = useState('')
   const [sex, setSex] = useState<SexOption>('other')
   const [selectedTraits, setSelectedTraits] = useState<InputTrait[]>([])
+  const [traitLevels, setTraitLevels] = useState<TraitLevels>({})
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   function toggleTrait(trait: InputTrait) {
-    setSelectedTraits((currentTraits) => toggleCardTrait(currentTraits, trait))
+    const next = toggleCardTrait(selectedTraits, trait)
+
+    setSelectedTraits(next)
+
+    // Drop the deselected trait's level on the spot rather than pruning on
+    // submit: a re-selected trait should start fresh on 0, and the collapsing
+    // row is the only thing still reading the old entry.
+    if (!next.includes(trait)) {
+      setTraitLevels(({ [trait]: _removed, ...rest }) => rest)
+    }
+  }
+
+  function changeTraitLevel(trait: InputTrait, level: number) {
+    setTraitLevels((currentLevels) => setTraitLevel(currentLevels, trait, level))
   }
 
   async function handleGenerateCard() {
@@ -43,7 +58,10 @@ export function useNewCharacterCardForm({
       return
     }
 
-    const validation = validateCardForm({ name, selectedTraits }, sex)
+    const validation = validateCardForm(
+      { name, selectedTraits, traitLevels },
+      sex,
+    )
 
     if (!validation.ok) {
       setErrorMessage(t(validation.errorKey))
@@ -90,12 +108,14 @@ export function useNewCharacterCardForm({
     name,
     sex,
     selectedTraits,
+    traitLevels,
     errorMessage,
     isGenerating: generation.isGenerating,
     maxTraits: MAX_CARD_TRAITS,
     setName,
     setSex,
     toggleTrait,
+    changeTraitLevel,
     handleGenerateCard,
     cancelGeneration: generation.cancel,
   }

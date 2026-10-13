@@ -93,6 +93,7 @@ A character card is an AI-generated role profile associated with one party.
 - `name`
 - `sex`
 - `selectedTraits`
+- `traitLevels` — per-trait intensity from -3 to +3, default 0. Absent entry reads as 0.
 
 #### Character card generated fields
 
@@ -131,10 +132,12 @@ A character card is an AI-generated role profile associated with one party.
    - name
    - sex
    - predefined traits
+   - an intensity level per selected trait (-3 to +3, default 0)
 4. App builds a structured AI prompt using:
    - party theme category
    - party mood
    - card input form values
+   - each trait's intensity level
  5. App calls AI directly from client for PoC and shows a blocking generating overlay
  6. App stores returned card as draft automatically
  7. User sees generated result
@@ -247,6 +250,7 @@ Purpose: create a new character seed for AI generation.
 - name
 - sex
 - predefined traits (multi-select or bounded selection)
+- intensity level per selected trait (slider, -3 to +3, default 0)
 
 ## 8. AI Generation Requirements
 
