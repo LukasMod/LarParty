@@ -110,7 +110,7 @@ reach the prompt only when at least one value leaves 0.
 ## Card generation rules
 
 - AI generation is a must-have feature
-- Provider: Google Gemini (`gemini-3.6-flash-lite`), called directly from the client
+- Provider: Google Gemini (`gemini-3.6-flash`), called directly from the client
 - Sampling is creative by design: `temperature: 1.15`, `topP: 0.95`
 - API key comes from `EXPO_PUBLIC_GEMINI_API_KEY`
 - Generated field values are written in the resolved app language; JSON schema keys stay
