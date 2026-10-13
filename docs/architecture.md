@@ -192,8 +192,8 @@ opposite held as a principle, a value never shifts the mood or another trait, a 
 a comedy hook and never tragedy, and no number appears in generated text. The loudest value also
 pins the `generatedNameWithClass` and `specialMovement` rules. `generation/utils/seed-traits.ts`
 owns that rendering. An input with no levels keeps getting the default prompt unchanged.
-`getPromptSiblings()` takes an optional `traitValueOf(card, trait)` reader, so once stored
-`traitValue`s exist the caller passes how to read them and sibling summaries pick them up.
+`getPromptSiblings()` reads each sibling's own `input.traitLevels`, so tuned values show up in
+anti-similarity context without extra plumbing.
 
 Two schemas must stay in lockstep with the domain type: the hand-written Gemini JSON
 schema and the Zod schema, both in `schemas.ts`, plus `CharacterCardGenerated` in

@@ -1,12 +1,14 @@
-import { CharacterCard, InputTrait } from '@/features/cards/types'
+import { CharacterCard } from '@/features/cards/types'
 import { PromptSiblingCard } from '@/features/generation/types'
-import { DEFAULT_TRAIT_VALUE } from '@/features/generation/utils/trait-value'
+import {
+  clampTraitValue,
+  DEFAULT_TRAIT_VALUE,
+} from '@/features/generation/utils/trait-value'
 
 interface PartyContextParams {
   cards: readonly CharacterCard[]
   partyId: string
   excludeGenerationGroupId?: string
-  traitValueOf?: (card: CharacterCard, trait: InputTrait) => number
 }
 
 // Variants of the same card share a seed, so they are never useful as
@@ -15,7 +17,6 @@ export function getPromptSiblings({
   cards,
   partyId,
   excludeGenerationGroupId,
-  traitValueOf,
 }: PartyContextParams): PromptSiblingCard[] {
   return cards
     .filter(
@@ -28,7 +29,9 @@ export function getPromptSiblings({
       nameWithClass: card.generated.generatedNameWithClass,
       traits: card.input.selectedTraits.map((trait) => ({
         trait,
-        traitValue: traitValueOf?.(card, trait) ?? DEFAULT_TRAIT_VALUE,
+        traitValue: clampTraitValue(
+          card.input.traitLevels?.[trait] ?? DEFAULT_TRAIT_VALUE,
+        ),
       })),
       specialPhrase: card.generated.specialPhrase,
       specialMovement: card.generated.specialMovement,
