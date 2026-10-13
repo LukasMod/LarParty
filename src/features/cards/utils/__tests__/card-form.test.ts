@@ -3,7 +3,6 @@ import {
   MAX_TRAIT_LEVEL,
   MIN_TRAIT_LEVEL,
   normalizeTraitLevels,
-  parseCardAge,
   setTraitLevel,
   toggleCardTrait,
   validateCardForm,
@@ -67,52 +66,9 @@ describe('toggleCardTrait', () => {
   })
 })
 
-describe('parseCardAge', () => {
-  it('parses a plain number', () => {
-    expect(parseCardAge('25')).toBe(25)
-  })
-
-  it('parses the youngest allowed age', () => {
-    expect(parseCardAge('1')).toBe(1)
-  })
-
-  it('accepts surrounding whitespace', () => {
-    expect(parseCardAge(' 30 ')).toBe(30)
-  })
-
-  it('ignores a trailing decimal', () => {
-    expect(parseCardAge('25.9')).toBe(25)
-  })
-
-  it('rejects zero', () => {
-    expect(parseCardAge('0')).toBeNull()
-  })
-
-  it('rejects a negative age', () => {
-    expect(parseCardAge('-5')).toBeNull()
-  })
-
-  it('rejects an empty string', () => {
-    expect(parseCardAge('')).toBeNull()
-  })
-
-  it('rejects non-numeric text', () => {
-    expect(parseCardAge('abc')).toBeNull()
-  })
-
-  it('reads leading digits of mixed text as an age', () => {
-    expect(parseCardAge('25abc')).toBe(25)
-  })
-
-  it('rejects text with no leading digits', () => {
-    expect(parseCardAge('abc25')).toBeNull()
-  })
-})
-
 describe('validateCardForm', () => {
   const validDraft = {
     name: 'Aldric',
-    age: '25',
     selectedTraits: makeCardInput().selectedTraits,
     traitLevels: {},
   }
@@ -123,7 +79,6 @@ describe('validateCardForm', () => {
       input: {
         name: 'Aldric',
         sex: 'male',
-        age: 25,
         selectedTraits: validDraft.selectedTraits,
         traitLevels: { loyal: 0, funny: 0, calm: 0 },
       },
@@ -153,16 +108,6 @@ describe('validateCardForm', () => {
     expect(result.input.name).toBe('Aldric')
   })
 
-  it('returns the parsed age, not the raw text', () => {
-    const result = validateCardForm({ ...validDraft, age: ' 34 ' }, 'other')
-
-    if (!result.ok) {
-      throw new Error('expected the draft to validate')
-    }
-
-    expect(result.input.age).toBe(34)
-  })
-
   it('rejects a blank name', () => {
     expect(validateCardForm({ ...validDraft, name: '' }, 'other')).toEqual({
       ok: false,
@@ -174,20 +119,6 @@ describe('validateCardForm', () => {
     expect(validateCardForm({ ...validDraft, name: '   ' }, 'other')).toEqual({
       ok: false,
       errorKey: 'form.errors.nameRequired',
-    })
-  })
-
-  it('rejects an invalid age', () => {
-    expect(validateCardForm({ ...validDraft, age: 'x' }, 'other')).toEqual({
-      ok: false,
-      errorKey: 'form.errors.invalidAge',
-    })
-  })
-
-  it('rejects a zero age', () => {
-    expect(validateCardForm({ ...validDraft, age: '0' }, 'other')).toEqual({
-      ok: false,
-      errorKey: 'form.errors.invalidAge',
     })
   })
 
@@ -209,9 +140,9 @@ describe('validateCardForm', () => {
     expect(result.ok).toBe(true)
   })
 
-  it('reports name before age and traits', () => {
+  it('reports name before traits', () => {
     const result = validateCardForm(
-      { name: '', age: 'x', selectedTraits: [], traitLevels: {} },
+      { name: '', selectedTraits: [], traitLevels: {} },
       'other',
     )
 
@@ -220,19 +151,6 @@ describe('validateCardForm', () => {
     }
 
     expect(result.errorKey).toBe('form.errors.nameRequired')
-  })
-
-  it('reports age before traits', () => {
-    const result = validateCardForm(
-      { ...validDraft, age: 'x', selectedTraits: [] },
-      'other',
-    )
-
-    if (result.ok) {
-      throw new Error('expected the draft to fail')
-    }
-
-    expect(result.errorKey).toBe('form.errors.invalidAge')
   })
 
   it('defaults a selected trait with no stored level to 0', () => {

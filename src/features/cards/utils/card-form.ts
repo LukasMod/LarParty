@@ -15,7 +15,6 @@ export const MAX_TRAIT_LEVEL = 3
 export const CARD_FORM_ERROR_KEYS = {
   partyNotFound: 'form.errors.partyNotFound',
   nameRequired: 'form.errors.nameRequired',
-  invalidAge: 'form.errors.invalidAge',
   invalidTraits: 'form.errors.invalidTraits',
 } as const satisfies Record<string, string>
 
@@ -24,7 +23,6 @@ export type CardFormErrorKey =
 
 export interface CardFormDraft {
   name: string
-  age: string
   selectedTraits: InputTrait[]
   traitLevels: TraitLevels
 }
@@ -80,16 +78,6 @@ export function toggleCardTrait(
   return [...selectedTraits, trait]
 }
 
-// Age arrives as free text. `Number.parseInt` yields NaN for anything without
-// leading digits, so the finite check is what rejects "abc" and "". Zero and
-// negatives are rejected separately. Leading digits of mixed text still read
-// as a number ("25abc" is 25).
-export function parseCardAge(age: string) {
-  const parsedAge = Number.parseInt(age, 10)
-
-  return Number.isFinite(parsedAge) && parsedAge > 0 ? parsedAge : null
-}
-
 // First failing rule wins, matching the order the fields appear in the form.
 export function validateCardForm(
   draft: CardFormDraft,
@@ -99,12 +87,6 @@ export function validateCardForm(
 
   if (!name) {
     return { ok: false, errorKey: CARD_FORM_ERROR_KEYS.nameRequired }
-  }
-
-  const age = parseCardAge(draft.age)
-
-  if (age === null) {
-    return { ok: false, errorKey: CARD_FORM_ERROR_KEYS.invalidAge }
   }
 
   if (
@@ -119,7 +101,6 @@ export function validateCardForm(
     input: {
       name,
       sex,
-      age,
       selectedTraits: draft.selectedTraits,
       traitLevels: normalizeTraitLevels(draft.selectedTraits, draft.traitLevels),
     },

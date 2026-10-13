@@ -26,7 +26,6 @@ export default function NewCharacterCardScreen() {
   const {
     name,
     sex,
-    age,
     selectedTraits,
     traitLevels,
     errorMessage,
@@ -34,7 +33,6 @@ export default function NewCharacterCardScreen() {
     maxTraits,
     setName,
     setSex,
-    setAge,
     toggleTrait,
     changeTraitLevel,
     handleGenerateCard,
@@ -66,14 +64,12 @@ export default function NewCharacterCardScreen() {
             <NewCharacterCardForm
               name={name}
               sex={sex}
-              age={age}
               selectedTraits={selectedTraits}
               traitLevels={traitLevels}
               maxTraits={maxTraits}
               errorMessage={errorMessage}
               onNameChange={setName}
               onSexChange={setSex}
-              onAgeChange={setAge}
               onToggleTrait={toggleTrait}
               onTraitLevelChange={changeTraitLevel}
             />

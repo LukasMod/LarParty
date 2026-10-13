@@ -17,7 +17,6 @@ export type TraitLevels = Partial<Record<InputTrait, number>>
 export interface CharacterCardInput {
   name: string
   sex: SexOption
-  age: number
   selectedTraits: InputTrait[]
   traitLevels?: TraitLevels
 }

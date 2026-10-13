@@ -5,7 +5,6 @@ const party = makeParty({ themeCategory: 'horror', mood: 'dramatic' })
 const input = makeCardInput({
   name: 'Vesper Nightbloom',
   sex: 'female',
-  age: 34,
   selectedTraits: ['vengeful', 'calm', 'mysterious'],
 })
 
@@ -25,7 +24,8 @@ describe('buildCharacterCardPrompt', () => {
     const prompt = build()
 
     expect(prompt).toContain('- Name: Vesper Nightbloom')
-    expect(prompt).toContain('- Age: 34')
+    expect(prompt).toContain('- Sex: Female')
+    expect(prompt).not.toContain('- Age:')
   })
 
   it('lists the selected traits comma separated', () => {

@@ -133,7 +133,6 @@ reach the prompt only when at least one value leaves 0.
 - inputs:
   - name
   - sex
-  - age
   - predefined traits
   - per-trait intensity level
 - trait selection max: 3

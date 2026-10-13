@@ -92,7 +92,6 @@ A character card is an AI-generated role profile associated with one party.
 - `partyId`
 - `name`
 - `sex`
-- `age`
 - `selectedTraits`
 - `traitLevels` — per-trait intensity from -3 to +3, default 0. Absent entry reads as 0.
 
@@ -132,7 +131,6 @@ A character card is an AI-generated role profile associated with one party.
 3. User fills card input form:
    - name
    - sex
-   - age
    - predefined traits
    - an intensity level per selected trait (-3 to +3, default 0)
 4. App builds a structured AI prompt using:
@@ -251,7 +249,6 @@ Purpose: create a new character seed for AI generation.
 
 - name
 - sex
-- age
 - predefined traits (multi-select or bounded selection)
 - intensity level per selected trait (slider, -3 to +3, default 0)
 
@@ -293,7 +290,6 @@ The prompt should use:
 - selected mood
 - user name
 - user sex
-- user age
 - selected user traits, each with its intensity value when any value is away from the default
 
 The prompt should aim for:
