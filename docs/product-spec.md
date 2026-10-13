@@ -197,11 +197,13 @@ Purpose: show one party and all cards belonging to it.
 - theme category and mood
 - list of cards, drafts and accepted together, most recently updated first
 - create card CTA
+- header info button (once the party has a shared world) that shows the `partyHistory` text
 
 #### Actions
 
 - open card details
 - create card
+- view the party world
 - delete card
 - delete party
 

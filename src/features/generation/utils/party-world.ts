@@ -22,6 +22,8 @@ export function splitGeneratedWorld(
 
 // A party has a world only once a card has founded one. An empty string from
 // stored data counts as none, so the next generation establishes one instead.
-export function hasPartyWorld(partyHistory?: string | null) {
+export function hasPartyWorld(
+  partyHistory?: string | null,
+): partyHistory is string {
   return Boolean(partyHistory?.trim())
 }

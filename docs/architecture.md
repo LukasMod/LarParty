@@ -199,6 +199,9 @@ party, not the card.
 - `setPartyHistory` is first-write-wins: it fills the field only when the party has no world yet.
 - Regenerating the very first card of a party can still found a world, so the regenerate hook runs
   the same split.
+- The party screen shows an `info.circle` header button whenever `hasPartyWorld` is true, and
+  `handleShowPartyWorld` (`use-party-details-actions.ts`) presents the text in an `Alert`. The
+  button never renders for a party with no world.
 
 Trait intensity rides on the optional `seedTraits` of the request (`{ trait, traitValue }`,
 `-3..3`, clamped in `generation/utils/trait-value.ts`). When every value is `0` the prompt prints

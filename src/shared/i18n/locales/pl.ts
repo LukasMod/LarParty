@@ -11,6 +11,7 @@ export const pl = {
       deleteCard: 'Usuń kartę',
       deleteParty: 'Usuń imprezę',
       cancel: 'Anuluj',
+      close: 'Zamknij',
       back: 'Wstecz',
       delete: 'Usuń',
       regenerate: 'Generuj ponownie',
@@ -119,6 +120,8 @@ export const pl = {
     details: {
       deleteTitle: 'Usunąć imprezę?',
       deleteBody: 'Usunąć {{title}} oraz wszystkie zapisane karty?',
+      worldTitle: 'Świat imprezy',
+      worldAction: 'Pokaż świat imprezy',
     },
   },
   cards: {

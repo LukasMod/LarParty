@@ -2,6 +2,7 @@ import { router } from 'expo-router'
 import { Alert } from 'react-native'
 import { useTranslation } from 'react-i18next'
 
+import { hasPartyWorld } from '@/features/generation/utils/party-world'
 import { usePartyStore } from '@/features/parties/store/party-store'
 import { Party } from '@/features/parties/types'
 
@@ -35,7 +36,18 @@ export function usePartyDetailsActions({
     ])
   }
 
+  function handleShowPartyWorld() {
+    if (!party || !hasPartyWorld(party.partyHistory)) {
+      return
+    }
+
+    Alert.alert(t('parties:details.worldTitle'), party.partyHistory, [
+      { text: t('actions.close'), style: 'cancel' },
+    ])
+  }
+
   return {
     handleDeleteParty,
+    handleShowPartyWorld,
   }
 }

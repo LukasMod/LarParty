@@ -367,6 +367,9 @@ Depending on state, one of these should appear:
 - `No cards yet...`, or
 - a list of saved cards
 
+Once the party has a shared world (at least one generated card), the header also shows an
+info button.
+
 ### Checks
 
 1. Confirm the selected party title is shown.
@@ -375,9 +378,11 @@ Depending on state, one of these should appear:
 4. Confirm the create-card CTA is visible.
 5. Confirm the delete-party CTA is visible.
 6. If no cards exist yet, confirm the empty copy is shown.
-7. Tap `Delete party` once only for dialog verification.
-8. Confirm a destructive confirmation dialog appears.
-9. Cancel the dialog so the test data remains available unless this run is specifically testing deletion.
+7. If the party has a generated card, tap the header info button and confirm a `Party world`
+   dialog shows a short world description. Dismiss it. A party without one has no info button.
+8. Tap `Delete party` once only for dialog verification.
+9. Confirm a destructive confirmation dialog appears.
+10. Cancel the dialog so the test data remains available unless this run is specifically testing deletion.
 
 ### Pass criteria
 
