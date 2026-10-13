@@ -142,6 +142,10 @@ form input. Two pieces make this work:
   of the active UI language.
 - `prompt.ts` instructs the model to keep JSON schema keys in English and localize only
   the string values.
+- Only seed labels are localized. Prompt instruction text — the intensity scale wording in
+  `generation/utils/trait-value.ts`, the uniqueness rules, the divergence block, and the
+  sibling rules in `prompt.ts` — is English regardless of output language, as are the sibling
+  card's stored phrase and movement.
 
 The schema keys themselves (`generatedNameWithClass`, `backgroundHistory`,
 `characterTraits`, `specialMovement`, `specialPhrase`) are never localized. See

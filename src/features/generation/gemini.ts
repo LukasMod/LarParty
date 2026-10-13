@@ -10,7 +10,12 @@ import {
   GenerateCharacterCardRequest,
 } from '@/features/generation/types'
 
-const GEMINI_MODEL = 'gemini-3.5-flash-lite'
+const GEMINI_MODEL = 'gemini-3.6-flash-lite'
+
+// Character cards are creative text, so sampling stays off the predictable peak of the
+// distribution. Low temperature returns near-identical cards for the same seed.
+const GEMINI_TEMPERATURE = 1.15
+const GEMINI_TOP_P = 0.95
 const GEMINI_API_KEY = process.env.EXPO_PUBLIC_GEMINI_API_KEY
 
 // The API can answer with whitespace, an error string as plain text, or JSON
@@ -48,6 +53,8 @@ class GeminiCharacterCardGenerator implements CharacterCardGenerator {
       config: {
         responseMimeType: 'application/json',
         responseSchema: generatedCharacterCardJsonSchema,
+        temperature: GEMINI_TEMPERATURE,
+        topP: GEMINI_TOP_P,
         abortSignal: request.signal,
       },
     })
