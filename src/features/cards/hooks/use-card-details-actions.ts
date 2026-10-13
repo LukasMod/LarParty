@@ -10,7 +10,9 @@ import {
   getGenerationAttempt,
   getPromptSiblings,
 } from '@/features/generation/utils/party-context'
+import { splitGeneratedWorld } from '@/features/generation/utils/party-world'
 import { Party } from '@/features/parties/types'
+import { usePartyStore } from '@/features/parties/store/party-store'
 import { useAppLanguage } from '@/shared/i18n/use-app-language'
 import { resolveErrorMessage } from '@/shared/utils/error'
 
@@ -28,6 +30,7 @@ export function useCardDetailsActions({
   const { resolvedLanguage } = useAppLanguage()
   const createDraftCard = useCardStore((state) => state.createDraftCard)
   const deleteCard = useCardStore((state) => state.deleteCard)
+  const setPartyHistory = usePartyStore((state) => state.setPartyHistory)
   const generation = useCharacterCardGeneration()
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -84,6 +87,7 @@ export function useCardDetailsActions({
                 party,
                 input: card.input,
                 outputLanguage: resolvedLanguage,
+                partyHistory: party.partyHistory,
                 attempt: getGenerationAttempt(
                   partyCards,
                   card.generationGroupId,
@@ -99,10 +103,17 @@ export function useCardDetailsActions({
                 return
               }
 
+              const { generated: cardGenerated, partyHistory } =
+                splitGeneratedWorld(generated)
+
+              if (partyHistory) {
+                setPartyHistory(card.partyId, partyHistory)
+              }
+
               const nextCardId = createDraftCard({
                 partyId: card.partyId,
                 input: card.input,
-                generated,
+                generated: cardGenerated,
                 basedOnCardId: card.id,
                 generationGroupId: card.generationGroupId,
               })

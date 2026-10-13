@@ -1,11 +1,13 @@
 import { useRef, useState } from 'react'
 
 import { generateCharacterCard } from '@/features/generation/gemini'
-import { GenerateCharacterCardRequest } from '@/features/generation/types'
-import { CharacterCardGenerated } from '@/features/cards/types'
+import {
+  GeneratedCharacterCard,
+  GenerateCharacterCardRequest,
+} from '@/features/generation/types'
 
 interface GenerationOutcome {
-  generated: CharacterCardGenerated | null
+  generated: GeneratedCharacterCard | null
   cancelled: boolean
 }
 

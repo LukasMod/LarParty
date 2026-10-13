@@ -25,6 +25,7 @@ export function makeParty(overrides: Partial<Party> = {}): Party {
     title: 'Test Party',
     themeCategory: 'fantasy' as ThemeCategory,
     mood: 'fun' as PartyMood,
+    partyHistory: null,
     createdAt: fixedTimestamp(0),
     updatedAt: fixedTimestamp(0),
     ...overrides,

@@ -125,6 +125,10 @@ reach the prompt only when at least one value leaves 0.
 - The prompt avoids the archetype the traits imply, bans stock setups (chosen one, fallen noble,
   dark past, cursed object), and forbids repeating the name, phrase, or mannerism of any other
   card in the same party
+- The party's first card also writes a 2-3 sentence shared world (`partyHistory`) that later cards
+  receive and must stay consistent with. It is saved on the party, first write wins, and the field
+  never reaches the card. The backend is meant to own this later; for now it lives in the local
+  party store
 - Regenerating the same seed adds a divergence instruction that holds the traits fixed and
   changes the trade, place, epithet, mannerism, and phrase
 

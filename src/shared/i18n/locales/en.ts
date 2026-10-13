@@ -11,6 +11,7 @@ export const en = {
       deleteCard: 'Delete card',
       deleteParty: 'Delete party',
       cancel: 'Cancel',
+      close: 'Close',
       back: 'Back',
       delete: 'Delete',
       regenerate: 'Regenerate',
@@ -115,6 +116,8 @@ export const en = {
     details: {
       deleteTitle: 'Delete party?',
       deleteBody: 'Remove {{title}} and all saved cards?',
+      worldTitle: 'Party world',
+      worldAction: 'Show party world',
     },
   },
   cards: {

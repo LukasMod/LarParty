@@ -138,6 +138,52 @@ describe('cascade delete', () => {
   })
 })
 
+describe('setPartyHistory', () => {
+  beforeEach(() => {
+    usePartyStore.setState({ parties: [makeParty({ id: 'party-1' })] })
+  })
+
+  it('writes the world to the party', () => {
+    usePartyStore
+      .getState()
+      .setPartyHistory('party-1', 'The gate opens once a season.')
+
+    expect(usePartyStore.getState().parties[0].partyHistory).toBe(
+      'The gate opens once a season.',
+    )
+  })
+
+  it('leaves an already established world untouched', () => {
+    usePartyStore.setState({
+      parties: [makeParty({ id: 'party-1', partyHistory: 'Original world.' })],
+    })
+
+    usePartyStore.getState().setPartyHistory('party-1', 'Replacement world.')
+
+    expect(usePartyStore.getState().parties[0].partyHistory).toBe(
+      'Original world.',
+    )
+  })
+
+  it('claims a party has a world from empty string', () => {
+    usePartyStore.setState({
+      parties: [makeParty({ id: 'party-1', partyHistory: '' })],
+    })
+
+    usePartyStore.getState().setPartyHistory('party-1', 'Written world.')
+
+    expect(usePartyStore.getState().parties[0].partyHistory).toBe(
+      'Written world.',
+    )
+  })
+
+  it('is a no-op for an unknown id', () => {
+    usePartyStore.getState().setPartyHistory('party-nope', 'World.')
+
+    expect(usePartyStore.getState().parties[0].partyHistory).toBeNull()
+  })
+})
+
 describe('hasHydrated', () => {
   it('starts false so an empty store reads as restoring', () => {
     usePartyStore.getState().setHasHydrated(false)

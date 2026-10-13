@@ -243,4 +243,45 @@ describe('buildCharacterCardPrompt', () => {
     expect(prompt).toContain('the chosen one, the fallen noble')
     expect(prompt).toContain('Never restate the trait word')
   })
+
+  describe('party world', () => {
+    const world = 'The gate opens once a season.'
+
+    it('asks the first card to found the world and emit partyHistory', () => {
+      const prompt = build()
+
+      expect(prompt).toContain('Shared world (first guest, you establish it):')
+      expect(prompt).toContain(
+        'partyHistory must be exactly 2-3 short sentences',
+      )
+    })
+
+    it('omits the partyHistory field rule once a world exists', () => {
+      expect(build({ partyHistory: world })).not.toContain(
+        'partyHistory must be',
+      )
+    })
+
+    it('reuses the stored world verbatim and forbids changing it', () => {
+      const prompt = build({ partyHistory: world })
+
+      expect(prompt).toContain(
+        'Shared world (already founded, do not change it):',
+      )
+      expect(prompt).toContain(`- ${world}`)
+      expect(prompt).not.toContain('you establish it')
+    })
+
+    it('treats a blank stored world as none', () => {
+      const prompt = build({ partyHistory: '   ' })
+
+      expect(prompt).toContain('Shared world (first guest, you establish it):')
+    })
+
+    it('keeps the world instruction under the output language rule', () => {
+      expect(build({ outputLanguage: 'pl' })).toContain(
+        'Write all generated field values in Polish.',
+      )
+    })
+  })
 })

@@ -210,10 +210,18 @@ const histories = [
 const indexToTraits = (index: number) =>
   indexToDistinctTraits(cardTraits, index)
 
+// A party seeded with cards already has an established world, so its later cards
+// would reuse it rather than found a new one. A party with no cards stays null.
+const worldHistories = [
+  'The old quarter reopens for one night each season, and every invitation arrived unsigned.',
+  'The convoy is stranded past the last checkpoint, and nobody has agreed who is in charge.',
+  'The house has more heirs than rooms, and the will is not due to be read until morning.',
+]
+
 const makeTimestamp = (dayOffset: number): string =>
   timestampFromDayOffset(dayOffset)
 
-function buildParty(index: number): Party {
+function buildParty(index: number, partyHistory: string | null): Party {
   const themeCategory = themeCategories[index % themeCategories.length]
   const titles = partyTitlesByTheme[themeCategory]
   const round = Math.floor(index / themeCategories.length)
@@ -225,6 +233,7 @@ function buildParty(index: number): Party {
     title,
     themeCategory,
     mood: pick(partyMoods, index),
+    partyHistory,
     createdAt: makeTimestamp(index),
     updatedAt: makeTimestamp(index),
   }
@@ -313,7 +322,10 @@ export function generateDebugData(
   const cards: CharacterCard[] = []
 
   for (let partyIndex = 0; partyIndex < partyCount; partyIndex += 1) {
-    const party = buildParty(partyIndex)
+    const party = buildParty(
+      partyIndex,
+      cardsPerParty > 0 ? pick(worldHistories, partyIndex) : null,
+    )
 
     parties.push(party)
     cards.push(...buildCardsForParty(party, partyIndex, cardsPerParty))

@@ -112,7 +112,7 @@ with a distinct `name` (`party-store`, `card-store`, `preferences-store`).
 
 | Store                 | State                                                  | Actions                                                              |
 | --------------------- | ------------------------------------------------------ | -------------------------------------------------------------------- |
-| `usePartyStore`       | `parties`, `hasHydrated`                               | `createParty`, `deleteParty`                                         |
+| `usePartyStore`       | `parties`, `hasHydrated`                               | `createParty`, `setPartyHistory`, `deleteParty`                      |
 | `useCardStore`        | `cards`, `hasHydrated`                                 | `createDraftCard`, `acceptCard`, `deleteCard`, `deleteCardsForParty` |
 | `usePreferencesStore` | `cardDisplayMode`, `languagePreference`, `hasHydrated` | setters                                                              |
 
@@ -169,16 +169,39 @@ text, rejects non-JSON, and finally runs `generatedCharacterCardSchema.parse(...
 or off-schema AI output throws rather than saving bad data. Errors bubble to the form hook, which
 sets `errorMessage` and saves nothing.
 
-The prompt has five parts: the party setup, the character seed, a uniqueness section, an optional
-divergence section, and the field rules. Uniqueness tells the model to skip the archetype the
-trait set implies, include one detail too specific to fit another guest, and avoid a named list of
-stock setups. `getPromptSiblings()` (`generation/utils/party-context.ts`) reads the party's other
-cards from the store inside the generate handler and renders them as one-line summaries (name,
-traits, phrase, movement; newest first, capped by `MAX_PARTY_SIBLING_SUMMARIES`), which the prompt
-forbids repeating. Variants of the card being regenerated are excluded — they share its seed.
-`getGenerationAttempt()` counts cards in the same `generationGroupId`, so regeneration adds a
-divergence block ("variant 3 for this exact seed") that holds the traits fixed and changes
-everything else. The first generation gets neither block.
+The prompt has six parts: the party setup, the shared world, the character seed, a uniqueness
+section, an optional divergence section, and the field rules. Uniqueness tells the model to skip
+the archetype the trait set implies, include one detail too specific to fit another guest, and
+avoid a named list of stock setups. `getPromptSiblings()` (`generation/utils/party-context.ts`)
+reads the party's other cards from the store inside the generate handler and renders them as
+one-line summaries (name, traits, phrase, movement; newest first, capped by
+`MAX_PARTY_SIBLING_SUMMARIES`), which the prompt forbids repeating. Variants of the card being
+regenerated are excluded — they share its seed. `getGenerationAttempt()` counts cards in the same
+`generationGroupId`, so regeneration adds a divergence block ("variant 3 for this exact seed")
+that holds the traits fixed and changes everything else. The first generation gets neither block.
+
+### The shared party world (`partyHistory`)
+
+`Party.partyHistory` holds a 2-3 sentence description of the world every guest at that party
+inhabits, so separate cards share one history instead of inventing rival ones. It lives on the
+party, not the card.
+
+- The party's **first** card founds it. With no stored world the request carries no
+  `partyHistory`, which switches the prompt to a "first guest, you found it" block and the request
+  to `characterCardWithWorldJsonSchema`, so the model answers `partyHistory` alongside the card
+  fields.
+- Once a world exists the prompt prints it verbatim under "already founded, do not change it" and
+  the model gets the card-only schema, so it never regenerates the world.
+- `splitGeneratedWorld()` (`generation/utils/party-world.ts`) lifts `partyHistory` out of the
+  first card's answer before saving: the string goes to the party through `setPartyHistory`, and
+  the card keeps only its own fields. `hasPartyWorld()` is the one emptiness check (a blank stored
+  string reads as no world), used by both the prompt and `gemini.ts` to pick the variant.
+- `setPartyHistory` is first-write-wins: it fills the field only when the party has no world yet.
+- Regenerating the very first card of a party can still found a world, so the regenerate hook runs
+  the same split.
+- The party screen shows an `info.circle` header button whenever `hasPartyWorld` is true, and
+  `handleShowPartyWorld` (`use-party-details-actions.ts`) presents the text in an `Alert`. The
+  button never renders for a party with no world.
 
 The form writes a signed intensity per selected trait into `input.traitLevels` (`-3..3`, default
 `0`, absent entry reads as `0`). `generation/utils/seed-traits.ts` turns those into
@@ -197,12 +220,16 @@ anti-similarity context without extra plumbing.
 
 Two schemas must stay in lockstep with the domain type: the hand-written Gemini JSON
 schema and the Zod schema, both in `schemas.ts`, plus `CharacterCardGenerated` in
-`features/cards/types.ts`. Changing generated fields means editing all three.
+`features/cards/types.ts`. Changing generated fields means editing all three. The world-founding
+first card adds a second pair (`characterCardWithWorldSchema` /
+`characterCardWithWorldJsonSchema`) built from the same card field objects plus `partyHistory`.
 
 Both write hooks (`use-new-character-card-form.ts`, `use-card-details-actions.ts`) call
 `useCharacterCardGeneration()` (`generation/hooks/`) instead of `generateCharacterCard`
 directly. That hook owns one `AbortController` per request, exposes `{ isGenerating, start,
-cancel }`, and reports `{ generated, cancelled }`. While `isGenerating` is true the screen
+cancel }`, and reports `{ generated, cancelled }`, where `generated` is the answer with
+`partyHistory` still attached; each hook runs `splitGeneratedWorld` before saving so the world
+lands on the party and the card stays clean. While `isGenerating` is true the screen
 renders `GeneratingOverlay` (`generation/components/`) — a full-screen `Modal` with a Cancel
 button — and sets `gestureEnabled: false` on its `Stack.Screen` so the iOS swipe-back cannot
 leave mid-request. Cancel aborts the signal, and `start()` resolves as `cancelled`; the hooks
