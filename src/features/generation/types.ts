@@ -25,11 +25,20 @@ export interface GenerateCharacterCardRequest {
   attempt?: number
   seedTraits?: PromptSeedTrait[]
   siblings?: PromptSiblingCard[]
+  // The party's established world. Absent until the first card founds one, which
+  // is what makes that card also generate the shared `partyHistory`.
+  partyHistory?: string | null
   signal?: AbortSignal
+}
+
+// The first card of a party answers `partyHistory` alongside the card fields.
+// Callers strip it before saving, so it lives on the party rather than the card.
+export interface GeneratedCharacterCard extends CharacterCardGenerated {
+  partyHistory?: string
 }
 
 export interface CharacterCardGenerator {
   generate(
     request: GenerateCharacterCardRequest,
-  ): Promise<CharacterCardGenerated>
+  ): Promise<GeneratedCharacterCard>
 }

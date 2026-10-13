@@ -96,4 +96,32 @@ describe('parseGeneratedCardResponse', () => {
 
     expect(parsed).not.toHaveProperty('extra')
   })
+
+  describe('with world', () => {
+    it('requires partyHistory alongside the card fields', () => {
+      expect(() =>
+        parseGeneratedCardResponse(JSON.stringify(valid), true),
+      ).toThrow()
+    })
+
+    it('accepts a card with partyHistory and keeps the field', () => {
+      const withWorld = {
+        ...valid,
+        partyHistory: 'The gate opens once a season.',
+      }
+
+      expect(
+        parseGeneratedCardResponse(JSON.stringify(withWorld), true),
+      ).toEqual(withWorld)
+    })
+
+    it('rejects a blank partyHistory', () => {
+      expect(() =>
+        parseGeneratedCardResponse(
+          JSON.stringify({ ...valid, partyHistory: '   ' }),
+          true,
+        ),
+      ).toThrow()
+    })
+  })
 })

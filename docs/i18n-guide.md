@@ -148,8 +148,8 @@ form input. Two pieces make this work:
   card's stored phrase and movement.
 
 The schema keys themselves (`generatedNameWithClass`, `backgroundHistory`,
-`characterTraits`, `specialMovement`, `specialPhrase`) are never localized. See
-`src/features/generation/schemas.ts`.
+`characterTraits`, `specialMovement`, `specialPhrase`, and the first card's `partyHistory`) are
+never localized. See `src/features/generation/schemas.ts`.
 
 ## Caveats
 

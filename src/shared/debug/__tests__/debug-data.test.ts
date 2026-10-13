@@ -14,6 +14,12 @@ describe('generateDebugData', () => {
     expect(generateDebugData(4, 1).parties).toHaveLength(4)
   })
 
+  it('gives a seeded party an established shared world', () => {
+    for (const party of generateDebugData(6, 2).parties) {
+      expect(party.partyHistory).toBeTruthy()
+    }
+  })
+
   it('builds the requested number of cards per party', () => {
     const { parties, cards } = generateDebugData(3, 2)
 

@@ -33,6 +33,7 @@ export function buildCharacterCardPrompt({
   attempt,
   seedTraits,
   siblings,
+  partyHistory,
 }: GenerateCharacterCardRequest) {
   const t = getGenerationTranslator(outputLanguage)
   const labels = getGenerationPromptLabels(t, party, input)
@@ -43,10 +44,13 @@ export function buildCharacterCardPrompt({
   const printValues = shouldPrintTraitValues(seeds)
   const loudestIndex = getLoudestTraitIndex(seedTraitValuesOf(seeds))
   const loudestLabel = loudestIndex >= 0 ? seedLabels[loudestIndex] : null
+  const establishedWorld = partyHistory?.trim() || null
+  const establishesWorld = !establishedWorld
 
   return [
     'You create playful and imaginative LARP character cards for party guests.',
     'Keep the tone creative, safe for a broad age range, and easy to read aloud.',
+    'Every guest belongs to one shared world, so their histories must coexist.',
     'Use the theme as inspiration, but avoid copying exact canon characters, factions, or plotlines.',
     `Write all generated field values in ${getGenerationLanguageName(outputLanguage)}.`,
     'Keep the JSON schema keys exactly as requested and localize only the string values.',
@@ -55,6 +59,10 @@ export function buildCharacterCardPrompt({
     'Party setup:',
     `- Theme category: ${labels.themeCategory}`,
     `- Mood: ${labels.mood}`,
+    '',
+    ...(establishesWorld
+      ? establishingWorldLines()
+      : sharedWorldLines(establishedWorld)),
     '',
     'Character seed:',
     `- Name: ${input.name}`,
@@ -96,8 +104,31 @@ export function buildCharacterCardPrompt({
         : ' for the player to use'
     }.`,
     '- specialPhrase should be a memorable short line the player can say in character, and a different kind of joke from the trait phrases.',
+    ...(establishesWorld
+      ? [
+          '- partyHistory must be exactly 2-3 short sentences and must not mention this character.',
+        ]
+      : []),
     '- Avoid explicit, hateful, or inappropriate content.',
   ].join('\n')
+}
+
+function establishingWorldLines() {
+  return [
+    'Shared world (first guest, you establish it):',
+    '- This is the first character at the party. In partyHistory, establish the one world every',
+    '  later guest will inhabit: the place, one situation or event that touches every guest,',
+    '  and one open thread each character can react to differently.',
+    '- Write it in exactly 2-3 short sentences about the world, not this character. Keep it',
+    '  open enough that a rival, a stranger, or a friend can all belong here.',
+  ]
+}
+
+function sharedWorldLines(partyHistory: string) {
+  return [
+    'Shared world (already founded, do not change it):',
+    `- ${partyHistory}`,
+  ]
 }
 
 function divergenceLines(attempt: number) {

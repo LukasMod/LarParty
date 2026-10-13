@@ -12,7 +12,9 @@ import {
 } from '@/features/cards/utils/card-form'
 import { useCharacterCardGeneration } from '@/features/generation/hooks/use-character-card-generation'
 import { getPromptSiblings } from '@/features/generation/utils/party-context'
+import { splitGeneratedWorld } from '@/features/generation/utils/party-world'
 import { Party } from '@/features/parties/types'
+import { usePartyStore } from '@/features/parties/store/party-store'
 import { useAppLanguage } from '@/shared/i18n/use-app-language'
 import { resolveErrorMessage } from '@/shared/utils/error'
 
@@ -25,6 +27,7 @@ export function useNewCharacterCardForm({
 }: UseNewCharacterCardFormParams) {
   const { t } = useTranslation('cards')
   const createDraftCard = useCardStore((state) => state.createDraftCard)
+  const setPartyHistory = usePartyStore((state) => state.setPartyHistory)
   const { resolvedLanguage } = useAppLanguage()
   const generation = useCharacterCardGeneration()
 
@@ -59,6 +62,7 @@ export function useNewCharacterCardForm({
         party,
         input,
         outputLanguage: resolvedLanguage,
+        partyHistory: party.partyHistory,
         siblings: getPromptSiblings({
           cards: useCardStore.getState().cards,
           partyId: party.id,
@@ -69,10 +73,17 @@ export function useNewCharacterCardForm({
         return
       }
 
+      const { generated: cardGenerated, partyHistory } =
+        splitGeneratedWorld(generated)
+
+      if (partyHistory) {
+        setPartyHistory(party.id, partyHistory)
+      }
+
       const cardId = createDraftCard({
         partyId: party.id,
         input,
-        generated,
+        generated: cardGenerated,
       })
 
       router.replace({

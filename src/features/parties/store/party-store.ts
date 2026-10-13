@@ -10,6 +10,9 @@ interface PartyStoreState {
   hasHydrated: boolean
   parties: Party[]
   createParty: (input: CreatePartyInput) => string
+  // First write wins: the party's world is set by the first card and later
+  // generations reuse it instead of inventing a rival history.
+  setPartyHistory: (partyId: string, partyHistory: string) => void
   deleteParty: (partyId: string) => void
   setHasHydrated: (hasHydrated: boolean) => void
 }
@@ -30,6 +33,7 @@ export const usePartyStore = create<PartyStoreState>()(
               title: input.title.trim(),
               themeCategory: input.themeCategory,
               mood: input.mood,
+              partyHistory: null,
               createdAt: timestamp,
               updatedAt: timestamp,
             },
@@ -38,6 +42,21 @@ export const usePartyStore = create<PartyStoreState>()(
         }))
 
         return partyId
+      },
+      setPartyHistory: (partyId, partyHistory) => {
+        const timestamp = new Date().toISOString()
+
+        set((state) => ({
+          parties: state.parties.map((party) =>
+            party.id === partyId && !party.partyHistory
+              ? {
+                  ...party,
+                  partyHistory,
+                  updatedAt: timestamp,
+                }
+              : party,
+          ),
+        }))
       },
       deleteParty: (partyId) => {
         set((state) => ({

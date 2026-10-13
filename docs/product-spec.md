@@ -74,6 +74,7 @@ A party groups all character cards created under a specific theme/mood setup.
 - `title`
 - `themeCategory`
 - `mood`
+- `partyHistory` (shared world text, written by the first generated card)
 - `createdAt`
 - `updatedAt`
 
@@ -82,6 +83,9 @@ A party groups all character cards created under a specific theme/mood setup.
 - Title is only a user-facing name
 - Title does not change the AI party context prompt
 - No date, description, or location in MVP
+- `partyHistory` is a 2-3 sentence world every card at the party shares, so the guests inhabit one
+  history. The first card to generate writes it; later cards read it and never rewrite it. It is
+  output-only (not a user input) and local until a backend owns it.
 
 ### Character Card
 
@@ -134,9 +138,11 @@ A character card is an AI-generated role profile associated with one party.
 4. App builds a structured AI prompt using:
    - party theme category
    - party mood
+   - the party's shared world, or a request to found one when the party has none yet
    - card input form values
  5. App calls AI directly from client for PoC and shows a blocking generating overlay
- 6. App stores returned card as draft automatically
+  6. App stores returned card as draft automatically. When the answer also carried a new shared
+     world, App saves that to the party rather than the card, so the next card reuses it.
  7. User sees generated result
  8. User can:
     - accept card
@@ -284,6 +290,8 @@ The prompt should use:
 
 - selected party theme category
 - selected mood
+- the party's shared world: passed in once it exists, or asked for from the first card so later
+  cards can reuse it
 - user name
 - user sex
 - selected user traits, each with its intensity value when any value is away from the default
